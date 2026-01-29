@@ -28,12 +28,9 @@ app.get('/', (req, res) => {
 // Database Connection
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('Database connection error:', err);
-  });
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('Database connection error:', err));
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
