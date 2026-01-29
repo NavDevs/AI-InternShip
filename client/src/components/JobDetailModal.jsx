@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { API_BASE_URL } from '../utils/api';
 import {
     X,
     MapPin,
@@ -41,7 +42,7 @@ const JobDetailModal = ({ job, isOpen, onClose }) => {
         try {
             const token = await user.getIdToken();
             const res = await axios.post(
-                'http://localhost:5000/api/ai/eligibility',
+                `${API_BASE_URL}/ai/eligibility`,
                 {
                     job: {
                         title: job.title?.replace(/<[^>]*>?/gm, ''),

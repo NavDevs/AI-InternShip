@@ -22,13 +22,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
 
-const AI_TIPS = [
-    { title: "Proactive Follow-up", text: "Following up within 3-5 days of applying increases your response rate by 22%.", icon: "🚀" },
-    { title: "Resume Optimization", text: "Match keywords from the job description to bypass ATS filters effectively.", icon: "📝" },
-    { title: "Networking pays off", text: "80% of jobs are filled through networking. Try reaching out to recruiters on LinkedIn.", icon: "🤝" },
-    { title: "Interview Prep", text: "Research the company's recent projects to stand out during your interview.", icon: "💡" }
-];
-
 const QuickAction = ({ icon: Icon, label, onClick, color }) => (
     <motion.button
         whileHover={{ y: -5, scale: 1.02 }}
@@ -109,7 +102,6 @@ const Dashboard = () => {
     const [stats, setStats] = useState({ total: 0, statusCounts: {} });
     const [recentApps, setRecentApps] = useState([]);
     const [followUpApps, setFollowUpApps] = useState([]);
-    const [currentTip, setCurrentTip] = useState(0);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -147,13 +139,6 @@ const Dashboard = () => {
             setLoading(false);
         }
     };
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentTip(prev => (prev + 1) % AI_TIPS.length);
-        }, 10000);
-        return () => clearInterval(interval);
-    }, []);
 
     const pieData = {
         labels: ['Applied', 'Interview', 'Offer', 'Rejected'],
@@ -265,31 +250,8 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            {/* AI Insights and Follow-ups */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <motion.div variants={itemVariants} className="lg:col-span-1 glass rounded-[2.5rem] p-8 bg-gradient-to-br from-indigo-600 to-blue-700 text-white relative overflow-hidden shadow-2xl">
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-6">
-                            <span className="text-3xl">{AI_TIPS[currentTip].icon}</span>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 px-3 py-1 rounded-full">AI Insight</span>
-                        </div>
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={currentTip}
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -20 }}
-                                className="space-y-4"
-                            >
-                                <h4 className="text-xl font-black leading-tight">{AI_TIPS[currentTip].title}</h4>
-                                <p className="text-white/80 text-sm font-medium leading-relaxed">{AI_TIPS[currentTip].text}</p>
-                            </motion.div>
-                        </AnimatePresence>
-                    </div>
-                    <div className="absolute bottom-0 right-0 h-32 w-32 bg-white/10 blur-3xl rounded-full translate-x-10 translate-y-10" />
-                </motion.div>
-
-                <motion.div variants={itemVariants} className="lg:col-span-2 glass rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-800">
+            <div className="grid grid-cols-1 gap-8">
+                <motion.div variants={itemVariants} className="glass rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-800 flex flex-col">
                     <div className="flex items-center justify-between mb-8">
                         <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                             <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600">
@@ -298,26 +260,30 @@ const Dashboard = () => {
                             Upcoming Follow-ups
                         </h3>
                     </div>
-                    <div className="space-y-4">
-                        {followUpApps.length > 0 ? followUpApps.map((app, i) => (
-                            <div key={app.id} className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 group hover:shadow-lg transition-all">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center font-black text-primary border border-slate-100 dark:border-slate-700">
-                                        {app.company.charAt(0)}
+                    <div className="flex-1 flex flex-col">
+                        {followUpApps.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {followUpApps.map((app, i) => (
+                                    <div key={app.id} className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 group hover:shadow-lg transition-all">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center font-black text-primary border border-slate-100 dark:border-slate-700">
+                                                {app.company.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <h4 className="font-black text-slate-900 dark:text-white leading-none mb-1 line-clamp-1">{app.company}</h4>
+                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter line-clamp-1">{app.role}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right shrink-0 ml-4">
+                                            <p className="text-[10px] font-black uppercase text-amber-600 mb-1">Due</p>
+                                            <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(app.followUpDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-black text-slate-900 dark:text-white leading-none mb-1">{app.company}</h4>
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter">{app.role}</p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-[10px] font-black uppercase text-amber-600 mb-1">Due Soon</p>
-                                    <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(app.followUpDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
-                                </div>
+                                ))}
                             </div>
-                        )) : (
-                            <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/30 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800">
-                                <CheckCircle2 className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center py-12 bg-slate-50/50 dark:bg-slate-800/20 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800">
+                                <CheckCircle2 className="h-10 w-10 text-slate-300 mb-3" />
                                 <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No follow-ups due!</p>
                             </div>
                         )}
@@ -325,80 +291,105 @@ const Dashboard = () => {
                 </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <motion.div
-                    variants={itemVariants}
-                    className="glass rounded-[2.5rem] p-8 shadow-sm dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800"
-                >
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white mb-8 flex items-center gap-3">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600">
-                            <BarChart3 className="h-5 w-5" />
-                        </div>
-                        Application Funnel
-                    </h3>
-                    <div className="h-72 flex justify-center">
-                        <Pie
-                            data={pieData}
-                            options={{
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: 'bottom',
-                                        labels: {
-                                            usePointStyle: true,
-                                            padding: 20,
-                                            font: { weight: 'bold', size: 11 }
+            {stats.total > 0 ? (
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                    <motion.div
+                        variants={itemVariants}
+                        className="glass rounded-[2.5rem] p-8 shadow-sm dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800"
+                    >
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-8 flex items-center gap-3">
+                            <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600">
+                                <BarChart3 className="h-5 w-5" />
+                            </div>
+                            Application Funnel
+                        </h3>
+                        <div className="h-72 flex justify-center">
+                            <Pie
+                                data={pieData}
+                                options={{
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom',
+                                            labels: {
+                                                usePointStyle: true,
+                                                padding: 20,
+                                                font: { weight: 'bold', size: 11 }
+                                            }
                                         }
                                     }
-                                }
-                            }}
-                        />
-                    </div>
-                </motion.div>
+                                }}
+                            />
+                        </div>
+                    </motion.div>
 
+                    <motion.div
+                        variants={itemVariants}
+                        className="glass rounded-[2.5rem] p-8 shadow-sm dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800"
+                    >
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white">Recent Activity</h3>
+                            <button onClick={() => navigate('/tracker')} className="text-xs font-black uppercase text-primary hover:underline tracking-widest">History</button>
+                        </div>
+                        <div className="space-y-4">
+                            {recentApps.map((app, i) => (
+                                <motion.div
+                                    key={i}
+                                    whileHover={{ x: 5 }}
+                                    className="flex items-center justify-between p-5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-700 group"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center font-black text-slate-400 border border-slate-100 dark:border-slate-700">
+                                            {app.company.charAt(0)}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-black text-slate-900 dark:text-white leading-none mb-1">{app.role}</h4>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{app.company} • {new Date(app.appliedDate).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-sm ${app.status === 'Offer' ? 'bg-emerald-500 text-white' :
+                                            app.status === 'Interview' ? 'bg-amber-500 text-white' :
+                                                app.status === 'Rejected' ? 'bg-rose-500 text-white' :
+                                                    'bg-blue-500 text-white'
+                                            }`}>
+                                            {app.status}
+                                        </span>
+                                        <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-primary transition-colors" />
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
+                </div>
+            ) : (
                 <motion.div
                     variants={itemVariants}
-                    className="glass rounded-[2.5rem] p-8 shadow-sm dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800"
+                    className="glass rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30"
                 >
-                    <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white">Recent Activity</h3>
-                        <button onClick={() => navigate('/tracker')} className="text-xs font-black uppercase text-primary hover:underline tracking-widest">History</button>
+                    <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                        <Sparkles className="h-10 w-10 text-primary" />
                     </div>
-                    <div className="space-y-4">
-                        {recentApps.length > 0 ? recentApps.map((app, i) => (
-                            <motion.div
-                                key={i}
-                                whileHover={{ x: 5 }}
-                                className="flex items-center justify-between p-5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-700 group"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center font-black text-slate-400 border border-slate-100 dark:border-slate-700">
-                                        {app.company.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <h4 className="font-black text-slate-900 dark:text-white leading-none mb-1">{app.role}</h4>
-                                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{app.company} • {new Date(app.appliedDate).toLocaleDateString()}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-sm ${app.status === 'Offer' ? 'bg-emerald-500 text-white' :
-                                        app.status === 'Interview' ? 'bg-amber-500 text-white' :
-                                            app.status === 'Rejected' ? 'bg-rose-500 text-white' :
-                                                'bg-blue-500 text-white'
-                                        }`}>
-                                        {app.status}
-                                    </span>
-                                    <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-primary transition-colors" />
-                                </div>
-                            </motion.div>
-                        )) : (
-                            <div className="text-center py-12">
-                                <p className="text-slate-400 font-black uppercase text-[10px] tracking-widest">Initial journey starts here.</p>
-                            </div>
-                        )}
+                    <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Start your journey!</h2>
+                    <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-10 font-medium text-lg leading-relaxed">
+                        Your dashboard looks a bit empty. Let's change that! Find your dream internship or chat with our AI career bot to get started.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button
+                            onClick={() => navigate('/jobs')}
+                            className="w-full sm:w-auto rounded-2xl bg-primary px-10 py-5 font-black text-white shadow-2xl shadow-blue-500/20 hover:bg-blue-600 transition-all flex items-center justify-center gap-3"
+                        >
+                            <Search className="h-5 w-5" /> Explore Jobs
+                        </button>
+                        <button
+                            onClick={() => navigate('/bot')}
+                            className="w-full sm:w-auto rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 px-10 py-5 font-black text-slate-900 dark:text-white shadow-sm hover:shadow-xl transition-all flex items-center justify-center gap-3"
+                        >
+                            <Sparkles className="h-5 w-5 text-emerald-500" /> Chat with AI
+                        </button>
                     </div>
                 </motion.div>
-            </div>
+            )}
         </motion.div>
     );
 };

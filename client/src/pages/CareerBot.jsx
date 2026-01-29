@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { getYouTubePlaylistForSkill } from '../constants/youtubeLinks';
 import { Youtube } from 'lucide-react';
+import { API_BASE_URL } from '../utils/api';
 
 const CareerBot = () => {
     const { user } = useAuth();
@@ -63,7 +64,7 @@ const CareerBot = () => {
             if (effectiveMode === 'menu' || isGreeting) {
                 // General Chat
                 setResult(null); // Clear previous results to show idle screen
-                const res = await axios.post('http://localhost:5000/api/ai/chat',
+                const res = await axios.post(`${API_BASE_URL}/ai/chat`,
                     {
                         message: userInput,
                         chatHistory: messages.map(m => ({ role: m.role === 'bot' ? 'model' : 'user', parts: [{ text: m.content }] }))
@@ -72,14 +73,14 @@ const CareerBot = () => {
                 );
                 setMessages(prev => [...prev, { role: 'bot', content: res.data.text }]);
             } else if (effectiveMode === 'analyze') {
-                const res = await axios.post('http://localhost:5000/api/ai/analyze',
+                const res = await axios.post(`${API_BASE_URL}/ai/analyze`,
                     { jdText: userInput },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
                 setMessages(prev => [...prev, { role: 'bot', content: `Based on my analysis, your match score for this role is ${res.data.matchPercentage}%. I've generated an eligibility report for you below!` }]);
             } else if (effectiveMode === 'roadmap') {
-                const res = await axios.post('http://localhost:5000/api/ai/roadmap',
+                const res = await axios.post(`${API_BASE_URL}/ai/roadmap`,
                     { dreamJob: userInput },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );

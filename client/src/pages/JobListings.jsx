@@ -14,7 +14,8 @@ import {
     CheckCircle2,
     Clock,
     IndianRupee,
-    Tag
+    Tag,
+    ChevronDown
 } from 'lucide-react';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,6 +24,7 @@ import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { INDIAN_STATES } from '../constants/states';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../utils/api';
 
 const SkeletonCard = () => (
     <div className="glass h-80 animate-pulse rounded-[2.5rem] p-8 space-y-4">
@@ -51,23 +53,30 @@ const JobListings = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [role, setRole] = useState('');
-    const [location, setLocation] = useState(user?.profile?.state || '');
+    const [location, setLocation] = useState('');
     const [type, setType] = useState('');
     const [userLocation, setUserLocation] = useState(null);
     const [isLive, setIsLive] = useState(false);
     const [error, setError] = useState(null);
     const [appliedJobs, setAppliedJobs] = useState(new Set());
+    const [savingState, setSavingState] = useState(false);
     const navigate = useNavigate();
 
-    const [savingState, setSavingState] = useState(false);
+    // Sync initial location
+    useEffect(() => {
+        if (user?.profile?.state && !location) {
+            setLocation(user.profile.state);
+        }
+    }, [user?.profile?.state]);
 
     // Debounced search logic
     useEffect(() => {
+        setLoading(true); // Show skeleton immediately
         const timer = setTimeout(() => {
             fetchJobs();
-        }, 800);
+        }, 500);
         return () => clearTimeout(timer);
-    }, [search, role, location, type, user?.profile?.state]);
+    }, [search, role, location, type]);
 
     const handleUpdateState = async (newState) => {
         if (!user) return;
@@ -77,7 +86,7 @@ const JobListings = () => {
             await updateDoc(userRef, {
                 'profile.state': newState
             });
-            // AuthContext will update automatically if it's listening to Firestore
+            setLocation(newState); // Update local state immediately for instant feedback
         } catch (err) {
             console.error('Update state failed:', err);
         } finally {
@@ -101,7 +110,7 @@ const JobListings = () => {
             const searchLocation = location.trim() || user?.profile?.state || 'India';
             const searchKeyword = `${role} ${search}`.trim() || 'internship';
 
-            const res = await axios.get(`http://localhost:5000/api/jobs/live`, {
+            const res = await axios.get(`${API_BASE_URL}/jobs/live`, {
                 params: {
                     keyword: searchKeyword,
                     location: searchLocation
@@ -112,7 +121,7 @@ const JobListings = () => {
             console.error('Fetch error:', err);
             setError('Failed to fetch live opportunities. Using local listings.');
             // Fallback to local
-            const res = await axios.get(`http://localhost:5000/api/jobs`, {
+            const res = await axios.get(`${API_BASE_URL}/jobs`, {
                 params: {
                     type: type || undefined,
                     state: user?.profile?.state || undefined
@@ -126,13 +135,16 @@ const JobListings = () => {
 
     // Filter jobs by user state for live results too
     const filteredJobs = jobs.filter(job => {
-        if (!user?.profile?.state) return true;
-        const state = user.profile.state.toLowerCase();
-        const location = job.location?.toLowerCase() || '';
-        const title = job.title?.toLowerCase() || '';
+        // If user is searching a specific location, prioritize that for visibility
+        const currentFilterState = location || user?.profile?.state;
+        if (!currentFilterState) return true;
+
+        const filterState = currentFilterState.toLowerCase();
+        const jobLoc = job.location?.toLowerCase() || '';
+        const jobTitle = job.title?.toLowerCase() || '';
 
         // Return true if location contains state OR if it's remote
-        return location.includes(state) || location.includes('remote');
+        return jobLoc.includes(filterState) || jobLoc.includes('remote');
     });
 
     const handleApply = async (job) => {
@@ -143,11 +155,16 @@ const JobListings = () => {
 
         // Automatically save to tracker
         try {
+            const appliedDate = new Date();
+            const followUpDate = new Date();
+            followUpDate.setDate(appliedDate.getDate() + 5);
+
             await addDoc(collection(db, 'applications'), {
                 company: job.company,
                 role: job.title,
                 status: 'Applied',
-                appliedDate: new Date().toISOString(),
+                appliedDate: appliedDate.toISOString(),
+                followUpDate: followUpDate.toISOString(),
                 location: job.location,
                 userId: user.uid,
                 source: job.source || 'InternAI'
@@ -191,35 +208,42 @@ const JobListings = () => {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="relative">
                         <select
-                            className="w-full rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50 px-4 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 shadow-sm transition-all focus:ring-2 focus:ring-primary focus:border-primary"
+                            className="w-full rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 pl-4 pr-10 text-sm font-bold text-slate-900 dark:text-white shadow-sm transition-all focus:ring-2 focus:ring-primary focus:border-primary appearance-none cursor-pointer"
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
                         >
                             <option value="">All Roles</option>
                             {JOB_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>
+                        <ChevronDown className="absolute right-3 top-4 h-4 w-4 text-slate-500 pointer-events-none" />
                     </div>
                     <div className="relative">
-                        <MapPin className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="City or State"
-                            className="w-full rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50 py-3 pl-10 pr-4 text-sm font-bold shadow-sm focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                        <MapPin className="absolute left-3 top-3.5 h-4 w-4 text-slate-500" />
+                        <select
+                            className="w-full rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 pl-10 pr-10 text-sm font-bold shadow-sm transition-all focus:ring-2 focus:ring-primary focus:border-primary text-slate-900 dark:text-white appearance-none cursor-pointer"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                        />
+                        >
+                            <option value="">All Regions</option>
+                            {INDIAN_STATES.map(state => (
+                                <option key={state} value={state}>{state}</option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-4 h-4 w-4 text-slate-500 pointer-events-none" />
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="relative">
+                        <Filter className="absolute left-3 top-3.5 h-4 w-4 text-slate-500" />
                         <select
-                            className="w-full rounded-2xl border-2 border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50 px-4 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 shadow-sm transition-all focus:ring-2 focus:ring-primary focus:border-primary"
+                            className="w-full rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 py-3 pl-10 pr-10 text-sm font-bold shadow-sm transition-all focus:ring-2 focus:ring-primary focus:border-primary text-slate-900 dark:text-white appearance-none cursor-pointer"
                             value={type}
                             onChange={(e) => setType(e.target.value)}
                         >
                             <option value="">Internship</option>
                             <option value="job">Full-time</option>
                         </select>
+                        <ChevronDown className="absolute right-3 top-4 h-4 w-4 text-slate-500 pointer-events-none" />
                     </div>
                 </div>
             </header>
@@ -248,17 +272,18 @@ const JobListings = () => {
                         To show you the most relevant local internships, please select your state. We'll match jobs in your area automatically.
                     </p>
 
-                    <div className="w-full max-w-sm">
+                    <div className="w-full max-w-sm relative">
                         <select
                             onChange={(e) => handleUpdateState(e.target.value)}
                             disabled={savingState}
-                            className="w-full rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-6 py-4 text-sm font-bold shadow-xl focus:ring-primary focus:border-primary disabled:opacity-50 transition-all"
+                            className="w-full rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-6 py-4 text-sm font-bold shadow-xl focus:ring-primary focus:border-primary disabled:opacity-50 transition-all appearance-none pr-12"
                         >
                             <option value="">Select your State</option>
                             {INDIAN_STATES.map(state => (
                                 <option key={state} value={state}>{state}</option>
                             ))}
                         </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
                         {savingState && (
                             <div className="flex items-center justify-center gap-2 mt-4 text-primary font-bold text-xs">
                                 <Loader2 className="h-3 w-3 animate-spin" /> Saving your preference...

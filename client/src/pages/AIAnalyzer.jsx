@@ -18,6 +18,7 @@ import { db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../utils/api';
 
 const AIAnalyzer = () => {
     const { user } = useAuth();
@@ -35,7 +36,7 @@ const AIAnalyzer = () => {
         setIsLoading(true);
         setError('');
         try {
-            const res = await axios.post('http://localhost:5000/api/ai/analyze', { jdText });
+            const res = await axios.post(`${API_BASE_URL}/ai/analyze`, { jdText });
             setResult(res.data);
         } catch (err) {
             setError('Failed to analyze the description. Please try again.');

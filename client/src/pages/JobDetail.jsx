@@ -23,6 +23,7 @@ import {
     HelpCircle
 } from 'lucide-react';
 import { db } from '../firebase';
+import { API_BASE_URL } from '../utils/api';
 import { collection, addDoc } from 'firebase/firestore';
 import { getYouTubePlaylistForSkill } from '../constants/youtubeLinks';
 
@@ -51,7 +52,7 @@ const JobDetail = () => {
         setError(null);
         try {
             const res = await axios.post(
-                'http://localhost:5000/api/ai/eligibility',
+                `${API_BASE_URL}/ai/eligibility`,
                 {
                     job: {
                         title: job.title?.replace(/<[^>]*>?/gm, ''),
