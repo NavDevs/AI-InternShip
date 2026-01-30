@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'InternAI - Internship Tracker',
-        short_name: 'InternAI',
-        description: 'AI-Assisted Internship & Job Application Tracker',
+        name: 'Intern-AI - Career Assistant',
+        short_name: 'Intern-AI',
+        description: 'AI-Powered Career & Internship Assistant',
         theme_color: '#3b82f6',
         icons: [
           {

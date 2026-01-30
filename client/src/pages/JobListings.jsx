@@ -167,7 +167,7 @@ const JobListings = () => {
                 followUpDate: followUpDate.toISOString(),
                 location: job.location,
                 userId: user.uid,
-                source: job.source || 'InternAI'
+                source: job.source || 'Intern-AI'
             });
             setAppliedJobs(prev => new Set(prev).add(job._id || job.id));
         } catch (err) {

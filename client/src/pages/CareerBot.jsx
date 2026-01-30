@@ -219,7 +219,7 @@ const CareerBot = () => {
             doc.setFontSize(8);
             doc.setFont(undefined, 'italic');
             doc.setTextColor(120, 120, 120);
-            doc.text('Prepared by InternAI Career Coach', 105, 290, { align: 'center' });
+            doc.text('Prepared by Intern-AI Career Coach', 105, 290, { align: 'center' });
             doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: 'center' });
             doc.setTextColor(0, 0, 0);
         }
@@ -797,8 +797,8 @@ const CareerBot = () => {
                                                                                     {qIdx + 1}. {q.question}
                                                                                 </h5>
                                                                                 <span className={`px-3 py-1 rounded-lg text-xs font-black uppercase tracking-wider shrink-0 ${q.difficulty === 'Hard' ? 'bg-rose-100 text-rose-600' :
-                                                                                        q.difficulty === 'Medium' ? 'bg-amber-100 text-amber-600' :
-                                                                                            'bg-emerald-100 text-emerald-600'
+                                                                                    q.difficulty === 'Medium' ? 'bg-amber-100 text-amber-600' :
+                                                                                        'bg-emerald-100 text-emerald-600'
                                                                                     }`}>
                                                                                     {q.difficulty}
                                                                                 </span>

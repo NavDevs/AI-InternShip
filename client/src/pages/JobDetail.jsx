@@ -90,7 +90,7 @@ const JobDetail = () => {
                     appliedDate: new Date().toISOString(),
                     location: job.location,
                     userId: user.uid,
-                    source: job.source || 'InternAI'
+                    source: job.source || 'Intern-AI'
                 });
             } catch (err) {
                 console.error('Failed to save to tracker:', err);
@@ -191,7 +191,7 @@ const JobDetail = () => {
             doc.setFontSize(8);
             doc.setFont(undefined, 'italic');
             doc.setTextColor(120, 120, 120);
-            doc.text('Prepared by InternAI Career Coach', 105, 290, { align: 'center' });
+            doc.text('Prepared by Intern-AI Career Coach', 105, 290, { align: 'center' });
             doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: 'center' });
             doc.setTextColor(0, 0, 0);
         }

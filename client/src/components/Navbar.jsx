@@ -38,11 +38,11 @@ const Navbar = () => {
             <div className="mx-auto max-w-[85rem]">
                 <div className="glass flex items-center justify-between rounded-[2rem] border border-slate-200 px-8 py-3 shadow-2xl backdrop-blur-3xl bg-white/95 dark:bg-slate-900/80 dark:border-slate-800/50 transition-all duration-300">
                     <Link to="/" className="flex items-center gap-3 text-2xl font-black tracking-tight transition-transform active:scale-95 group">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-primary to-blue-600 shadow-lg shadow-blue-500/30 group-hover:rotate-12 transition-transform">
-                            <Briefcase className="h-5 w-5 text-white" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white shadow-lg shadow-blue-500/10 group-hover:scale-110 transition-transform overflow-hidden">
+                            <img src="/logo.png" alt="Intern-AI Logo" className="h-full w-full object-cover" />
                         </div>
                         <span className="bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent dark:from-white dark:to-slate-300">
-                            InternAI
+                            Intern-AI
                         </span>
                     </Link>
 

@@ -96,7 +96,7 @@ const Home = () => {
                         {
                             icon: Smartphone,
                             title: "Mobile Ready PWA",
-                            desc: "Install InternAI on your phone. It works like a native app with offline support.",
+                            desc: "Install Intern-AI on your phone. It works like a native app with offline support.",
                             color: "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
                         },
                         {
