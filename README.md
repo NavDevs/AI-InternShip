@@ -1,106 +1,174 @@
-# AI-Powered Internship & Job Application Platform
+# 🚀 **AI-Powered Internship & Job Application Platform**
 
-A modern, production-ready MERN stack application to help students find internships, track applications, and get AI-powered career guidance.
+A **production-ready MERN stack application** that helps students **find internships**, **track applications**, and receive **AI-powered career guidance** — all in one place.
 
-## ✨ Features
+🔗 **Live Demo (Frontend):**  
+👉 https://ai-internship-frontend.onrender.com  
 
-### 🔍 Live Job Search
-- Real-time job listings via RapidAPI integration
-- Advanced filtering by title, location, and employment type
+🔗 **Backend API:**  
+👉 https://ai-internship.onrender.com  
+
+---
+
+## 🎯 **Problem Statement**
+
+Students apply to multiple internships across platforms but struggle with:
+- **Tracking application status**
+- **Understanding skill gaps from job descriptions**
+- **Getting personalized career guidance**
+
+This platform solves all three using **AI + analytics + modern UI**.
+
+---
+
+## ✨ **Features**
+
+### 🔍 **Live Job Search**
+- Real-time job listings via **RapidAPI (JSearch)**
+- Advanced filtering by **title, location, employment type**
 - One-click application tracking
 
-### 🤖 AI Job Analyzer
-- Paste job descriptions to analyze skill match percentage
-- Identify missing skills and get personalized recommendations
-- Download professional PDF analysis reports
+### 🤖 **AI Job Analyzer**
+- Paste job descriptions for analysis
+- **Skill match percentage calculation**
+- Identify **missing skills**
+- Download **professional PDF reports**
 
-### 💬 AI Career Bot
-- Personalized career advice based on your applications
+### 💬 **AI Career Bot**
+- Personalized career advice
 - Interactive career roadmap generation
-- Natural conversation for career guidance
+- Natural AI-driven conversation
 
-### 📊 Application Tracker
+### 📊 **Application Tracker**
 - Centralized dashboard for all applications
-- Status tracking (Applied, Interview, Offer, Rejected)
-- Visual analytics with charts and insights
+- Status tracking: **Applied | Interview | Offer | Rejected**
+- Visual analytics using charts
 
-### 🎨 Modern UI/UX
-- Dark/Light mode toggle
-- Responsive design for mobile and desktop
-- Smooth animations with Framer Motion
-- Professional glassmorphism design
+### 🎨 **Modern UI / UX**
+- **Dark / Light mode**
+- Fully responsive design
+- Smooth animations with **Framer Motion**
+- Professional **glassmorphism UI**
 
-## 🛠 Tech Stack
+---
 
-**Frontend:**
-- React.js with Vite
-- Tailwind CSS
-- Framer Motion (animations)
-- Chart.js (analytics)
-- Lucide React (icons)
-- Firebase (auth & storage)
+## 🛠 **Tech Stack**
 
-**Backend:**
-- Node.js & Express.js
-- MongoDB with Mongoose
-- JWT authentication
-- Groq AI (Llama 3.3 70B)
-- RapidAPI (JSearch)
+### **Frontend**
+- **React.js (Vite)**
+- **Tailwind CSS**
+- **Framer Motion**
+- **Chart.js**
+- **Lucide React**
+- **Firebase Authentication & Storage**
 
-**AI Features:**
+### **Backend**
+- **Node.js**
+- **Express.js**
+- **MongoDB Atlas + Mongoose**
+- **JWT Authentication**
+- **Groq AI (Llama 3.3 – 70B)**
+- **RapidAPI (JSearch)**
+
+### **AI Capabilities**
 - Job description analysis
-- Career advice generation
 - Resume skill extraction
-- Personalized roadmaps
+- Career advice generation
+- Personalized learning roadmaps
 
-## 📦 Quick Setup
+---
+
+## 🏗 **Project Structure**
+
+## 🏗 Project Structure
+
+```text
+AI-InternShip
+│
+├── client/                 # React frontend
+│   ├── components/
+│   ├── pages/
+│   ├── services/
+│   └── utils/
+│
+├── server/                 # Express backend
+│   ├── models/             # Mongoose schemas
+│   ├── routes/             # API routes
+│   ├── controllers/        # Business logic
+│   ├── middleware/         # Authentication & security
+│   └── utils/              # AI helpers
+│
+└── README.md
+```
+
+## ⚙️ Environment Variables
+
+### Backend (`server/.env`)
+```env
+PORT=5000
+MONGO_URI=your_mongodb_atlas_uri
+JWT_SECRET=your_jwt_secret
+
+GROQ_API_KEY=your_groq_api_key
+RAPIDAPI_KEY=your_rapidapi_key
+RAPIDAPI_HOST=jsearch.p.rapidapi.com
+```
+
+### Frontend (`client/.env`)
+```env
+VITE_API_BASE_URL=https://ai-internship.onrender.com
+VITE_FIREBASE_API_KEY=your_key
+VITE_FIREBASE_AUTH_DOMAIN=your_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+```
+
+## 📦 Installation & Setup
 
 ### Prerequisites
 - Node.js v18+
-- MongoDB Atlas account
-- Firebase project
-- API keys (Groq, RapidAPI)
+- MongoDB Atlas
+- Firebase Project
+- Groq AI API Key
+- RapidAPI Key
 
-### Installation
-
-1. **Clone the repository**
+### Clone Repository
 ```bash
-git clone <your-repo-url>
-cd Internship\ Project
+git clone https://github.com/nas23ise-dot/AI-InternShip.git
+cd AI-InternShip
 ```
 
-2. **Server Setup**
+### Backend Setup
 ```bash
 cd server
 npm install
-cp .env.example .env
-# Edit .env with your credentials
 npm run dev
 ```
 
-3. **Client Setup**
+### Frontend Setup
 ```bash
 cd client
 npm install
 npm run dev
 ```
 
-4. **Access the app**
-- Frontend: http://localhost:5173
-- Backend: http://localhost:5000
+## 🔐 Authentication Flow
+- Firebase handles login & signup
+- JWT secures backend APIs
+- Scalable for future role-based access
 
-## 🔑 Environment Variables
+## 📈 Future Enhancements
+- AI resume scoring & ATS matching
+- Email notifications for application updates
+- Admin dashboard
+- Company-wise analytics
 
-### Server (.env)
-```env
-PORT=5000
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret_minimum_32_chars
-GROQ_API_KEY=your_groq_api_key
-RAPIDAPI_KEY=your_rapidapi_key
-NODE_ENV=development
-```
+## 🧠 Why This Project Stands Out
+- ✔ Real-world AI integration
+- ✔ Production deployment
+- ✔ Clean MERN architecture
+- ✔ Strong resume & interview project
 
+<<<<<<< HEAD
 See `server/.env.example` for a complete template.
 
 ### Client
@@ -286,6 +354,8 @@ npm run dev
 - ✔ Clean MERN architecture
 - ✔ Strong resume & interview project
 
+=======
+>>>>>>> 2c47b031c9f73e55d722fc46c758e6076b80229d
 ## 👨‍💻 Author
 **Naveen S**
 CSE Student | MERN Stack Developer | AI Enthusiast
