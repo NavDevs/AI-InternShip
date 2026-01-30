@@ -57,6 +57,7 @@ function App() {
                 <Route path="/analyzer" element={<PrivateRoute><PageWrapper><AIAnalyzer /></PageWrapper></PrivateRoute>} />
                 <Route path="/bot" element={<PrivateRoute><PageWrapper><CareerBot /></PageWrapper></PrivateRoute>} />
                 <Route path="/profile" element={<PrivateRoute><PageWrapper><Profile /></PageWrapper></PrivateRoute>} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
           </div>
