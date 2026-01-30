@@ -29,6 +29,12 @@ import { API_BASE_URL } from '../utils/api';
 import { collection, addDoc } from 'firebase/firestore';
 import { getYouTubePlaylistForSkill } from '../constants/youtubeLinks';
 
+const ensureAbsoluteUrl = (url) => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return 'https://' + url;
+};
+
 const JobDetail = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -78,7 +84,7 @@ const JobDetail = () => {
     };
 
     const handleApply = async () => {
-        window.open(job.link, '_blank');
+        window.open(ensureAbsoluteUrl(job.link), '_blank');
 
         // Auto-save to tracker
         if (user) {
@@ -424,7 +430,7 @@ const JobDetail = () => {
                                                             return (
                                                                 <a
                                                                     key={idx}
-                                                                    href={playlist.url}
+                                                                    href={ensureAbsoluteUrl(playlist.url)}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="flex items-center gap-2 px-4 py-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-200 dark:border-indigo-800"
@@ -446,7 +452,7 @@ const JobDetail = () => {
                                                         {step.certifications.map((cert, j) => (
                                                             <a
                                                                 key={j}
-                                                                href={cert.url}
+                                                                href={ensureAbsoluteUrl(cert.url)}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-colors border ${cert.isFree
@@ -472,7 +478,7 @@ const JobDetail = () => {
                                                         {step.resources.map((resource, j) => (
                                                             <a
                                                                 key={j}
-                                                                href={resource.url}
+                                                                href={ensureAbsoluteUrl(resource.url)}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-sm font-bold hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
