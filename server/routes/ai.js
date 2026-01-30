@@ -197,7 +197,9 @@ IMPORTANT:
   * phase: Clear phase name
   * skills: Array of skills to learn
   * tasks: Array of specific tasks to do
-  * certifications: At least one free AND one paid certification from providers like Google, AWS, Microsoft, Coursera, Udemy, LinkedIn Learning`;
+  * certifications: At least one free AND one paid certification from providers like Google, AWS, Microsoft, Coursera, Udemy, LinkedIn Learning
+  
+CRITICAL: ONLY provide real, working URLs. If you don't know the exact URL, DO NOT hallucinate one. Instead, leave the URL field as an empty string "" and the system will generate a search link for the user. NEVER use placeholder text like "https://example.com" or "actual-url.com".`;
 
         const response = await callGroq(systemPrompt, userPrompt, true);
         console.log('Groq Raw Response (Eligibility):', response);
@@ -207,6 +209,45 @@ IMPORTANT:
             result = JSON.parse(response);
         } catch (e) {
             result = extractJson(response);
+        }
+
+        // --- Post-processing and Sanitation ---
+        const { sanitizeLink, getResourcesForRole } = require('../utils/learningResources');
+
+        // 1. Sanitize AI-generated links
+        if (result.roadmap && result.roadmap.steps) {
+            result.roadmap.steps.forEach(step => {
+                if (step.youtubePlaylist) {
+                    step.youtubePlaylist = sanitizeLink(step.youtubePlaylist, 'youtube');
+                }
+                if (step.resources) {
+                    step.resources = step.resources.map(r => sanitizeLink(r, 'resource'));
+                }
+                if (step.certifications) {
+                    step.certifications = step.certifications.map(c => sanitizeLink(c, 'certification'));
+                }
+            });
+        }
+
+        // 2. Inject curated resources based on the job title if the roadmap seems thin or as a supplement
+        const curated = getResourcesForRole(job.title);
+        if (result.roadmap) {
+            // Add a "Verified Resources" section to the roadmap or first phase if it makes sense
+            if (result.roadmap.steps && result.roadmap.steps.length > 0) {
+                const firstStep = result.roadmap.steps[0];
+
+                // Supplement certifications if they are missing or placeholders
+                if (!firstStep.certifications || firstStep.certifications.length < 2) {
+                    const curatedCerts = curated.certifications || [];
+                    firstStep.certifications = [...(firstStep.certifications || []), ...curatedCerts.slice(0, 2)];
+                }
+
+                // Ensure labels are clear
+                firstStep.certifications = firstStep.certifications.map(c => ({
+                    ...c,
+                    isFree: c.isFree !== undefined ? c.isFree : (c.url?.toLowerCase().includes('free') || !c.name?.toLowerCase().includes('pro'))
+                }));
+            }
         }
 
         res.json(result);

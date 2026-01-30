@@ -228,8 +228,37 @@ const learningResources = {
     }
 };
 
+// Helper function to sanitize a link and ensure it is not a placeholder
+function sanitizeLink(linkObj, type = 'resource') {
+    if (!linkObj || !linkObj.url) return linkObj;
+
+    const url = linkObj.url.toLowerCase();
+    const isPlaceholder = url.includes('actual-url.com') ||
+        url.includes('example.com') ||
+        url.includes('course-url.com') ||
+        url.includes('docs-url.com') ||
+        url.includes('youtube.com/video') ||
+        (url.startsWith('https://...') || url.startsWith('http://...'));
+
+    if (isPlaceholder) {
+        // Replace with a useful search query
+        const query = encodeURIComponent(linkObj.name || 'tutorial');
+        if (type === 'youtube') {
+            linkObj.url = `https://www.youtube.com/results?search_query=${query}+tutorial`;
+        } else if (type === 'certification') {
+            linkObj.url = `https://www.coursera.org/search?query=${query}`;
+        } else {
+            linkObj.url = `https://www.google.com/search?q=${query}+learning+resources`;
+        }
+    }
+
+    return linkObj;
+}
+
 // Helper function to get resources for a specific role
 function getResourcesForRole(role) {
+    if (!role) return learningResources["Full Stack Developer"];
+
     // Normalize role name
     const normalizedRole = role.trim();
 
@@ -241,9 +270,23 @@ function getResourcesForRole(role) {
     // Fuzzy match for variations
     const lowerRole = normalizedRole.toLowerCase();
     for (const [key, value] of Object.entries(learningResources)) {
-        if (key.toLowerCase().includes(lowerRole) || lowerRole.includes(key.toLowerCase())) {
+        if (lowerRole.includes(key.toLowerCase()) || key.toLowerCase().includes(lowerRole)) {
             return value;
         }
+    }
+
+    // Check specific keywords for better matching than the fallback
+    if (lowerRole.includes('design') || lowerRole.includes('ui') || lowerRole.includes('ux')) {
+        return learningResources["Visual Designer"];
+    }
+    if (lowerRole.includes('data') || lowerRole.includes('ml') || lowerRole.includes('ai')) {
+        return learningResources["Data Scientist"];
+    }
+    if (lowerRole.includes('security') || lowerRole.includes('cyber')) {
+        return learningResources["Cybersecurity Analyst"];
+    }
+    if (lowerRole.includes('cloud') || lowerRole.includes('aws') || lowerRole.includes('azure')) {
+        return learningResources["Cloud Engineer"];
     }
 
     // Default fallback - return Full Stack Developer resources
@@ -253,5 +296,6 @@ function getResourcesForRole(role) {
 // Export for use in server routes
 module.exports = {
     learningResources,
-    getResourcesForRole
+    getResourcesForRole,
+    sanitizeLink
 };
