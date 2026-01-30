@@ -156,8 +156,8 @@ const Profile = () => {
                                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                 >
                                     <option value="student">Student</option>
-                                    <option value="recruiter">Recruiter</option>
-                                    <option value="admin">Admin</option>
+                                    <option value="employed">Employed</option>
+                                    <option value="unemployed">Unemployed</option>
                                 </select>
                             </div>
                             <div className="space-y-2">
