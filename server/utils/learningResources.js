@@ -230,7 +230,20 @@ const learningResources = {
 
 // Helper function to sanitize a link and ensure it is not a placeholder
 function sanitizeLink(linkObj, type = 'resource') {
-    if (!linkObj || !linkObj.url) return linkObj;
+    if (!linkObj) return linkObj;
+
+    // If URL is missing or empty, generate a search link
+    if (!linkObj.url || linkObj.url.trim() === '') {
+        const query = encodeURIComponent(linkObj.name || 'tutorial');
+        if (type === 'youtube') {
+            linkObj.url = `https://www.youtube.com/results?search_query=${query}+tutorial`;
+        } else if (type === 'certification') {
+            linkObj.url = `https://www.coursera.org/search?query=${query}`;
+        } else {
+            linkObj.url = `https://www.google.com/search?q=${query}+learning+resources`;
+        }
+        return linkObj;
+    }
 
     const url = linkObj.url.toLowerCase();
     const isPlaceholder = url.includes('actual-url.com') ||
@@ -253,6 +266,8 @@ function sanitizeLink(linkObj, type = 'resource') {
     }
 
     // Ensure the URL starts with http:// or https://
+    // Trim whitespace first
+    linkObj.url = linkObj.url.trim();
     if (!linkObj.url.match(/^https?:\/\//i)) {
         linkObj.url = 'https://' + linkObj.url;
     }
