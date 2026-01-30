@@ -105,6 +105,8 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [isDismissed, setIsDismissed] = useState(false);
+
     useEffect(() => {
         if (user) fetchDashboardData();
     }, [user]);
@@ -184,6 +186,52 @@ const Dashboard = () => {
             className="space-y-10 animate-fade-in pb-20"
         >
             <AddAppModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAdd={fetchDashboardData} />
+
+            {/* Skill Reminder Alert */}
+            <AnimatePresence>
+                {user && (!user.skills || user.skills.length === 0) && !isDismissed && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0, scale: 0.95 }}
+                        animate={{ height: 'auto', opacity: 1, scale: 1 }}
+                        exit={{ height: 0, opacity: 0, scale: 0.95 }}
+                        className="overflow-hidden mb-8"
+                    >
+                        <div className="relative group overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-[1px] border border-amber-500/20 dark:border-amber-500/10 shadow-xl shadow-amber-500/5">
+                            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6 bg-white dark:bg-slate-900 px-8 py-8 rounded-[2.45rem]">
+                                <div className="flex items-center gap-6 text-center md:text-left">
+                                    <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                                        <Sparkles className="h-8 w-8 animate-pulse" />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xl font-black text-slate-900 dark:text-white leading-tight">Complete Your Profile! 🚀</h4>
+                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2 max-w-md">
+                                            Adding skills helps our AI analyze how well you match with internships. Don't miss out on personalized recommendations!
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 shrink-0">
+                                    <button
+                                        onClick={() => setIsDismissed(true)}
+                                        className="rounded-xl px-5 py-3 text-xs font-black uppercase text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                                    >
+                                        Later
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/profile')}
+                                        className="rounded-2xl bg-amber-500 px-8 py-4 text-xs font-black uppercase text-white shadow-xl shadow-amber-500/20 hover:bg-amber-600 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+                                    >
+                                        Add Skills <ChevronRight className="h-4 w-4" />
+                                    </button>
+                                </div>
+
+                                {/* Decorative elements */}
+                                <div className="absolute -right-10 -top-10 h-40 w-40 bg-amber-500/5 blur-3xl rounded-full" />
+                                <div className="absolute -left-10 -bottom-10 h-40 w-40 bg-orange-500/5 blur-3xl rounded-full" />
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                 <motion.div variants={itemVariants} className="flex items-center gap-6">
