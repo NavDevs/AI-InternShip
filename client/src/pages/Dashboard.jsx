@@ -112,6 +112,10 @@ const Dashboard = () => {
     }, [user]);
 
     const fetchDashboardData = async () => {
+        console.log("Dashboard Render - User:", user);
+        console.log("User Skills:", user?.skills);
+        console.log("Is Dismissed:", isDismissed);
+
         try {
             const q = query(collection(db, 'applications'), where('userId', '==', user.uid));
             const querySnapshot = await getDocs(q);
