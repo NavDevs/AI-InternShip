@@ -24,6 +24,7 @@ const Profile = () => {
         college: user?.education?.college || '',
         degree: user?.education?.degree || '',
         state: user?.profile?.state || '',
+        role: user?.role || 'student',
     });
     const [skills, setSkills] = useState(user?.skills || []);
     const [newSkill, setNewSkill] = useState('');
@@ -38,6 +39,7 @@ const Profile = () => {
                 college: user.education?.college || '',
                 degree: user.education?.degree || '',
                 state: user.profile?.state || '',
+                role: user.role || 'student',
             });
             setSkills(user.skills || []);
             if (user.photoURL) {
@@ -68,6 +70,7 @@ const Profile = () => {
             await updateDoc(userRef, {
                 name: formData.name,
                 skills: skills,
+                role: formData.role,
                 profile: {
                     state: formData.state
                 },
@@ -147,12 +150,15 @@ const Profile = () => {
                             </div>
                             <div className="space-y-2">
                                 <label className="ml-1 text-xs font-black uppercase text-slate-400">Account Role</label>
-                                <input
-                                    type="text"
-                                    disabled
-                                    className="w-full rounded-2xl border-slate-200 bg-slate-100 px-5 py-3 font-bold text-slate-500 dark:border-slate-800 dark:bg-slate-900"
-                                    value={user?.role?.toUpperCase() || 'STUDENT'}
-                                />
+                                <select
+                                    className="w-full rounded-2xl border-slate-200 bg-slate-50 px-5 py-3 font-bold text-slate-900 transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                                    value={formData.role}
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                >
+                                    <option value="student">Student</option>
+                                    <option value="recruiter">Recruiter</option>
+                                    <option value="admin">Admin</option>
+                                </select>
                             </div>
                             <div className="space-y-2">
                                 <label className="ml-1 text-xs font-black uppercase text-slate-400">Selected State (Location-Based Discovery)</label>
