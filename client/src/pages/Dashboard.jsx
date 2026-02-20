@@ -23,17 +23,15 @@ import { db } from '../firebase';
 import { collection, addDoc, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
 
 const QuickAction = ({ icon: Icon, label, onClick, color }) => (
-    <motion.button
-        whileHover={{ y: -5, scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+    <button
         onClick={onClick}
-        className="flex flex-col items-center justify-center gap-3 p-6 glass rounded-[2rem] transition-all hover:shadow-xl group border border-transparent hover:border-primary/20"
+        className="flex flex-col items-center justify-center gap-2.5 p-5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl transition-colors hover:border-primary/30 hover:bg-primary/5 group"
     >
-        <div className={`h-14 w-14 rounded-2xl ${color} flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform`}>
-            <Icon className="h-7 w-7" />
+        <div className={`h-10 w-10 rounded-lg ${color} flex items-center justify-center`}>
+            <Icon className="h-5 w-5" />
         </div>
-        <span className="text-xs font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">{label}</span>
-    </motion.button>
+        <span className="text-xs font-medium text-stone-600 dark:text-stone-400 group-hover:text-primary transition-colors">{label}</span>
+    </button>
 );
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
@@ -60,35 +58,35 @@ const AddAppModal = ({ isOpen, onClose, onAdd }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
             <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
+                initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="glass w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl dark:bg-slate-900"
+                className="w-full max-w-lg bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 shadow-lg"
             >
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">New Application</h2>
+                <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-5">New Application</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase ml-1">Company</label>
-                            <input type="text" required className="w-full rounded-2xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3 outline-none focus:ring-2 focus:ring-primary/20 dark:text-white" value={formData.company} onChange={e => setFormData({ ...formData, company: e.target.value })} />
+                        <div>
+                            <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Company</label>
+                            <input type="text" required className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-2.5 text-sm text-stone-900 dark:text-stone-100 focus:ring-1 focus:ring-primary focus:border-primary" value={formData.company} onChange={e => setFormData({ ...formData, company: e.target.value })} />
                         </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase ml-1">Role</label>
-                            <input type="text" required className="w-full rounded-2xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3 outline-none focus:ring-2 focus:ring-primary/20 dark:text-white" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} />
+                        <div>
+                            <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Role</label>
+                            <input type="text" required className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-2.5 text-sm text-stone-900 dark:text-stone-100 focus:ring-1 focus:ring-primary focus:border-primary" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} />
                         </div>
                     </div>
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase ml-1">Follow-up Date</label>
-                        <input type="date" className="w-full rounded-2xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3 outline-none focus:ring-2 focus:ring-primary/20 dark:text-white" value={formData.followUpDate} onChange={e => setFormData({ ...formData, followUpDate: e.target.value })} />
+                    <div>
+                        <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Follow-up Date</label>
+                        <input type="date" className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-2.5 text-sm text-stone-900 dark:text-stone-100 focus:ring-1 focus:ring-primary focus:border-primary" value={formData.followUpDate} onChange={e => setFormData({ ...formData, followUpDate: e.target.value })} />
                     </div>
-                    <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase ml-1">Notes</label>
-                        <textarea className="w-full rounded-2xl bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3 outline-none focus:ring-2 focus:ring-primary/20 h-24 dark:text-white" value={formData.notes} onChange={e => setFormData({ ...formData, notes: e.target.value })} />
+                    <div>
+                        <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Notes</label>
+                        <textarea className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-2.5 text-sm text-stone-900 dark:text-stone-100 focus:ring-1 focus:ring-primary focus:border-primary h-20 resize-none" value={formData.notes} onChange={e => setFormData({ ...formData, notes: e.target.value })} />
                     </div>
-                    <div className="flex gap-4 pt-4">
-                        <button type="button" onClick={onClose} className="flex-1 rounded-2xl bg-slate-100 dark:bg-slate-800 py-4 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">Cancel</button>
-                        <button type="submit" className="flex-1 rounded-2xl bg-primary py-4 font-bold text-white hover:bg-blue-600 transition-all shadow-lg shadow-blue-200 dark:shadow-blue-900/20">Save Application</button>
+                    <div className="flex gap-3 pt-2">
+                        <button type="button" onClick={onClose} className="flex-1 rounded-lg border border-stone-200 dark:border-stone-700 py-2.5 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">Cancel</button>
+                        <button type="submit" className="flex-1 rounded-lg bg-primary py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors">Save Application</button>
                     </div>
                 </form>
             </motion.div>
@@ -112,10 +110,6 @@ const Dashboard = () => {
     }, [user]);
 
     const fetchDashboardData = async () => {
-        console.log("🔥 FRESH DEPLOYMENT CHECK - User:", user);
-        console.log("User Skills:", user?.skills);
-        console.log("Is Dismissed:", isDismissed);
-
         try {
             const q = query(collection(db, 'applications'), where('userId', '==', user.uid));
             const querySnapshot = await getDocs(q);
@@ -128,11 +122,9 @@ const Dashboard = () => {
 
             setStats({ total: allApps.length, statusCounts: counts });
 
-            // Get recent 5
             const sortedApps = [...allApps].sort((a, b) => new Date(b.appliedDate) - new Date(a.appliedDate)).slice(0, 5);
             setRecentApps(sortedApps);
 
-            // Get follow-ups
             const followUps = allApps
                 .filter(app => app.followUpDate && new Date(app.followUpDate) >= new Date())
                 .sort((a, b) => new Date(a.followUpDate) - new Date(b.followUpDate))
@@ -160,202 +152,147 @@ const Dashboard = () => {
         }]
     };
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const itemVariants = {
-        hidden: { y: 20, opacity: 0 },
-        visible: { y: 0, opacity: 1 }
-    };
-
     if (loading) return (
-        <div className="flex flex-col items-center justify-center py-40 space-y-4">
-            <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-            <p className="font-black text-slate-400 uppercase text-xs tracking-widest">Loading Dashboard...</p>
+        <div className="flex flex-col items-center justify-center py-32 space-y-3">
+            <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-stone-500">Loading dashboard…</p>
         </div>
     );
 
     return (
-        <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-10 animate-fade-in pb-20"
-        >
+        <div className="space-y-8 animate-fade-in pb-16">
             <AddAppModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAdd={fetchDashboardData} />
 
-            {/* Skill Reminder Alert */}
+            {/* Skill Reminder */}
             <AnimatePresence>
                 {user && (!user.skills || user.skills.length === 0) && !isDismissed && (
                     <motion.div
-                        initial={{ height: 0, opacity: 0, scale: 0.95 }}
-                        animate={{ height: 'auto', opacity: 1, scale: 1 }}
-                        exit={{ height: 0, opacity: 0, scale: 0.95 }}
-                        className="overflow-hidden mb-8"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
                     >
-                        <div className="relative group overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-[1px] border border-amber-500/20 dark:border-amber-500/10 shadow-xl shadow-amber-500/5">
-                            <div className="relative flex flex-col md:flex-row items-center justify-between gap-6 bg-white dark:bg-slate-900 px-8 py-8 rounded-[2.45rem]">
-                                <div className="flex items-center gap-6 text-center md:text-left">
-                                    <div className="h-16 w-16 shrink-0 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
-                                        <Sparkles className="h-8 w-8 animate-pulse" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xl font-black text-slate-900 dark:text-white leading-tight">Complete Your Profile! 🚀</h4>
-                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-2 max-w-md">
-                                            Adding skills helps our AI analyze how well you match with internships. Don't miss out on personalized recommendations!
-                                        </p>
-                                    </div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-5">
+                            <div className="flex items-start gap-3">
+                                <Sparkles className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
+                                <div>
+                                    <p className="text-sm font-medium text-stone-800 dark:text-stone-200">Complete your profile</p>
+                                    <p className="text-sm text-stone-600 dark:text-stone-400 mt-0.5">Adding skills helps our AI match you with better internships.</p>
                                 </div>
-                                <div className="flex items-center gap-3 shrink-0">
-                                    <button
-                                        onClick={() => setIsDismissed(true)}
-                                        className="rounded-xl px-5 py-3 text-xs font-black uppercase text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                                    >
-                                        Later
-                                    </button>
-                                    <button
-                                        onClick={() => navigate('/profile')}
-                                        className="rounded-2xl bg-amber-500 px-8 py-4 text-xs font-black uppercase text-white shadow-xl shadow-amber-500/20 hover:bg-amber-600 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
-                                    >
-                                        Add Skills <ChevronRight className="h-4 w-4" />
-                                    </button>
-                                </div>
-
-                                {/* Decorative elements */}
-                                <div className="absolute -right-10 -top-10 h-40 w-40 bg-amber-500/5 blur-3xl rounded-full" />
-                                <div className="absolute -left-10 -bottom-10 h-40 w-40 bg-orange-500/5 blur-3xl rounded-full" />
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <button onClick={() => setIsDismissed(true)} className="text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300 px-3 py-1.5 rounded-lg transition-colors">
+                                    Later
+                                </button>
+                                <button onClick={() => navigate('/profile')} className="text-sm font-medium bg-amber-600 text-white px-4 py-1.5 rounded-lg hover:bg-amber-700 transition-colors">
+                                    Add Skills
+                                </button>
                             </div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            <header className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                <motion.div variants={itemVariants} className="flex items-center gap-6">
-                    <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-primary to-blue-600 p-1 shadow-2xl overflow-hidden shrink-0">
+            {/* Header */}
+            <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-full overflow-hidden shrink-0 ring-2 ring-primary/30 ring-offset-2 ring-offset-[#f8f7f4] dark:ring-offset-[#1a1a2e]">
                         {user?.photoURL ? (
-                            <img src={user.photoURL} alt="" className="h-full w-full rounded-2xl object-cover" />
+                            <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
                         ) : (
-                            <div className="flex h-full w-full items-center justify-center rounded-2xl bg-slate-900 text-2xl font-black text-white">
+                            <div className="flex h-full w-full items-center justify-center bg-primary text-lg font-semibold text-white">
                                 {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U'}
                             </div>
                         )}
                     </div>
                     <div>
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="flex items-center gap-1 rounded-full bg-blue-50 dark:bg-blue-900/20 px-3 py-1 text-[10px] font-black uppercase text-blue-600 dark:text-blue-400">
-                                <Navigation className="h-3 w-3" /> Dashboard Active
-                            </span>
-                        </div>
-                        <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+                        <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100">
                             Hey, {user?.name?.split(' ')[0] || 'User'} 👋
                         </h1>
-                        <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Tracking {stats?.total || 0} opportunities in {user?.profile?.state || 'India'}.</p>
+                        <p className="text-sm text-stone-500 dark:text-stone-400">Tracking {stats?.total || 0} opportunities in {user?.profile?.state || 'India'}.</p>
                     </div>
-                </motion.div>
-                <motion.button
-                    variants={itemVariants}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                </div>
+                <button
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center justify-center gap-3 rounded-[1.5rem] bg-primary px-8 py-5 font-black text-white shadow-2xl shadow-blue-500/20 hover:bg-blue-600 transition-all"
+                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
                 >
-                    <Plus className="h-6 w-6" /> New Application
-                </motion.button>
+                    <Plus className="h-4 w-4" /> New Application
+                </button>
             </header>
 
-            <motion.section
-                variants={itemVariants}
-                className="grid grid-cols-2 md:grid-cols-4 gap-4"
-            >
-                <QuickAction icon={Search} label="Find Jobs" onClick={() => navigate('/jobs')} color="bg-blue-500 text-white" />
-                <QuickAction icon={Sparkles} label="AI Bot" onClick={() => navigate('/bot')} color="bg-emerald-500 text-white" />
-                <QuickAction icon={User} label="Profile" onClick={() => navigate('/profile')} color="bg-purple-500 text-white" />
-                <QuickAction icon={Calendar} label="Tracker" onClick={() => navigate('/tracker')} color="bg-amber-500 text-white" />
-            </motion.section>
+            {/* Quick Actions */}
+            <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <QuickAction icon={Search} label="Find Jobs" onClick={() => navigate('/jobs')} color="bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" />
+                <QuickAction icon={Sparkles} label="AI Bot" onClick={() => navigate('/bot')} color="bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400" />
+                <QuickAction icon={User} label="Profile" onClick={() => navigate('/profile')} color="bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400" />
+                <QuickAction icon={Calendar} label="Tracker" onClick={() => navigate('/tracker')} color="bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" />
+            </section>
 
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-                {[
-                    { label: 'Total Applications', value: stats.total, icon: BarChart3, color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-600' },
-                    { label: 'Active Interviews', value: stats.statusCounts['Interview'] || 0, icon: Clock, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600' },
-                    { label: 'Offers Received', value: stats.statusCounts['Offer'] || 0, icon: CheckCircle2, color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600' },
-                    { label: 'Rejections', value: stats.statusCounts['Rejected'] || 0, icon: XCircle, color: 'bg-rose-50 dark:bg-rose-900/20 text-rose-600' },
-                ].map((item, i) => (
-                    <motion.div
-                        key={i}
-                        variants={itemVariants}
-                        className="glass rounded-[2rem] p-6 shadow-sm hover:shadow-xl transition-all dark:bg-slate-900/50 group border border-transparent hover:border-primary/10"
-                    >
-                        <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-2xl ${item.color} group-hover:scale-110 transition-transform`}>
-                            <item.icon className="h-6 w-6" />
+            {/* Stat Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {
+                    [
+                        { label: 'Total Applications', value: stats.total, icon: BarChart3, color: 'text-blue-600 bg-blue-50 dark:bg-blue-900/20', border: 'border-l-blue-400' },
+                        { label: 'Active Interviews', value: stats.statusCounts['Interview'] || 0, icon: Clock, color: 'text-amber-600 bg-amber-50 dark:bg-amber-900/20', border: 'border-l-amber-400' },
+                        { label: 'Offers Received', value: stats.statusCounts['Offer'] || 0, icon: CheckCircle2, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20', border: 'border-l-emerald-400' },
+                        { label: 'Rejections', value: stats.statusCounts['Rejected'] || 0, icon: XCircle, color: 'text-rose-600 bg-rose-50 dark:bg-rose-900/20', border: 'border-l-rose-400' },
+                    ].map((item, i) => (
+                        <div
+                            key={i}
+                            className={`bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 border-l-4 ${item.border} rounded-xl p-5`}
+                        >
+                            <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg ${item.color}`}>
+                                <item.icon className="h-4 w-4" />
+                            </div>
+                            <p className="text-xs text-stone-500 dark:text-stone-400 mb-1">{item.label}</p>
+                            <p className="text-2xl font-semibold text-stone-900 dark:text-stone-100">{item.value}</p>
                         </div>
-                        <p className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter">{item.label}</p>
-                        <p className="text-3xl font-black text-slate-900 dark:text-white mt-1">{item.value}</p>
-                    </motion.div>
-                ))}
+                    ))}
             </div>
 
-            <div className="grid grid-cols-1 gap-8">
-                <motion.div variants={itemVariants} className="glass rounded-[2.5rem] p-8 border border-slate-100 dark:border-slate-800 flex flex-col">
-                    <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                            <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600">
-                                <Calendar className="h-5 w-5" />
-                            </div>
-                            Upcoming Follow-ups
-                        </h3>
-                    </div>
-                    <div className="flex-1 flex flex-col">
-                        {followUpApps.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {followUpApps.map((app, i) => (
-                                    <div key={app.id} className="flex items-center justify-between p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 group hover:shadow-lg transition-all">
-                                        <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center font-black text-primary border border-slate-100 dark:border-slate-700">
-                                                {app.company.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-black text-slate-900 dark:text-white leading-none mb-1 line-clamp-1">{app.company}</h4>
-                                                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter line-clamp-1">{app.role}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right shrink-0 ml-4">
-                                            <p className="text-[10px] font-black uppercase text-amber-600 mb-1">Due</p>
-                                            <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(app.followUpDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
-                                        </div>
+            {/* Follow-ups */}
+            <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
+                <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2 mb-5">
+                    <Calendar className="h-4 w-4 text-amber-600" />
+                    Upcoming Follow-ups
+                </h3>
+                {followUpApps.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {followUpApps.map((app) => (
+                            <div key={app.id} className="flex items-center justify-between p-4 rounded-lg bg-stone-50 dark:bg-stone-800/50 border border-stone-100 dark:border-stone-800">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-9 w-9 rounded-lg bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-center text-sm font-medium text-primary">
+                                        {app.company.charAt(0)}
                                     </div>
-                                ))}
+                                    <div>
+                                        <p className="text-sm font-medium text-stone-900 dark:text-stone-100 line-clamp-1">{app.company}</p>
+                                        <p className="text-xs text-stone-500 line-clamp-1">{app.role}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right shrink-0 ml-3">
+                                    <p className="text-xs text-amber-600 font-medium">Due</p>
+                                    <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{new Date(app.followUpDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+                                </div>
                             </div>
-                        ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center py-12 bg-slate-50/50 dark:bg-slate-800/20 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-800">
-                                <CheckCircle2 className="h-10 w-10 text-slate-300 mb-3" />
-                                <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No follow-ups due!</p>
-                            </div>
-                        )}
+                        ))}
                     </div>
-                </motion.div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-10 bg-stone-50 dark:bg-stone-800/30 rounded-lg border border-dashed border-stone-200 dark:border-stone-700">
+                        <CheckCircle2 className="h-8 w-8 text-stone-300 dark:text-stone-600 mb-2" />
+                        <p className="text-sm text-stone-400">No follow-ups due</p>
+                    </div>
+                )}
             </div>
 
             {stats.total > 0 ? (
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                    <motion.div
-                        variants={itemVariants}
-                        className="glass rounded-[2.5rem] p-8 shadow-sm dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800"
-                    >
-                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-8 flex items-center gap-3">
-                            <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600">
-                                <BarChart3 className="h-5 w-5" />
-                            </div>
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    {/* Chart */}
+                    <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
+                        <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-2 mb-6">
+                            <BarChart3 className="h-4 w-4 text-blue-600" />
                             Application Funnel
                         </h3>
-                        <div className="h-72 flex justify-center">
+                        <div className="h-64 flex justify-center">
                             <Pie
                                 data={pieData}
                                 options={{
@@ -365,84 +302,73 @@ const Dashboard = () => {
                                             position: 'bottom',
                                             labels: {
                                                 usePointStyle: true,
-                                                padding: 20,
-                                                font: { weight: 'bold', size: 11 }
+                                                padding: 16,
+                                                font: { weight: '500', size: 12 }
                                             }
                                         }
                                     }
                                 }}
                             />
                         </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.div
-                        variants={itemVariants}
-                        className="glass rounded-[2.5rem] p-8 shadow-sm dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800"
-                    >
-                        <div className="flex items-center justify-between mb-8">
-                            <h3 className="text-xl font-black text-slate-900 dark:text-white">Recent Activity</h3>
-                            <button onClick={() => navigate('/tracker')} className="text-xs font-black uppercase text-primary hover:underline tracking-widest">History</button>
+                    {/* Recent Activity */}
+                    <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
+                        <div className="flex items-center justify-between mb-5">
+                            <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100">Recent Activity</h3>
+                            <button onClick={() => navigate('/tracker')} className="text-xs font-medium text-primary hover:underline">View all</button>
                         </div>
-                        <div className="space-y-4">
+                        <div className="space-y-1">
                             {recentApps.map((app, i) => (
-                                <motion.div
+                                <div
                                     key={i}
-                                    whileHover={{ x: 5 }}
-                                    className="flex items-center justify-between p-5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-700 group"
+                                    className="flex items-center justify-between p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors"
                                 >
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-12 w-12 rounded-xl bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center font-black text-slate-400 border border-slate-100 dark:border-slate-700">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-9 w-9 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-sm text-stone-500 font-medium">
                                             {app.company.charAt(0)}
                                         </div>
                                         <div>
-                                            <h4 className="font-black text-slate-900 dark:text-white leading-none mb-1">{app.role}</h4>
-                                            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{app.company} • {new Date(app.appliedDate).toLocaleDateString()}</p>
+                                            <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{app.role}</p>
+                                            <p className="text-xs text-stone-500">{app.company} · {new Date(app.appliedDate).toLocaleDateString()}</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-4">
-                                        <span className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-sm ${app.status === 'Offer' ? 'bg-emerald-500 text-white' :
-                                            app.status === 'Interview' ? 'bg-amber-500 text-white' :
-                                                app.status === 'Rejected' ? 'bg-rose-500 text-white' :
-                                                    'bg-blue-500 text-white'
-                                            }`}>
-                                            {app.status}
-                                        </span>
-                                        <ChevronRight className="h-5 w-5 text-slate-300 group-hover:text-primary transition-colors" />
-                                    </div>
-                                </motion.div>
+                                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${app.status === 'Offer' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                                        app.status === 'Interview' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                                            app.status === 'Rejected' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400' :
+                                                'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                        }`}>
+                                        {app.status}
+                                    </span>
+                                </div>
                             ))}
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
             ) : (
-                <motion.div
-                    variants={itemVariants}
-                    className="glass rounded-[3rem] p-12 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30"
-                >
-                    <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                        <Sparkles className="h-10 w-10 text-primary" />
-                    </div>
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Start your journey!</h2>
-                    <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-10 font-medium text-lg leading-relaxed">
-                        Your dashboard looks a bit empty. Let's change that! Find your dream internship or chat with our AI career bot to get started.
+                <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-10 text-center border-dashed">
+                    <Sparkles className="h-8 w-8 text-stone-300 dark:text-stone-600 mx-auto mb-4" />
+                    <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-2">Start your journey</h2>
+                    <p className="text-sm text-stone-500 dark:text-stone-400 max-w-md mx-auto mb-6">
+                        Your dashboard looks a bit empty. Find your dream internship or chat with our AI career bot to get started.
                     </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                         <button
                             onClick={() => navigate('/jobs')}
-                            className="w-full sm:w-auto rounded-2xl bg-primary px-10 py-5 font-black text-white shadow-2xl shadow-blue-500/20 hover:bg-blue-600 transition-all flex items-center justify-center gap-3"
+                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
                         >
-                            <Search className="h-5 w-5" /> Explore Jobs
+                            <Search className="h-4 w-4" /> Explore Jobs
                         </button>
                         <button
                             onClick={() => navigate('/bot')}
-                            className="w-full sm:w-auto rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 px-10 py-5 font-black text-slate-900 dark:text-white shadow-sm hover:shadow-xl transition-all flex items-center justify-center gap-3"
+                            className="inline-flex items-center gap-2 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 px-5 py-2.5 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
                         >
-                            <Sparkles className="h-5 w-5 text-emerald-500" /> Chat with AI
+                            <Sparkles className="h-4 w-4 text-emerald-500" /> Chat with AI
                         </button>
                     </div>
-                </motion.div>
+                </div>
             )}
-        </motion.div>
+        </div>
     );
 };
 

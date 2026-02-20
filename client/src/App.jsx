@@ -43,7 +43,7 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+          <div className="min-h-screen bg-[#f8f7f4] dark:bg-[#1a1a2e] transition-colors duration-200">
             <Navbar />
             <div className="container mx-auto px-4 py-8">
               <Routes>

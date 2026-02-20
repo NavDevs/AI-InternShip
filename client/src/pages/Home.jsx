@@ -12,153 +12,184 @@ import {
     Zap
 } from 'lucide-react';
 
+const features = [
+    {
+        icon: Target,
+        title: "AI Job Analysis",
+        desc: "Paste any JD and our AI extracts required skills, matching them against your profile instantly.",
+        accent: "bg-blue-500",
+        tint: "bg-blue-50 dark:bg-blue-950/40",
+        iconColor: "text-blue-600 dark:text-blue-400",
+    },
+    {
+        icon: BarChart2,
+        title: "Performance Insights",
+        desc: "Visualize your application funnel and see where you stand in your job search journey.",
+        accent: "bg-indigo-500",
+        tint: "bg-indigo-50 dark:bg-indigo-950/40",
+        iconColor: "text-indigo-600 dark:text-indigo-400",
+    },
+    {
+        icon: Smartphone,
+        title: "Mobile Ready PWA",
+        desc: "Install Intern-AI on your phone. It works like a native app with offline support.",
+        accent: "bg-violet-500",
+        tint: "bg-violet-50 dark:bg-violet-950/40",
+        iconColor: "text-violet-600 dark:text-violet-400",
+    },
+    {
+        icon: Zap,
+        title: "Real-time Reminders",
+        desc: "Never miss a follow-up. Set reminders and track your interview schedules seamlessly.",
+        accent: "bg-amber-500",
+        tint: "bg-amber-50 dark:bg-amber-950/40",
+        iconColor: "text-amber-600 dark:text-amber-400",
+    },
+    {
+        icon: ShieldCheck,
+        title: "Secure & Fast",
+        desc: "Your data is protected with industry-standard JWT encryption and hosted on MongoDB Atlas.",
+        accent: "bg-emerald-500",
+        tint: "bg-emerald-50 dark:bg-emerald-950/40",
+        iconColor: "text-emerald-600 dark:text-emerald-400",
+    },
+    {
+        icon: Sparkles,
+        title: "Smart Recommendations",
+        desc: "Get suggestions on missing skills that could land you your next big offer.",
+        accent: "bg-rose-500",
+        tint: "bg-rose-50 dark:bg-rose-950/40",
+        iconColor: "text-rose-600 dark:text-rose-400",
+    },
+];
+
 const Home = () => {
     const { user } = useAuth();
     return (
-        <div className="space-y-24 pb-20 overflow-hidden">
+        <div className="space-y-24 pb-16">
             {/* Hero Section */}
-            <section className="relative flex flex-col items-center text-center pt-10 sm:pt-20">
+            <section className="relative flex flex-col items-center text-center pt-14 sm:pt-24 max-w-3xl mx-auto">
+                {/* Subtle warm tint behind hero */}
+                <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-blue-50/60 via-transparent to-transparent dark:from-blue-950/20 dark:via-transparent -z-10 rounded-3xl" />
+
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-1.5 text-blue-600 text-sm font-bold mb-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-1.5 text-primary text-sm font-medium mb-6"
                 >
-                    <Sparkles className="h-4 w-4" /> The Future of Job Hunting is AI-Powered
+                    <Sparkles className="h-3.5 w-3.5" /> AI-Powered Job Hunting
                 </motion.div>
 
                 <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-5xl sm:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl"
+                    transition={{ delay: 0.1, duration: 0.4 }}
+                    className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-stone-900 dark:text-stone-100 leading-tight"
                 >
-                    Your AI Copilot for <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Internships & Jobs</span>
+                    Your copilot for{' '}
+                    <span className="text-primary">internships & jobs</span>
                 </motion.h1>
 
                 <motion.p
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="mt-6 text-lg sm:text-xl text-slate-500 dark:text-slate-400 max-w-2xl font-medium"
+                    transition={{ delay: 0.2, duration: 0.4 }}
+                    className="mt-5 text-lg text-stone-500 dark:text-stone-400 max-w-xl leading-relaxed"
                 >
-                    Track applications, analyze job descriptions using AI, and get matched with roles that fit your skills perfectly. All in one place.
+                    Track applications, analyze job descriptions with AI, and get matched
+                    with roles that fit your skills. All in one place.
                 </motion.p>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                    className="mt-10 flex flex-col sm:flex-row gap-4"
+                    transition={{ delay: 0.3, duration: 0.4 }}
+                    className="mt-8 flex flex-col sm:flex-row gap-3"
                 >
                     {user ? (
-                        <Link to="/dashboard" className="flex items-center gap-2 rounded-2xl bg-primary px-10 py-4 font-bold text-white shadow-2xl shadow-blue-500/20 hover:scale-105 transition-all">
-                            Go to Dashboard <ArrowRight className="h-5 w-5" />
+                        <Link to="/dashboard" className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
+                            Go to Dashboard <ArrowRight className="h-4 w-4" />
                         </Link>
                     ) : (
-                        <Link to="/register" className="flex items-center gap-2 rounded-2xl bg-primary px-10 py-4 font-bold text-white shadow-2xl shadow-blue-500/20 hover:scale-105 transition-all">
-                            Get Started Free <ArrowRight className="h-5 w-5" />
+                        <Link to="/register" className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
+                            Get Started Free <ArrowRight className="h-4 w-4" />
                         </Link>
                     )}
-                    <Link to="/jobs" className="flex items-center gap-2 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-10 py-4 font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                    <Link to="/jobs" className="inline-flex items-center gap-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-6 py-3 font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
                         Browse Jobs
                     </Link>
                 </motion.div>
 
-                {/* Decorative Background Blur */}
-                <div className="absolute top-0 -z-10 h-full w-full pointer-events-none">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] bg-blue-200/30 blur-[120px] rounded-full" />
-                    <div className="absolute top-1/4 right-1/4 h-[300px] w-[300px] bg-indigo-200/20 blur-[100px] rounded-full" />
-                </div>
+                {/* Stats row */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-12 flex items-center gap-8 text-center"
+                >
+                    {[
+                        { value: '10k+', label: 'jobs listed' },
+                        { value: '3 min', label: 'avg. setup time' },
+                        { value: 'Free', label: 'forever' },
+                    ].map((stat, i) => (
+                        <div key={i}>
+                            <p className="text-2xl font-bold text-primary">{stat.value}</p>
+                            <p className="text-xs text-stone-500 mt-0.5">{stat.label}</p>
+                        </div>
+                    ))}
+                </motion.div>
             </section>
 
             {/* Features Grid */}
-            <section className="container mx-auto px-4">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl sm:text-5xl font-bold text-slate-900 dark:text-white">Everything you need to succeed</h2>
-                    <p className="mt-4 text-slate-500 dark:text-slate-400 font-medium">Built with the latest technology to give you an edge.</p>
+            <section className="max-w-5xl mx-auto px-4">
+                <div className="text-center mb-10">
+                    <h2 className="text-2xl sm:text-3xl font-semibold text-stone-900 dark:text-stone-100">Everything you need to succeed</h2>
+                    <p className="mt-3 text-stone-500 dark:text-stone-400">Built with the latest technology to give you an edge.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {[
-                        {
-                            icon: Target,
-                            title: "AI Job Analysis",
-                            desc: "Paste any JD and our AI extracts required skills, matching them against your profile instantly.",
-                            color: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                        },
-                        {
-                            icon: BarChart2,
-                            title: "Performance Insights",
-                            desc: "Visualize your application funnel and see where you stand in your job search journey.",
-                            color: "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400"
-                        },
-                        {
-                            icon: Smartphone,
-                            title: "Mobile Ready PWA",
-                            desc: "Install Intern-AI on your phone. It works like a native app with offline support.",
-                            color: "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400"
-                        },
-                        {
-                            icon: Zap,
-                            title: "Real-time Reminders",
-                            desc: "Never miss a follow-up. Set reminders and track your interview schedules seamlessly.",
-                            color: "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400"
-                        },
-                        {
-                            icon: ShieldCheck,
-                            title: "Secure & Fast",
-                            desc: "Your data is protected with industry-standard JWT encryption and hosted on MongoDB Atlas.",
-                            color: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
-                        },
-                        {
-                            icon: Sparkles,
-                            title: "Smart Recommendations",
-                            desc: "Get suggestions on missing skills that could land you your next big offer.",
-                            color: "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400"
-                        }
-                    ].map((feature, i) => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    {features.map((feature, i) => (
                         <motion.div
                             key={i}
-                            whileHover={{ y: -5 }}
-                            className="glass p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.07 }}
+                            className="relative bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 p-6 hover:shadow-md transition-shadow overflow-hidden"
                         >
-                            <div className={`h-14 w-14 ${feature.color} rounded-2xl flex items-center justify-center mb-6 shadow-sm`}>
-                                <feature.icon className="h-7 w-7" />
+                            {/* Colored top accent bar */}
+                            <div className={`absolute top-0 left-0 right-0 h-0.5 ${feature.accent}`} />
+                            <div className={`h-10 w-10 ${feature.tint} rounded-lg flex items-center justify-center mb-4`}>
+                                <feature.icon className={`h-5 w-5 ${feature.iconColor}`} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{feature.title}</h3>
-                            <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">{feature.desc}</p>
+                            <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100 mb-2">{feature.title}</h3>
+                            <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">{feature.desc}</p>
                         </motion.div>
                     ))}
                 </div>
             </section>
 
             {/* CTA Section */}
-            <section className="container mx-auto px-4">
-                <div className="bg-slate-900 rounded-[3rem] p-8 sm:p-20 text-center text-white relative overflow-hidden shadow-3xl">
-                    <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-                        <h2 className="text-4xl sm:text-6xl font-bold tracking-tight">Ready to land your dream internship?</h2>
-                        <p className="text-slate-400 text-lg font-medium">Join thousands of students and start tracking your success today.</p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <section className="max-w-4xl mx-auto px-4">
+                <div className="relative rounded-2xl overflow-hidden bg-[#1e3a5f] dark:bg-[#0f1f35] px-8 py-14 sm:px-16 sm:py-20 text-center text-white">
+                    {/* Subtle corner decoration */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+
+                    <div className="relative max-w-xl mx-auto space-y-5">
+                        <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight">Ready to land your dream internship?</h2>
+                        <p className="text-blue-200/80 text-base">Join thousands of students and start tracking your success today.</p>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
                             {user ? (
-                                <Link to="/dashboard" className="bg-primary hover:bg-blue-600 px-10 py-4 rounded-2xl font-extrabold transition-all shadow-xl shadow-blue-500/20">
-                                    Return to Dashboard
+                                <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover px-6 py-3 rounded-lg font-medium transition-colors shadow-lg shadow-accent/20">
+                                    Return to Dashboard <ArrowRight className="h-4 w-4" />
                                 </Link>
                             ) : (
-                                <Link to="/register" className="bg-primary hover:bg-blue-600 px-10 py-4 rounded-2xl font-extrabold transition-all shadow-xl shadow-blue-500/20">
-                                    Join Now - It's Free
+                                <Link to="/register" className="inline-flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover px-6 py-3 rounded-lg font-medium transition-colors shadow-lg shadow-accent/20">
+                                    Join Now — It's Free <ArrowRight className="h-4 w-4" />
                                 </Link>
                             )}
-                            <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md px-10 py-4 rounded-2xl font-extrabold transition-all border border-white/20">
-                                Download Mobile App
-                            </button>
                         </div>
-                    </div>
-
-                    {/* Animated background elements for CTA */}
-                    <div className="absolute top-0 right-0 h-full w-full opacity-20 pointer-events-none">
-                        <div className="absolute top-0 right-0 h-[400px] w-[400px] bg-primary/40 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
-                        <div className="absolute bottom-0 left-0 h-[300px] w-[300px] bg-secondary/30 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
                     </div>
                 </div>
             </section>

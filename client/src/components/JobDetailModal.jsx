@@ -76,158 +76,158 @@ const JobDetailModal = ({ job, isOpen, onClose }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
                 onClick={onClose}
             >
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ type: "spring", duration: 0.5 }}
-                    className="relative w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900 shadow-2xl"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 12 }}
+                    transition={{ duration: 0.2 }}
+                    className="relative w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-xl bg-white dark:bg-stone-900 shadow-lg border border-stone-200 dark:border-stone-800"
                     onClick={e => e.stopPropagation()}
                 >
-                    {/* Close Button */}
+                    {/* Close */}
                     <button
                         onClick={onClose}
-                        className="absolute top-6 right-6 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                        className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-500 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
                     >
-                        <X className="h-5 w-5" />
+                        <X className="h-4 w-4" />
                     </button>
 
-                    <div className="overflow-y-auto max-h-[90vh] p-8">
-                        {/* Job Header */}
-                        <div className="mb-8">
-                            <div className="flex items-start gap-4 mb-4">
-                                <div className="h-16 w-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-blue-600 text-white text-2xl font-black shadow-lg">
+                    <div className="overflow-y-auto max-h-[90vh] p-6">
+                        {/* Header */}
+                        <div className="mb-6">
+                            <div className="flex items-start gap-3 mb-3">
+                                <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-primary text-white text-sm font-semibold shrink-0">
                                     {job.company?.[0] || 'J'}
                                 </div>
-                                <div className="flex-1">
-                                    <h2 className="text-2xl font-black text-slate-900 dark:text-white leading-tight" dangerouslySetInnerHTML={{ __html: job.title }} />
-                                    <p className="text-slate-500 font-bold mt-1">{job.company}</p>
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100 leading-snug" dangerouslySetInnerHTML={{ __html: job.title }} />
+                                    <p className="text-sm text-stone-500 mt-0.5">{job.company}</p>
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap gap-3 mt-4">
-                                <span className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400">
-                                    <MapPin className="h-3.5 w-3.5" /> {job.location}
+                            <div className="flex flex-wrap gap-2">
+                                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 text-xs text-stone-600 dark:text-stone-400">
+                                    <MapPin className="h-3 w-3" /> {job.location}
                                 </span>
-                                <span className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400">
-                                    <Briefcase className="h-3.5 w-3.5" /> {job.workMode || 'On-site'}
+                                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 text-xs text-stone-600 dark:text-stone-400">
+                                    <Briefcase className="h-3 w-3" /> {job.workMode || 'On-site'}
                                 </span>
-                                <span className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-400">
-                                    <Clock className="h-3.5 w-3.5" /> {job.duration || '4 Months'}
+                                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 text-xs text-stone-600 dark:text-stone-400">
+                                    <Clock className="h-3 w-3" /> {job.duration || '4 Months'}
                                 </span>
                             </div>
                         </div>
 
-                        {/* Job Description */}
-                        <div className="mb-8 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
-                            <h3 className="font-black text-slate-900 dark:text-white mb-3">About This Role</h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        {/* Description */}
+                        <div className="mb-6 p-4 rounded-lg bg-stone-50 dark:bg-stone-800">
+                            <h3 className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-2">About This Role</h3>
+                            <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
                                 {job.description?.replace(/<[^>]*>?/gm, '') || 'No description available for this position.'}
                             </p>
                         </div>
 
-                        {/* AI Eligibility Analysis */}
-                        <div className="mb-8">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600">
-                                    <Sparkles className="h-5 w-5 text-white" />
+                        {/* AI Eligibility */}
+                        <div className="mb-6">
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="h-7 w-7 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                                    <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
                                 </div>
-                                <h3 className="font-black text-slate-900 dark:text-white">AI Eligibility Analysis</h3>
+                                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">AI Eligibility Analysis</h3>
                             </div>
 
                             {loading ? (
-                                <div className="flex flex-col items-center justify-center py-12 rounded-2xl bg-slate-50 dark:bg-slate-800/50">
-                                    <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
-                                    <p className="text-sm font-bold text-slate-500">Analyzing your skills against job requirements...</p>
+                                <div className="flex flex-col items-center justify-center py-10 rounded-lg bg-stone-50 dark:bg-stone-800">
+                                    <Loader2 className="h-7 w-7 text-primary animate-spin mb-2" />
+                                    <p className="text-xs text-stone-500">Analyzing your skills…</p>
                                 </div>
                             ) : error ? (
-                                <div className="flex items-center gap-3 p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400">
-                                    <AlertTriangle className="h-5 w-5" />
-                                    <p className="font-bold text-sm">{error}</p>
-                                    <button onClick={checkEligibility} className="ml-auto text-xs font-black underline">Retry</button>
+                                <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    <p className="text-xs flex-1">{error}</p>
+                                    <button onClick={checkEligibility} className="text-xs font-medium underline">Retry</button>
                                 </div>
                             ) : eligibility ? (
-                                <div className="space-y-6">
-                                    {/* Eligibility Score */}
-                                    <div className={`p-6 rounded-2xl ${eligibility.isEligible ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}`}>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <div className="flex items-center gap-3">
+                                <div className="space-y-4">
+                                    {/* Score */}
+                                    <div className={`p-4 rounded-lg ${eligibility.isEligible ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200/50 dark:border-emerald-800/50' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/50'}`}>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-2.5">
                                                 {eligibility.isEligible ? (
-                                                    <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+                                                    <CheckCircle2 className="h-6 w-6 text-emerald-500" />
                                                 ) : (
-                                                    <Target className="h-8 w-8 text-amber-500" />
+                                                    <Target className="h-6 w-6 text-amber-500" />
                                                 )}
                                                 <div>
-                                                    <h4 className={`font-black text-lg ${eligibility.isEligible ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'}`}>
+                                                    <h4 className={`text-sm font-semibold ${eligibility.isEligible ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'}`}>
                                                         {eligibility.isEligible ? "You're Qualified!" : "Almost There!"}
                                                     </h4>
-                                                    <p className="text-sm text-slate-500">{eligibility.summary}</p>
+                                                    <p className="text-xs text-stone-500">{eligibility.summary}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <span className={`text-4xl font-black ${eligibility.isEligible ? 'text-emerald-500' : 'text-amber-500'}`}>
+                                                <span className={`text-2xl font-semibold ${eligibility.isEligible ? 'text-emerald-500' : 'text-amber-500'}`}>
                                                     {eligibility.eligibilityScore}%
                                                 </span>
-                                                <p className="text-xs font-bold text-slate-400">Match Score</p>
+                                                <p className="text-xs text-stone-400">Match</p>
                                             </div>
                                         </div>
 
-                                        {/* Skill Comparison */}
-                                        <div className="grid grid-cols-2 gap-4 mt-4">
+                                        {/* Skills */}
+                                        <div className="grid grid-cols-2 gap-3">
                                             <div>
-                                                <h5 className="text-xs font-black text-slate-500 uppercase mb-2">Matched Skills</h5>
-                                                <div className="flex flex-wrap gap-2">
+                                                <h5 className="text-xs text-stone-500 mb-1.5">Matched</h5>
+                                                <div className="flex flex-wrap gap-1">
                                                     {eligibility.matchedSkills?.length > 0 ? eligibility.matchedSkills.map((skill, i) => (
-                                                        <span key={i} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
-                                                            <CheckCircle2 className="h-3 w-3" /> {skill}
+                                                        <span key={i} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[11px]">
+                                                            <CheckCircle2 className="h-2.5 w-2.5" /> {skill}
                                                         </span>
-                                                    )) : <span className="text-xs text-slate-400">None matched</span>}
+                                                    )) : <span className="text-xs text-stone-400">None</span>}
                                                 </div>
                                             </div>
                                             <div>
-                                                <h5 className="text-xs font-black text-slate-500 uppercase mb-2">Missing Skills</h5>
-                                                <div className="flex flex-wrap gap-2">
+                                                <h5 className="text-xs text-stone-500 mb-1.5">Missing</h5>
+                                                <div className="flex flex-wrap gap-1">
                                                     {eligibility.missingSkills?.length > 0 ? eligibility.missingSkills.map((skill, i) => (
-                                                        <span key={i} className="flex items-center gap-1 px-2 py-1 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold">
-                                                            <XCircle className="h-3 w-3" /> {skill}
+                                                        <span key={i} className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 text-[11px]">
+                                                            <XCircle className="h-2.5 w-2.5" /> {skill}
                                                         </span>
-                                                    )) : <span className="text-xs text-slate-400">None! Great match!</span>}
+                                                    )) : <span className="text-xs text-stone-400">None — great match!</span>}
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Learning Roadmap (if not eligible) */}
+                                    {/* Roadmap (if not eligible) */}
                                     {!eligibility.isEligible && eligibility.roadmap && (
-                                        <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-800">
-                                            <div className="flex items-center gap-2 mb-4">
-                                                <BookOpen className="h-5 w-5 text-indigo-500" />
-                                                <h4 className="font-black text-indigo-700 dark:text-indigo-400">{eligibility.roadmap.title}</h4>
-                                                <span className="ml-auto text-xs font-bold text-indigo-500 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-1 rounded-lg">
+                                        <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-800 border border-stone-200/50 dark:border-stone-700">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <BookOpen className="h-4 w-4 text-indigo-500" />
+                                                <h4 className="text-sm font-medium text-stone-900 dark:text-stone-100">{eligibility.roadmap.title}</h4>
+                                                <span className="ml-auto text-xs text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 px-2 py-0.5 rounded-md">
                                                     {eligibility.roadmap.duration}
                                                 </span>
                                             </div>
 
-                                            <div className="space-y-4">
+                                            <div className="space-y-3">
                                                 {eligibility.roadmap.steps?.map((step, i) => (
-                                                    <div key={i} className="p-4 rounded-xl bg-white/70 dark:bg-slate-800/50">
-                                                        <h5 className="font-black text-slate-900 dark:text-white text-sm mb-2">{step.phase}</h5>
-                                                        <p className="text-xs text-slate-500 mb-3">Learn: {step.skills?.join(', ')}</p>
+                                                    <div key={i} className="p-3 rounded-lg bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-700">
+                                                        <h5 className="text-xs font-medium text-stone-900 dark:text-stone-100 mb-1">{step.phase}</h5>
+                                                        <p className="text-[11px] text-stone-500 mb-2">Learn: {step.skills?.join(', ')}</p>
 
                                                         {step.resources?.length > 0 && (
-                                                            <div className="flex flex-wrap gap-2">
+                                                            <div className="flex flex-wrap gap-1.5">
                                                                 {step.resources.map((resource, j) => (
                                                                     <a
                                                                         key={j}
                                                                         href={resource.url}
                                                                         target="_blank"
                                                                         rel="noopener noreferrer"
-                                                                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-xs font-bold hover:bg-indigo-200 dark:hover:bg-indigo-900 transition-colors"
+                                                                        className="flex items-center gap-1 px-2 py-1 rounded-md bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[11px] hover:bg-indigo-100 transition-colors"
                                                                     >
-                                                                        <ExternalLink className="h-3 w-3" />
+                                                                        <ExternalLink className="h-2.5 w-2.5" />
                                                                         {resource.name}
                                                                     </a>
                                                                 ))}
@@ -242,18 +242,18 @@ const JobDetailModal = ({ job, isOpen, onClose }) => {
                             ) : null}
                         </div>
 
-                        {/* Action Buttons */}
-                        <div className="flex gap-4">
+                        {/* Actions */}
+                        <div className="flex gap-3">
                             <button
                                 onClick={handleApply}
-                                className="flex-1 flex items-center justify-center gap-2 py-4 rounded-2xl bg-gradient-to-r from-primary to-blue-600 text-white font-black shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transition-all active:scale-95"
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
                             >
-                                <ExternalLink className="h-5 w-5" />
+                                <ExternalLink className="h-4 w-4" />
                                 Apply Now
                             </button>
                             <button
                                 onClick={onClose}
-                                className="px-8 py-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-black hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                                className="px-6 py-2.5 rounded-lg bg-stone-100 dark:bg-stone-800 text-sm text-stone-600 dark:text-stone-400 font-medium hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
                             >
                                 Close
                             </button>
