@@ -105,34 +105,28 @@ const Home = () => {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.4 }}
-                    className="mt-8 flex flex-col sm:flex-row gap-3"
+                    className="mt-8 flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3"
                 >
-                    <div className="flex flex-col sm:flex-row gap-3">
-                        {user ? (
-                            <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
-                                Go to Dashboard <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        ) : (
-                            <Link to="/register" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
-                                Get Started Free <ArrowRight className="h-4 w-4" />
-                            </Link>
-                        )}
-                        <Link to="/jobs" className="inline-flex items-center justify-center gap-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-6 py-3 font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
-                            Browse Jobs
+                    {user ? (
+                        <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
+                            Go to Dashboard <ArrowRight className="h-4 w-4" />
                         </Link>
-                    </div>
-
-                    {/* Add Download App Button on its own row or next to Browses dependent on screen size */}
-                    <div className="mt-4 flex justify-center">
-                        <a
-                            href="/Intern-AI.apk"
-                            download="Intern-AI.apk"
-                            className="inline-flex items-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-6 py-3 font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 shadow-sm"
-                        >
-                            <Smartphone className="h-5 w-5 text-primary" />
-                            Download Android App
-                        </a>
-                    </div>
+                    ) : (
+                        <Link to="/register" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
+                            Get Started Free <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    )}
+                    <Link to="/jobs" className="inline-flex items-center justify-center gap-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-6 py-3 font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
+                        Browse Jobs
+                    </Link>
+                    <a
+                        href="/Intern-AI.apk"
+                        download="Intern-AI.apk"
+                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-6 py-3 font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 shadow-sm"
+                    >
+                        <Smartphone className="h-5 w-5 text-primary dark:text-primary-light" />
+                        Download App
+                    </a>
                 </motion.div>
 
                 {/* Stats row */}
