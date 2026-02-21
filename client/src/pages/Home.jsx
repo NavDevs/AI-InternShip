@@ -125,10 +125,9 @@ const Home = () => {
                     {/* Add Download App Button on its own row or next to Browses dependent on screen size */}
                     <div className="mt-4 flex justify-center">
                         <a
-                            href="https://github.com/NavDevs/AI-InternShip/releases/download/v1.0.0/Intern-AI.apk"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-6 py-3 font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700"
+                            href="/Intern-AI.apk"
+                            download="Intern-AI.apk"
+                            className="inline-flex items-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-6 py-3 font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 shadow-sm"
                         >
                             <Smartphone className="h-5 w-5 text-primary" />
                             Download Android App
