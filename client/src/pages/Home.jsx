@@ -107,18 +107,32 @@ const Home = () => {
                     transition={{ delay: 0.3, duration: 0.4 }}
                     className="mt-8 flex flex-col sm:flex-row gap-3"
                 >
-                    {user ? (
-                        <Link to="/dashboard" className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
-                            Go to Dashboard <ArrowRight className="h-4 w-4" />
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        {user ? (
+                            <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
+                                Go to Dashboard <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        ) : (
+                            <Link to="/register" className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
+                                Get Started Free <ArrowRight className="h-4 w-4" />
+                            </Link>
+                        )}
+                        <Link to="/jobs" className="inline-flex items-center justify-center gap-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-6 py-3 font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
+                            Browse Jobs
                         </Link>
-                    ) : (
-                        <Link to="/register" className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-medium text-white hover:bg-primary-hover transition-colors shadow-sm shadow-primary/30">
-                            Get Started Free <ArrowRight className="h-4 w-4" />
-                        </Link>
-                    )}
-                    <Link to="/jobs" className="inline-flex items-center gap-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-6 py-3 font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
-                        Browse Jobs
-                    </Link>
+                    </div>
+
+                    {/* Add Download App Button on its own row or next to Browses dependent on screen size */}
+                    <div className="mt-4 flex justify-center">
+                        <a
+                            href="https://github.com/NavDevs/AI-InternShip/releases/download/v1.0.0/Intern-AI.apk"
+                            download
+                            className="inline-flex items-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-6 py-3 font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700"
+                        >
+                            <Smartphone className="h-5 w-5 text-primary" />
+                            Download Android App
+                        </a>
+                    </div>
                 </motion.div>
 
                 {/* Stats row */}
