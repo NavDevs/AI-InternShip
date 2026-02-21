@@ -1,0 +1,331 @@
+import 'package:flutter/material.dart';
+import '../services/api_service.dart';
+import '../widgets/app_drawer.dart';
+
+class CareerBotScreen extends StatefulWidget {
+  const CareerBotScreen({super.key});
+
+  @override
+  State<CareerBotScreen> createState() => _CareerBotScreenState();
+}
+
+class _CareerBotScreenState extends State<CareerBotScreen> {
+  final _api = ApiService();
+  final _controller = TextEditingController();
+  final _scrollController = ScrollController();
+  final List<_ChatMessage> _messages = [];
+  bool _isTyping = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _messages.add(_ChatMessage(
+      text:
+          "Hi! I'm your AI Career Assistant 🚀\n\nI can help you with:\n• **Career Roadmaps** — Type a dream job like 'Flutter Developer'\n• **Interview Questions** — Ask me for interview prep\n• **Career Advice** — Ask anything about your career!\n\nWhat would you like to explore?",
+      isBot: true,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  Future<void> _sendMessage() async {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _messages.add(_ChatMessage(text: text, isBot: false));
+      _isTyping = true;
+    });
+    _controller.clear();
+    _scrollToBottom();
+
+    try {
+      // Determine intent
+      final lower = text.toLowerCase();
+      String botResponse;
+
+      if (lower.contains('roadmap') ||
+          lower.contains('become') ||
+          lower.contains('career path')) {
+        // Extract job from message
+        final job = text
+            .replaceAll(RegExp(r'(roadmap|become|career path|for|to|a|an|how|can|i|be)', caseSensitive: false), '')
+            .trim();
+        if (job.isNotEmpty) {
+          final result = await _api.generateRoadmap(job);
+          botResponse = _formatRoadmap(result);
+        } else {
+          botResponse =
+              "What's your dream job? Tell me and I'll create a personalized roadmap! 💡";
+        }
+      } else if (lower.contains('interview') ||
+          lower.contains('questions')) {
+        final role = text
+            .replaceAll(RegExp(r'(interview|questions|for|give|me|some|prep)', caseSensitive: false), '')
+            .trim();
+        if (role.isNotEmpty) {
+          final result = await _api.getInterviewQuestions(
+            jobRole: role,
+            difficulty: 'mixed',
+            count: 5,
+          );
+          botResponse = _formatQuestions(result);
+        } else {
+          botResponse =
+              "Which role should I prepare interview questions for? E.g., 'Interview questions for React Developer'";
+        }
+      } else {
+        // General career advice via roadmap
+        final result = await _api.generateRoadmap(text);
+        botResponse = _formatRoadmap(result);
+      }
+
+      setState(() {
+        _messages.add(_ChatMessage(text: botResponse, isBot: true));
+        _isTyping = false;
+      });
+    } catch (e) {
+      setState(() {
+        _messages.add(_ChatMessage(
+          text: "Sorry, I encountered an error. Please try again! 🔄",
+          isBot: true,
+        ));
+        _isTyping = false;
+      });
+    }
+    _scrollToBottom();
+  }
+
+  String _formatRoadmap(Map<String, dynamic> data) {
+    final buf = StringBuffer();
+    final dreamJob = data['dreamJob'] ?? 'Your Dream Job';
+    buf.writeln('🗺️ **Career Roadmap: $dreamJob**\n');
+
+    final phases = data['phases'] as List? ?? [];
+    for (var i = 0; i < phases.length; i++) {
+      final phase = phases[i] as Map<String, dynamic>;
+      buf.writeln('**Phase ${i + 1}: ${phase['phase'] ?? phase['title'] ?? ''}**');
+      buf.writeln('⏱️ ${phase['duration'] ?? ''}');
+
+      final skills = phase['skills'] as List? ?? [];
+      if (skills.isNotEmpty) {
+        buf.writeln('Skills: ${skills.join(', ')}');
+      }
+
+      final tasks = phase['tasks'] as List? ?? [];
+      for (final task in tasks) {
+        buf.writeln('  • $task');
+      }
+      buf.writeln('');
+    }
+    return buf.toString().trim();
+  }
+
+  String _formatQuestions(Map<String, dynamic> data) {
+    final buf = StringBuffer();
+    buf.writeln('📝 **Interview Questions**\n');
+
+    final questions = data['questions'] as List? ?? [];
+    for (var i = 0; i < questions.length; i++) {
+      final q = questions[i];
+      if (q is Map) {
+        buf.writeln('**Q${i + 1}:** ${q['question'] ?? q['q'] ?? ''}');
+        if (q['answer'] != null || q['a'] != null) {
+          buf.writeln('💡 ${q['answer'] ?? q['a']}');
+        }
+        buf.writeln('');
+      } else {
+        buf.writeln('**Q${i + 1}:** $q\n');
+      }
+    }
+    return buf.toString().trim();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.smart_toy_rounded, size: 22),
+            const SizedBox(width: 8),
+            const Text('Career Bot',
+                style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+      drawer: const AppDrawer(),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              itemCount: _messages.length + (_isTyping ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index == _messages.length && _isTyping) {
+                  return _buildTypingIndicator(context);
+                }
+                return _buildBubble(context, _messages[index]);
+              },
+            ),
+          ),
+          // Input Bar
+          Container(
+            padding: const EdgeInsets.fromLTRB(12, 8, 8, 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller,
+                      onSubmitted: (_) => _sendMessage(),
+                      decoration: InputDecoration(
+                        hintText: 'Ask about your career...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(24),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  CircleAvatar(
+                    backgroundColor: theme.colorScheme.primary,
+                    child: IconButton(
+                      icon: const Icon(Icons.send_rounded,
+                          color: Colors.white, size: 20),
+                      onPressed: _sendMessage,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBubble(BuildContext context, _ChatMessage msg) {
+    final theme = Theme.of(context);
+    return Align(
+      alignment: msg.isBot ? Alignment.centerLeft : Alignment.centerRight,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.8),
+        decoration: BoxDecoration(
+          color: msg.isBot
+              ? theme.colorScheme.surfaceContainerHighest
+              : theme.colorScheme.primary,
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(16),
+            topRight: const Radius.circular(16),
+            bottomLeft: Radius.circular(msg.isBot ? 4 : 16),
+            bottomRight: Radius.circular(msg.isBot ? 16 : 4),
+          ),
+        ),
+        child: Text(
+          msg.text,
+          style: TextStyle(
+            color: msg.isBot
+                ? theme.colorScheme.onSurface
+                : Colors.white,
+            height: 1.4,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTypingIndicator(BuildContext context) {
+    final theme = Theme.of(context);
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+            bottomLeft: Radius.circular(4),
+            bottomRight: Radius.circular(16),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDot(0),
+            _buildDot(1),
+            _buildDot(2),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDot(int index) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 600 + index * 200),
+      builder: (context, value, child) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 3),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: Theme.of(context)
+                .colorScheme
+                .onSurface
+                .withValues(alpha: 0.4),
+            shape: BoxShape.circle,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ChatMessage {
+  final String text;
+  final bool isBot;
+  _ChatMessage({required this.text, required this.isBot});
+}
