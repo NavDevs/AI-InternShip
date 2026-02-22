@@ -36,10 +36,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       // Load both jobs and applications
       final jobsFuture = _api.getLatestJobs();
       final appsFuture = _api.getApplications();
-      
+
       final jobs = await jobsFuture;
       final apps = await appsFuture;
-      
+
       // Process applications
       final appsList = List.from(apps).cast<Map<String, dynamic>>();
       appsList.sort((a, b) {
@@ -48,17 +48,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         if (dateA == null || dateB == null) return 0;
         return dateB.compareTo(dateA);
       });
-      
+
       // Get recent applications (last 5)
       final recentApps = appsList.take(5).toList();
-      
+
       // Get follow-up applications (those with follow-up dates in the future)
-      final followUpApps = appsList.where((app) {
-        final followUpDate = DateTime.tryParse(app['followUpDate'] ?? '');
-        if (followUpDate == null) return false;
-        return followUpDate.isAfter(DateTime.now());
-      }).take(3).toList();
-      
+      final followUpApps = appsList
+          .where((app) {
+            final followUpDate = DateTime.tryParse(app['followUpDate'] ?? '');
+            if (followUpDate == null) return false;
+            return followUpDate.isAfter(DateTime.now());
+          })
+          .take(3)
+          .toList();
+
       setState(() {
         _recentJobs = jobs.take(5).toList();
         _recentApplications = recentApps;
@@ -84,7 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       'offer': 0,
       'rejected': 0,
     };
-    
+
     for (final app in _recentApplications) {
       counts['total'] = counts['total']! + 1;
       final status = (app['status'] ?? '').toLowerCase();
@@ -103,10 +106,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           break;
       }
     }
-    
+
     return counts;
   }
-  
+
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final theme = Theme.of(context);
@@ -114,7 +117,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Dashboard',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       drawer: const AppDrawer(),
       body: RefreshIndicator(
@@ -185,8 +191,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.info_outline,
-                                color: Colors.white, size: 18),
+                            const Icon(
+                              Icons.info_outline,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -207,9 +216,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 24),
 
               // Quick Actions Grid
-              Text('Quick Actions',
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                'Quick Actions',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               GridView.count(
                 crossAxisCount: 2,
@@ -295,16 +307,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Follow-ups
               Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.5,
+                    ),
                   ),
                 ),
                 child: Padding(
@@ -314,8 +328,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.calendar_month, 
-                            color: const Color(0xFFF59E0B), 
+                          Icon(
+                            Icons.calendar_month,
+                            color: const Color(0xFFF59E0B),
                             size: 20,
                           ),
                           const SizedBox(width: 8),
@@ -329,22 +344,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 12),
                       if (_followUpApplications.isNotEmpty)
-                        ..._followUpApplications.map((app) => _buildFollowUpCard(context, app))
+                        ..._followUpApplications.map(
+                          (app) => _buildFollowUpCard(context, app),
+                        )
                       else
                         Container(
                           padding: const EdgeInsets.all(16),
                           child: Center(
                             child: Column(
                               children: [
-                                Icon(Icons.check_circle, 
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.3), 
+                                Icon(
+                                  Icons.check_circle,
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   size: 32,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'No follow-ups due',
                                   style: TextStyle(
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.5),
                                   ),
                                 ),
                               ],
@@ -355,16 +376,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Recent Activity
               Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.5,
+                    ),
                   ),
                 ),
                 child: Padding(
@@ -382,29 +405,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () => Navigator.pushNamed(context, '/tracker'),
+                            onPressed: () =>
+                                Navigator.pushNamed(context, '/tracker'),
                             child: const Text('View All'),
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       if (_recentApplications.isNotEmpty)
-                        ..._recentApplications.map((app) => _buildActivityCard(context, app))
+                        ..._recentApplications.map(
+                          (app) => _buildActivityCard(context, app),
+                        )
                       else
                         Container(
                           padding: const EdgeInsets.all(16),
                           child: Center(
                             child: Column(
                               children: [
-                                Icon(Icons.dashboard, 
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.3), 
+                                Icon(
+                                  Icons.dashboard,
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   size: 32,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'No activity yet',
                                   style: TextStyle(
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.5),
                                   ),
                                 ),
                               ],
@@ -415,16 +445,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Recent Jobs
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Recent Jobs',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Recent Jobs',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   TextButton(
                     onPressed: () => Navigator.pushNamed(context, '/jobs'),
                     child: const Text('View All'),
@@ -434,10 +467,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(height: 8),
               if (_isLoading)
                 const Center(
-                    child: Padding(
-                  padding: EdgeInsets.all(32),
-                  child: CircularProgressIndicator(),
-                ))
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: CircularProgressIndicator(),
+                  ),
+                )
               else if (_recentJobs.isEmpty)
                 Card(
                   child: Padding(
@@ -445,16 +479,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: Center(
                       child: Column(
                         children: [
-                          Icon(Icons.work_off_outlined,
-                              size: 48,
-                              color: theme.colorScheme.onSurface
-                                  .withValues(alpha: 0.3)),
+                          Icon(
+                            Icons.work_off_outlined,
+                            size: 48,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                           const SizedBox(height: 12),
-                          Text('No jobs available',
-                              style: TextStyle(
-                                color: theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5),
-                              )),
+                          Text(
+                            'No jobs available',
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -548,7 +588,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -571,9 +613,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outline,
-        ),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -583,16 +623,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: theme.colorScheme.outline,
-              ),
+              border: Border.all(color: theme.colorScheme.outline),
             ),
             child: Center(
               child: Text(
                 app['company']?.substring(0, 1) ?? '?',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -649,7 +685,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final formattedDate = appliedDate != null
         ? '${appliedDate.day}/${appliedDate.month}'
         : 'N/A';
-    
+
     String getStatusColor(String status) {
       switch (status.toLowerCase()) {
         case 'offer':
@@ -662,7 +698,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return 'blue';
       }
     }
-    
+
     Color getColor(String colorName) {
       switch (colorName) {
         case 'emerald':
@@ -682,9 +718,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outline,
-        ),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -694,16 +728,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: theme.colorScheme.outline,
-              ),
+              border: Border.all(color: theme.colorScheme.outline),
             ),
             child: Center(
               child: Text(
                 app['company']?.substring(0, 1) ?? '?',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -732,10 +762,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: getColor(getStatusColor(app['status'] ?? 'applied')).withValues(alpha: 0.1),
+              color: getColor(
+                getStatusColor(app['status'] ?? 'applied'),
+              ).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: getColor(getStatusColor(app['status'] ?? 'applied')).withValues(alpha: 0.3),
+                color: getColor(
+                  getStatusColor(app['status'] ?? 'applied'),
+                ).withValues(alpha: 0.3),
               ),
             ),
             child: Text(
@@ -770,8 +804,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.business_rounded,
-                    color: theme.colorScheme.primary),
+                child: Icon(
+                  Icons.business_rounded,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -789,15 +825,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       job['company'] ?? '',
                       style: TextStyle(
                         fontSize: 13,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios,
-                  size: 14,
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 14,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+              ),
             ],
           ),
         ),

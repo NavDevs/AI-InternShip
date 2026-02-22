@@ -120,8 +120,8 @@ const Home = () => {
                         Browse Jobs
                     </Link>
                     <a
-                        href="https://github.com/NavDevs/AI-InternShip/releases/download/v1.4.0/Intern-AI-v7.apk"
-                        download="Intern-AI-v7.apk"
+                        href="https://github.com/NavDevs/AI-InternShip/releases/latest/download/Intern-AI.apk"
+                        download="Intern-AI.apk"
                         className="inline-flex items-center justify-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-6 py-3 font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 shadow-sm"
                     >
                         <Smartphone className="h-5 w-5 text-primary dark:text-primary-light" />
