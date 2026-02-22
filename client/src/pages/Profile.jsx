@@ -115,7 +115,7 @@ const Profile = () => {
                         <p className="mt-1 text-stone-400">{user?.role || 'Student'} · {user?.email}</p>
                         <div className="mt-3 flex flex-wrap justify-center gap-2 md:justify-start">
                             <span className="flex items-center gap-1 rounded-md bg-white/10 px-2.5 py-1 text-xs">
-                                <Shield className="h-3 w-3 text-emerald-400" /> Member since {new Date(user?.metadata?.creationTime).getFullYear()}
+                                <Shield className="h-3 w-3 text-emerald-400" /> Member since {user?.metadata?.creationTime ? new Date(user?.metadata?.creationTime).getFullYear() : new Date().getFullYear()}
                             </span>
                         </div>
                     </div>
