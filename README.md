@@ -8,6 +8,9 @@ A **production-ready MERN stack application** that helps students **find interns
 🔗 **Backend API:**  
 👉 https://ai-internship.onrender.com  
 
+📱 **Mobile App:**  
+📲 [Download for Android](https://github.com/NavDevs/AI-InternShip/releases/download/v1.4.0/Intern-AI-v7.apk)  
+
 ---
 
 ## 🎯 **Problem Statement**
