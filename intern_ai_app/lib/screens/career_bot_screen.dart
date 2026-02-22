@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/app_drawer.dart';
 
@@ -269,15 +272,27 @@ class _CareerBotScreenState extends State<CareerBotScreen> {
             bottomRight: Radius.circular(msg.isBot ? 16 : 4),
           ),
         ),
-        child: Text(
-          msg.text,
-          style: TextStyle(
-            color: msg.isBot
-                ? theme.colorScheme.onSurface
-                : Colors.white,
-            height: 1.4,
-          ),
-        ),
+        child: msg.isBot
+            ? MarkdownBody(
+                data: msg.text,
+                selectable: true,
+                styleSheet: MarkdownStyleSheet(
+                  p: TextStyle(
+                      color: theme.colorScheme.onSurface, height: 1.4),
+                  strong: TextStyle(
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.bold),
+                  listBullet: TextStyle(
+                      color: theme.colorScheme.onSurface),
+                ),
+              )
+            : Text(
+                msg.text,
+                style: const TextStyle(
+                  color: Colors.white,
+                  height: 1.4,
+                ),
+              ),
       ),
     );
   }
