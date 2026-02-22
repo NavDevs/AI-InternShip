@@ -6,13 +6,43 @@ import '../widgets/app_drawer.dart';
 import 'job_detail_screen.dart';
 
 const List<String> indianStates = [
-  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
-  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
-  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
-  'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
-  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
-  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu',
-  'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry', 'Remote'
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  'Andaman and Nicobar Islands',
+  'Chandigarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Jammu and Kashmir',
+  'Ladakh',
+  'Lakshadweep',
+  'Puducherry',
+  'Remote',
 ];
 
 class JobListingsScreen extends StatefulWidget {
@@ -81,8 +111,10 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Job Listings',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Job Listings',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           if (_filterState.isNotEmpty || _searchController.text.isNotEmpty)
             TextButton(
@@ -93,8 +125,11 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
                 });
                 _loadJobs();
               },
-              child: const Text('Clear All', style: TextStyle(color: Colors.red)),
-            )
+              child: const Text(
+                'Clear All',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
         ],
       ),
       drawer: const AppDrawer(),
@@ -127,7 +162,7 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          
+
           // State Filter
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -144,12 +179,18 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
                         borderSide: BorderSide.none,
                       ),
                       filled: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
                     ),
-                    items: indianStates.map((state) => DropdownMenuItem(
-                          value: state,
-                          child: Text(state),
-                        )).toList(),
+                    items: indianStates
+                        .map(
+                          (state) => DropdownMenuItem(
+                            value: state,
+                            child: Text(state),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (val) {
                       setState(() {
                         _filterState = val ?? '';
@@ -178,72 +219,77 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.error_outline,
-                                size: 48, color: Colors.red),
-                            const SizedBox(height: 12),
-                            Text('Failed to load jobs',
-                                style: theme.textTheme.titleMedium),
-                            const SizedBox(height: 8),
-                            FilledButton.icon(
-                              onPressed: _loadJobs,
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Retry'),
-                            ),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: Colors.red,
                         ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _loadJobs,
-                        child: filtered.isEmpty
-                            ? ListView(
-                                children: [
-                                  SizedBox(
-                                    height:
-                                        MediaQuery.of(context).size.height * 0.4,
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(Icons.search_off,
-                                              size: 48,
-                                              color: theme
-                                                  .colorScheme.onSurface
-                                                  .withValues(alpha: 0.3)),
-                                          const SizedBox(height: 12),
-                                          Text('No jobs found',
-                                              style:
-                                                  theme.textTheme.titleMedium),
-                                        ],
+                        const SizedBox(height: 12),
+                        Text(
+                          'Failed to load jobs',
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        FilledButton.icon(
+                          onPressed: _loadJobs,
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _loadJobs,
+                    child: filtered.isEmpty
+                        ? ListView(
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.4,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.search_off,
+                                        size: 48,
+                                        color: theme.colorScheme.onSurface
+                                            .withValues(alpha: 0.3),
                                       ),
-                                    ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        'No jobs found',
+                                        style: theme.textTheme.titleMedium,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              )
-                            : ListView.builder(
-                                padding: const EdgeInsets.all(16),
-                                itemCount: filtered.length,
-                                itemBuilder: (context, index) {
-                                  final job =
-                                      filtered[index] as Map<String, dynamic>;
-                                  return _JobCard(
-                                    job: job,
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              JobDetailScreen(job: job),
-                                        ),
-                                      );
-                                    },
+                                ),
+                              ),
+                            ],
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: filtered.length,
+                            itemBuilder: (context, index) {
+                              final job =
+                                  filtered[index] as Map<String, dynamic>;
+                              return _JobCard(
+                                job: job,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/job-detail',
+                                    arguments: job,
                                   );
                                 },
-                              ),
-                      ),
+                              );
+                            },
+                          ),
+                  ),
           ),
         ],
       ),
@@ -260,7 +306,8 @@ class _JobCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final skills = (job['requiredSkills'] as List?)
+    final skills =
+        (job['requiredSkills'] as List?)
             ?.take(3)
             .map((s) => s.toString())
             .toList() ??
@@ -285,8 +332,10 @@ class _JobCard extends StatelessWidget {
                       color: theme.colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(Icons.business_rounded,
-                        color: theme.colorScheme.primary),
+                    child: Icon(
+                      Icons.business_rounded,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -306,8 +355,9 @@ class _JobCard extends StatelessWidget {
                         Text(
                           job['company'] ?? '',
                           style: TextStyle(
-                            color: theme.colorScheme.onSurface
-                                .withValues(alpha: 0.6),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
                           ),
                         ),
                       ],
@@ -318,9 +368,11 @@ class _JobCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.location_on_outlined,
-                      size: 16,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 16,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     job['location'] ?? 'Not specified',
@@ -331,15 +383,18 @@ class _JobCard extends StatelessWidget {
                   ),
                   if (job['salary'] != null) ...[
                     const SizedBox(width: 16),
-                    Icon(Icons.currency_rupee,
-                        size: 16,
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5)),
+                    Icon(
+                      Icons.currency_rupee,
+                      size: 16,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
                     Text(
                       job['salary'],
                       style: TextStyle(
                         fontSize: 13,
-                        color:
-                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                     ),
                   ],
@@ -351,13 +406,15 @@ class _JobCard extends StatelessWidget {
                   spacing: 6,
                   runSpacing: 4,
                   children: skills
-                      .map((s) => Chip(
-                            label: Text(s, style: const TextStyle(fontSize: 11)),
-                            padding: EdgeInsets.zero,
-                            visualDensity: VisualDensity.compact,
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                          ))
+                      .map(
+                        (s) => Chip(
+                          label: Text(s, style: const TextStyle(fontSize: 11)),
+                          padding: EdgeInsets.zero,
+                          visualDensity: VisualDensity.compact,
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      )
                       .toList(),
                 ),
               ],

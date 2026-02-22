@@ -59,10 +59,7 @@ class InternAIApp extends StatelessWidget {
                 brightness: Brightness.light,
               ),
               textTheme: GoogleFonts.interTextTheme(),
-              appBarTheme: const AppBarTheme(
-                centerTitle: true,
-                elevation: 0,
-              ),
+              appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
               cardTheme: CardThemeData(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -109,9 +106,7 @@ class InternAIApp extends StatelessWidget {
                 brightness: Brightness.dark,
                 surface: surfaceDark,
               ),
-              textTheme: GoogleFonts.interTextTheme(
-                ThemeData.dark().textTheme,
-              ),
+              textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
               appBarTheme: AppBarTheme(
                 centerTitle: true,
                 elevation: 0,
@@ -169,6 +164,15 @@ class InternAIApp extends StatelessWidget {
               '/career-bot': (_) => const CareerBotScreen(),
               '/tracker': (_) => const ApplicationTrackerScreen(),
               '/profile': (_) => const ProfileScreen(),
+            },
+            onGenerateRoute: (settings) {
+              if (settings.name == '/job-detail') {
+                final job = settings.arguments as Map<String, dynamic>;
+                return MaterialPageRoute(
+                  builder: (_) => JobDetailScreen(job: job),
+                );
+              }
+              return null;
             },
           );
         },
