@@ -4,6 +4,11 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:pdf/pdf.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:open_file/open_file.dart';
 
 class JobDetailScreen extends StatefulWidget {
   final Map<String, dynamic> job;
@@ -17,6 +22,7 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
   late final ApiService _api;
   Map<String, dynamic>? _eligibility;
   bool _isAnalyzing = false;
+  bool _isDownloadingQuestions = false;
   bool _didInit = false;
 
   @override
@@ -94,6 +100,134 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
         });
       } catch (e) {
         // Silently handle tracker save failure
+      }
+    }
+  }
+
+  Future<void> _downloadInterviewQuestions() async {
+    if (widget.job['title'] == null) return;
+
+    setState(() {
+      _isDownloadingQuestions = true;
+    });
+
+    try {
+      final role = widget.job['title'].toString().replaceAll(
+        RegExp(r'<[^>]*>?'),
+        '',
+      );
+      final questionsData = await _api.getInterviewQuestions(
+        jobRole: role,
+        difficulty: 'mixed',
+        count: 10,
+      );
+
+      // Generate PDF
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text(
+                  'Interview Questions: $role',
+                  style: pw.TextStyle(
+                    fontSize: 20,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+                pw.Text(
+                  'Generated: ${DateTime.now().toString().substring(0, 10)}',
+                  style: pw.TextStyle(fontSize: 12),
+                ),
+                pw.SizedBox(height: 30),
+                pw.Text(
+                  'Total Questions: ${questionsData['totalQuestions']}',
+                  style: pw.TextStyle(
+                    fontSize: 14,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+                if (questionsData['questionsByRound'] != null)
+                  pw.ListView(
+                    children: (questionsData['questionsByRound'] as Map).entries
+                        .map((entry) {
+                          String round = entry.key;
+                          List questions = entry.value;
+                          return pw.Column(
+                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                            children: [
+                              pw.Text(
+                                round,
+                                style: pw.TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: pw.FontWeight.bold,
+                                ),
+                              ),
+                              pw.SizedBox(height: 10),
+                              pw.ListView(
+                                children: questions.map((q) {
+                                  return pw.Column(
+                                    crossAxisAlignment:
+                                        pw.CrossAxisAlignment.start,
+                                    children: [
+                                      pw.Text(
+                                        'Q: ${q['question']}',
+                                        style: pw.TextStyle(
+                                          fontWeight: pw.FontWeight.bold,
+                                        ),
+                                      ),
+                                      pw.SizedBox(height: 5),
+                                      pw.Text(
+                                        'Difficulty: ${q['difficulty']}',
+                                        style: pw.TextStyle(fontSize: 10),
+                                      ),
+                                      pw.SizedBox(height: 5),
+                                      pw.Text(
+                                        'Answer: ${q['answer']}',
+                                        style: pw.TextStyle(italic: true),
+                                      ),
+                                      pw.SizedBox(height: 15),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                              pw.SizedBox(height: 20),
+                            ],
+                          );
+                        })
+                        .toList(),
+                  ),
+              ],
+            );
+          },
+        ),
+      );
+
+      // Save PDF to device
+      final output = await getTemporaryDirectory();
+      final file = File(
+        "${output.path}/InterviewQuestions_${role.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}.pdf",
+      );
+      await file.writeAsBytes(await pdf.save());
+
+      // Open the PDF
+      await OpenFile.open(file.path);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to download PDF: $e')));
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloadingQuestions = false;
+        });
       }
     }
   }
@@ -418,6 +552,147 @@ class _JobDetailScreenState extends State<JobDetailScreen> {
                       ),
                     )
                     .toList(),
+              ),
+            ],
+            // Download Interview Questions Button
+            if (_eligibility!['interviewQuestions'] != null &&
+                (_eligibility!['interviewQuestions'] as List).isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: theme.colorScheme.outlineVariant.withValues(
+                      alpha: 0.5,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Previously Asked Interview Questions',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        FilledButton.small(
+                          onPressed: _isDownloadingQuestions
+                              ? null
+                              : _downloadInterviewQuestions,
+                          child: _isDownloadingQuestions
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.download, size: 16),
+                                    SizedBox(width: 4),
+                                    Text('PDF'),
+                                  ],
+                                ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Show sample questions
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: (_eligibility!['interviewQuestions'] as List)
+                          .take(3)
+                          .length, // Show only first 3 as sample
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        final q =
+                            (_eligibility!['interviewQuestions']
+                                as List)[index];
+                        return Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: theme.colorScheme.outline,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                q['question'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Category: ${q['category']}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
+                                ),
+                              ),
+                              if (q['difficulty'] != null) ...[
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        (q['difficulty'] == 'Hard'
+                                                ? Colors.red
+                                                : q['difficulty'] == 'Medium'
+                                                ? Colors.orange
+                                                : Colors.green)
+                                            .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color:
+                                          (q['difficulty'] == 'Hard'
+                                                  ? Colors.red
+                                                  : q['difficulty'] == 'Medium'
+                                                  ? Colors.orange
+                                                  : Colors.green)
+                                              .withValues(alpha: 0.3),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    q['difficulty'],
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: (q['difficulty'] == 'Hard'
+                                          ? Colors.red
+                                          : q['difficulty'] == 'Medium'
+                                          ? Colors.orange
+                                          : Colors.green),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ],

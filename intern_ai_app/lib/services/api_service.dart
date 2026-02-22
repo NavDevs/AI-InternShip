@@ -10,9 +10,9 @@ class ApiService {
   }
 
   Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        if (_userId != null) 'X-User-ID': _userId!,
-      };
+    'Content-Type': 'application/json',
+    if (_userId != null) 'X-User-ID': _userId!,
+  };
 
   // ──────────── AUTH ────────────
 
@@ -80,7 +80,9 @@ class ApiService {
     if (skills != null && skills.isNotEmpty) params['skills'] = skills;
     if (state != null && state.isNotEmpty) params['state'] = state;
 
-    final uri = Uri.parse('$baseUrl/jobs').replace(queryParameters: params.isNotEmpty ? params : null);
+    final uri = Uri.parse(
+      '$baseUrl/jobs',
+    ).replace(queryParameters: params.isNotEmpty ? params : null);
     final res = await http.get(uri, headers: _headers);
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return jsonDecode(res.body) as List<dynamic>;
@@ -89,7 +91,10 @@ class ApiService {
   }
 
   Future<List<dynamic>> getLatestJobs() async {
-    final res = await http.get(Uri.parse('$baseUrl/jobs/latest'), headers: _headers);
+    final res = await http.get(
+      Uri.parse('$baseUrl/jobs/latest'),
+      headers: _headers,
+    );
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return jsonDecode(res.body) as List<dynamic>;
     }
@@ -97,7 +102,10 @@ class ApiService {
   }
 
   Future<List<dynamic>> getLiveJobs() async {
-    final res = await http.get(Uri.parse('$baseUrl/jobs/live'), headers: _headers);
+    final res = await http.get(
+      Uri.parse('$baseUrl/jobs/live'),
+      headers: _headers,
+    );
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return jsonDecode(res.body) as List<dynamic>;
     }
@@ -105,7 +113,10 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> getJob(String id) async {
-    final res = await http.get(Uri.parse('$baseUrl/jobs/$id'), headers: _headers);
+    final res = await http.get(
+      Uri.parse('$baseUrl/jobs/$id'),
+      headers: _headers,
+    );
     return _handleResponse(res);
   }
 
@@ -173,17 +184,31 @@ class ApiService {
     return _handleResponse(res);
   }
 
+  Future<Map<String, dynamic>> getCareerAdvice() async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/ai/career-advice'),
+      headers: _headers,
+      body: jsonEncode({}), // Empty body as per web implementation
+    );
+    return _handleResponse(res);
+  }
+
   // ──────────── APPLICATIONS ────────────
 
   Future<List<dynamic>> getApplications() async {
-    final res = await http.get(Uri.parse('$baseUrl/applications'), headers: _headers);
+    final res = await http.get(
+      Uri.parse('$baseUrl/applications'),
+      headers: _headers,
+    );
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return jsonDecode(res.body) as List<dynamic>;
     }
     throw ApiException(_extractMessage(res));
   }
 
-  Future<Map<String, dynamic>> createApplication(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> createApplication(
+    Map<String, dynamic> data,
+  ) async {
     final res = await http.post(
       Uri.parse('$baseUrl/applications'),
       headers: _headers,
@@ -192,7 +217,10 @@ class ApiService {
     return _handleResponse(res);
   }
 
-  Future<Map<String, dynamic>> updateApplication(String id, Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> updateApplication(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     final res = await http.put(
       Uri.parse('$baseUrl/applications/$id'),
       headers: _headers,

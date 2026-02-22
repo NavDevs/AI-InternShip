@@ -176,58 +176,8 @@ class _CareerBotScreenState extends State<CareerBotScreen> {
     });
 
     try {
-      // This would call the backend API to get career insights
-      // Since this endpoint might not exist, I'll simulate it
-      // In a real scenario, you'd call the backend API like:
-      // final result = await _api.getCareerInsights();
-
-      // Simulating the backend response structure based on web version
-      final result = {
-        'overallAssessment':
-            'Based on your application history, you show strong interest in tech roles but could benefit from diversifying your applications.',
-        'applicationStats': {
-          'total': 5,
-          'applied': 3,
-          'interview': 1,
-          'offer': 0,
-        },
-        'strengths': [
-          'Consistent application activity',
-          'Good variety in role types',
-          'Strong interest in tech companies',
-        ],
-        'areasToImprove': [
-          'Follow-up rate could be improved',
-          'Consider applying to more diverse companies',
-          'Expand to more senior roles gradually',
-        ],
-        'strategicAdvice': [
-          {
-            'title': 'Optimize your follow-ups',
-            'description':
-                'Following up within 3-5 days of applying increases your chances of response by 40%',
-            'priority': 'high',
-          },
-          {
-            'title': 'Diversify your applications',
-            'description':
-                'Consider applying to startups as well as established companies',
-            'priority': 'medium',
-          },
-        ],
-        'roleRecommendations': [
-          'Frontend Developer',
-          'Junior Software Engineer',
-          'Web Developer',
-        ],
-        'nextSteps': [
-          'Update your resume with recent projects',
-          'Practice common interview questions',
-          'Apply to 3-5 positions this week',
-        ],
-        'motivationalMessage':
-            'Remember, every application brings you closer to your dream role. Keep pushing forward!',
-      };
+      // Call the actual backend API to get career insights
+      final result = await _api.getCareerAdvice();
 
       setState(() {
         _careerInsightsResult = result;
