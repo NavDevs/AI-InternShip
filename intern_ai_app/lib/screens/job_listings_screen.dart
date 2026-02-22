@@ -5,6 +5,16 @@ import '../services/api_service.dart';
 import '../widgets/app_drawer.dart';
 import 'job_detail_screen.dart';
 
+const List<String> indianStates = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka',
+  'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram',
+  'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu',
+  'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry', 'Remote'
+];
+
 class JobListingsScreen extends StatefulWidget {
   const JobListingsScreen({super.key});
 
@@ -73,6 +83,19 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
       appBar: AppBar(
         title: const Text('Job Listings',
             style: TextStyle(fontWeight: FontWeight.bold)),
+        actions: [
+          if (_filterState.isNotEmpty || _searchController.text.isNotEmpty)
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _filterState = '';
+                  _searchController.clear();
+                });
+                _loadJobs();
+              },
+              child: const Text('Clear All', style: TextStyle(color: Colors.red)),
+            )
+        ],
       ),
       drawer: const AppDrawer(),
       body: Column(
@@ -123,11 +146,7 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
                       filled: true,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
-                    items: [
-                      'Maharashtra', 'Karnataka', 'Delhi', 'Tamil Nadu', 
-                      'Telangana', 'Uttar Pradesh', 'Gujarat', 'West Bengal',
-                      'Kerala', 'Rajasthan', 'Haryana', 'Remote'
-                    ].map((state) => DropdownMenuItem(
+                    items: indianStates.map((state) => DropdownMenuItem(
                           value: state,
                           child: Text(state),
                         )).toList(),

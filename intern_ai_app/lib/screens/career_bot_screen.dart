@@ -74,11 +74,11 @@ class _CareerBotScreenState extends State<CareerBotScreen> {
       String botResponse;
 
       final isCareerQuery = RegExp(
-        r'\b(developer|engineer|designer|manager|analyst|scientist|architect|devops|frontend|backend|fullstack|full stack|data|cloud|machine learning|ml|ai|software|web|mobile|ios|android|product|ux|ui|security|blockchain|fsd|mern|mean|python|java|react|angular|vue|node|django|flask|spring|dotnet|golang|rust|ruby|php|kotlin|swift|flutter|aws|azure|gcp|docker|kubernetes|cybersecurity|qa|tester|dba|sysadmin|intern|fresher|career|become|want to be|how to become)\b',
+        r'\b(developer|engineer|designer|manager|analyst|scientist|architect|devops|frontend|backend|fullstack|full stack|data|cloud|machine learning|ml|ai|software|web|mobile|ios|android|product|ux|ui|security|blockchain|fsd|mern|mean|python|java|react|angular|vue|node|django|flask|spring|dotnet|golang|rust|ruby|php|kotlin|swift|flutter|aws|azure|gcp|docker|kubernetes|cybersecurity|qa|tester|dba|sysadmin|intern|fresher|career|become|want to be|how to become|roadmap|road map|roadmaps|syllabus|curriculum)\b',
         caseSensitive: false,
       ).hasMatch(text);
 
-      final isGreeting = RegExp(r'^(hi|hello|hey|hola|yo|help|who are you)', caseSensitive: false).hasMatch(text);
+      final isGreeting = RegExp(r'^(hi|hello|hey|hola|yo|who are you|help)$', caseSensitive: false).hasMatch(text);
 
       if (isCareerQuery && !isGreeting) {
         final result = await _api.generateRoadmap(text);

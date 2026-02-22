@@ -48,12 +48,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _loadProfile() {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     _nameController.text = auth.displayName;
-    _collegeController.text = auth.profile?['education']?['college'] ?? '';
-    _degreeController.text = auth.profile?['education']?['degree'] ?? '';
+    
+    // Defensive check for education
+    final edu = auth.profile?['education'];
+    if (edu is Map) {
+      _collegeController.text = edu['college'] ?? '';
+      _degreeController.text = edu['degree'] ?? '';
+    } else {
+      _collegeController.text = edu?.toString() ?? '';
+      _degreeController.text = '';
+    }
+    
     _role = auth.role.isEmpty ? 'student' : auth.role;
     _skills = List<String>.from(auth.skills);
     
-    final st = auth.profile?['profile']?['state'] ?? '';
+    // Defensive check for state
+    final prof = auth.profile?['profile'];
+    final st = prof is Map ? (prof['state'] ?? '') : '';
     _selectedState = indianStates.contains(st) ? st : null;
   }
 
