@@ -141,6 +141,21 @@ class ApiService {
     return _handleResponse(res);
   }
 
+  Future<Map<String, dynamic>> sendChatMatch({
+    required String message,
+    List<Map<String, dynamic>>? chatHistory,
+  }) async {
+    final res = await http.post(
+      Uri.parse('$baseUrl/ai/chat'),
+      headers: _headers,
+      body: jsonEncode({
+        'message': message,
+        if (chatHistory != null) 'chatHistory': chatHistory,
+      }),
+    );
+    return _handleResponse(res);
+  }
+
   Future<Map<String, dynamic>> getInterviewQuestions({
     required String jobRole,
     required String difficulty,

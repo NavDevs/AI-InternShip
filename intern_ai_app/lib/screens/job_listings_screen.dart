@@ -97,8 +97,57 @@ class _JobListingsScreenState extends State<JobListingsScreen> {
             ),
           ),
           const SizedBox(height: 8),
-
-          // Results
+          
+          // State Filter
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: DropdownButtonFormField<String>(
+                    value: _filterState.isEmpty ? null : _filterState,
+                    decoration: InputDecoration(
+                      hintText: 'Filter by State',
+                      prefixIcon: const Icon(Icons.map_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    items: [
+                      'Maharashtra', 'Karnataka', 'Delhi', 'Tamil Nadu', 
+                      'Telangana', 'Uttar Pradesh', 'Gujarat', 'West Bengal',
+                      'Kerala', 'Rajasthan', 'Haryana', 'Remote'
+                    ].map((state) => DropdownMenuItem(
+                          value: state,
+                          child: Text(state),
+                        )).toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        _filterState = val ?? '';
+                      });
+                      _loadJobs();
+                    },
+                  ),
+                ),
+                if (_filterState.isNotEmpty) ...[
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      setState(() {
+                        _filterState = '';
+                      });
+                      _loadJobs();
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())

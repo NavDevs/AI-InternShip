@@ -1,29 +1,40 @@
 {
-    "project_info": {
-        "project_number": "560687520124",
-        "project_id": "internship-569fd",
-        "storage_bucket": "internship-569fd.firebasestorage.app"
-    },
-    "client": [
-        {
-            "client_info": {
-                "mobilesdk_app_id": "1:560687520124:android:54ba63c9c96e38407f6cf9",
-                "android_client_info": {
-                    "package_name": "com.internai.intern_ai_app"
-                }
-            },
-            "oauth_client": [],
-            "api_key": [
-                {
-                    "current_key": "AIzaSyDGWyz9vhDFgnyw2IMIVkGG4ma5GX-Vyl0"
-                }
-            ],
-            "services": {
-                "appinvite_service": {
-                    "other_platform_oauth_client": []
-                }
-            }
+  "project_info": {
+    "project_number": "560687520124",
+    "firebase_url": "https://internship-569fd-default-rtdb.firebaseio.com",
+    "project_id": "internship-569fd",
+    "storage_bucket": "internship-569fd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560687520124:android:55884f39707d19467f6cf9",
+        "android_client_info": {
+          "package_name": "com.internai.intern_ai_app"
         }
-    ],
-    "configuration_version": "1"
+      },
+      "oauth_client": [
+        {
+          "client_id": "560687520124-ld13piph68jc6pmcv2sr1gu8ibsulq5v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmX5cfe52tcl_S2pxFD7qJSu-PvJAeqUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "560687520124-ld13piph68jc6pmcv2sr1gu8ibsulq5v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }

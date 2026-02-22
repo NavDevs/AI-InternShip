@@ -92,9 +92,17 @@ class _CareerBotScreenState extends State<CareerBotScreen> {
               "Which role should I prepare interview questions for? E.g., 'Interview questions for React Developer'";
         }
       } else {
-        // General career advice via roadmap
-        final result = await _api.generateRoadmap(text);
-        botResponse = _formatRoadmap(result);
+        // General AI Chat
+        final chatHistory = _messages.map((m) => {
+          'role': m.isBot ? 'model' : 'user',
+          'parts': [{'text': m.text}],
+        }).toList();
+
+        final result = await _api.sendChatMatch(
+          message: text,
+          chatHistory: chatHistory,
+        );
+        botResponse = result['text'] ?? "Sorry, I couldn't generate a response.";
       }
 
       setState(() {
