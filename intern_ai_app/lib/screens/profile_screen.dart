@@ -21,10 +21,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _role = 'student';
   bool _isSaving = false;
 
+  bool _didInit = false;
+
   @override
-  void initState() {
-    super.initState();
-    _loadProfile();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _loadProfile();
+      _didInit = true;
+    }
   }
 
   void _loadProfile() {

@@ -66,26 +66,23 @@ class _CareerBotScreenState extends State<CareerBotScreen> {
     _scrollToBottom();
 
     try {
-      // Determine intent
       final lower = text.toLowerCase();
       String botResponse;
 
-      if (lower.contains('roadmap') ||
-          lower.contains('become') ||
-          lower.contains('career path')) {
-        // Extract job from message
-        final job = text
-            .replaceAll(RegExp(r'(roadmap|become|career path|for|to|a|an|how|can|i|be)', caseSensitive: false), '')
-            .trim();
-        if (job.isNotEmpty) {
-          final result = await _api.generateRoadmap(job);
-          botResponse = _formatRoadmap(result);
-        } else {
-          botResponse =
-              "What's your dream job? Tell me and I'll create a personalized roadmap! 💡";
-        }
-      } else if (lower.contains('interview') ||
-          lower.contains('questions')) {
+      // Match the website's career keyword detection regex
+      final isCareerQuery = RegExp(
+        r'\b(developer|engineer|designer|manager|analyst|scientist|architect|devops|frontend|backend|fullstack|full stack|data|cloud|machine learning|ml|ai|software|web|mobile|ios|android|product|ux|ui|security|blockchain|fsd|mern|mean|python|java|react|angular|vue|node|django|flask|spring|dotnet|golang|rust|ruby|php|kotlin|swift|flutter|aws|azure|gcp|docker|kubernetes|cybersecurity|qa|tester|dba|sysadmin|intern|fresher|career|become|want to be|how to become)\b',
+        caseSensitive: false,
+      ).hasMatch(text);
+
+      final isGreeting = RegExp(r'^(hi|hello|hey|hola|yo|help|who are you)', caseSensitive: false).hasMatch(text);
+
+      if (isCareerQuery && !isGreeting) {
+        // Send the FULL user input as dreamJob — exactly like the website does
+        final result = await _api.generateRoadmap(text);
+        botResponse = _formatRoadmap(result);
+      } else if (lower.contains('interview') || lower.contains('questions')) {
+        // Extract role for interview questions
         final role = text
             .replaceAll(RegExp(r'(interview|questions|for|give|me|some|prep)', caseSensitive: false), '')
             .trim();
@@ -133,25 +130,38 @@ class _CareerBotScreenState extends State<CareerBotScreen> {
   String _formatRoadmap(Map<String, dynamic> data) {
     final buf = StringBuffer();
     final dreamJob = data['dreamJob'] ?? 'Your Dream Job';
-    buf.writeln('🗺️ **Career Roadmap: $dreamJob**\n');
+    buf.writeln('🗺️ Career Roadmap: $dreamJob\n');
 
     final phases = data['phases'] as List? ?? [];
     for (var i = 0; i < phases.length; i++) {
       final phase = phases[i] as Map<String, dynamic>;
-      buf.writeln('**Phase ${i + 1}: ${phase['phase'] ?? phase['title'] ?? ''}**');
-      buf.writeln('⏱️ ${phase['duration'] ?? ''}');
+      // Use correct API keys: month, topics, actionItems
+      buf.writeln('📅 ${phase['month'] ?? 'Phase ${i + 1}'}');
 
-      final skills = phase['skills'] as List? ?? [];
-      if (skills.isNotEmpty) {
-        buf.writeln('Skills: ${skills.join(', ')}');
+      final topics = phase['topics'] as List? ?? [];
+      if (topics.isNotEmpty) {
+        buf.writeln('Topics: ${topics.join(', ')}');
       }
 
-      final tasks = phase['tasks'] as List? ?? [];
-      for (final task in tasks) {
-        buf.writeln('  • $task');
+      final actions = phase['actionItems'] as List? ?? [];
+      for (final action in actions) {
+        buf.writeln('  • $action');
       }
       buf.writeln('');
     }
+
+    final resources = data['recommendedResources'] as List? ?? [];
+    if (resources.isNotEmpty) {
+      buf.writeln('📚 Resources:');
+      for (final res in resources) {
+        if (res is Map) {
+          buf.writeln('  • ${res['name'] ?? res}');
+        } else {
+          buf.writeln('  • $res');
+        }
+      }
+    }
+
     return buf.toString().trim();
   }
 
