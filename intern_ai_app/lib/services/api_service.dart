@@ -3,15 +3,15 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   static const String baseUrl = 'https://ai-internship.onrender.com/api';
-  String? _token;
+  String? _userId;
 
-  void setToken(String? token) {
-    _token = token;
+  void setUserId(String? uid) {
+    _userId = uid;
   }
 
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
-        if (_token != null) 'Authorization': 'Bearer $_token',
+        if (_userId != null) 'X-User-ID': _userId!,
       };
 
   // ──────────── AUTH ────────────

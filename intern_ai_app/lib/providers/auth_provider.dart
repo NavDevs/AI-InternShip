@@ -52,9 +52,8 @@ class AuthProvider extends ChangeNotifier {
     _authService.authStateChanges.listen((user) async {
       _firebaseUser = user;
       if (user != null) {
-        // Get token and pass to API service
-        final token = await user.getIdToken();
-        _apiService.setToken(token);
+        // Pass Firebase UID to API service (matches website's X-User-ID header)
+        _apiService.setUserId(user.uid);
 
         // Listen to Firestore profile
         _authService.getUserProfileStream(user.uid).listen((snap) {
@@ -66,18 +65,10 @@ class AuthProvider extends ChangeNotifier {
         _authService.setOnlineStatus(user.uid);
       } else {
         _profile = null;
-        _apiService.setToken(null);
+        _apiService.setUserId(null);
       }
       _isLoading = false;
       notifyListeners();
-    });
-
-    // Also listen to token refreshes
-    FirebaseAuth.instance.idTokenChanges().listen((user) async {
-      if (user != null) {
-        final token = await user.getIdToken();
-        _apiService.setToken(token);
-      }
     });
   }
 

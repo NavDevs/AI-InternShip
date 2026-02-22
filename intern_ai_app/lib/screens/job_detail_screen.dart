@@ -12,9 +12,19 @@ class JobDetailScreen extends StatefulWidget {
 }
 
 class _JobDetailScreenState extends State<JobDetailScreen> {
-  final _api = ApiService();
+  late final ApiService _api;
   Map<String, dynamic>? _eligibility;
   bool _isAnalyzing = false;
+  bool _didInit = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _api = Provider.of<AuthProvider>(context, listen: false).api;
+      _didInit = true;
+    }
+  }
 
   Future<void> _checkEligibility() async {
     final auth = context.read<AuthProvider>();

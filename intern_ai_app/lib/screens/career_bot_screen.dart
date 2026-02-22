@@ -13,20 +13,26 @@ class CareerBotScreen extends StatefulWidget {
 }
 
 class _CareerBotScreenState extends State<CareerBotScreen> {
-  final _api = ApiService();
+  late final ApiService _api;
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
   final List<_ChatMessage> _messages = [];
   bool _isTyping = false;
 
+  bool _didInit = false;
+
   @override
-  void initState() {
-    super.initState();
-    _messages.add(_ChatMessage(
-      text:
-          "Hi! I'm your AI Career Assistant 🚀\n\nI can help you with:\n• **Career Roadmaps** — Type a dream job like 'Flutter Developer'\n• **Interview Questions** — Ask me for interview prep\n• **Career Advice** — Ask anything about your career!\n\nWhat would you like to explore?",
-      isBot: true,
-    ));
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _api = Provider.of<AuthProvider>(context, listen: false).api;
+      _messages.add(_ChatMessage(
+        text:
+            "Hi! I'm your AI Career Assistant 🚀\n\nI can help you with:\n• **Career Roadmaps** — Type a dream job like 'Flutter Developer'\n• **Interview Questions** — Ask me for interview prep\n• **Career Advice** — Ask anything about your career!\n\nWhat would you like to explore?",
+        isBot: true,
+      ));
+      _didInit = true;
+    }
   }
 
   @override

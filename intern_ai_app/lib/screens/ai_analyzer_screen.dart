@@ -12,10 +12,20 @@ class AIAnalyzerScreen extends StatefulWidget {
 }
 
 class _AIAnalyzerScreenState extends State<AIAnalyzerScreen> {
-  final _api = ApiService();
+  late final ApiService _api;
   final _jdController = TextEditingController();
   Map<String, dynamic>? _result;
   bool _isAnalyzing = false;
+  bool _didInit = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _api = Provider.of<AuthProvider>(context, listen: false).api;
+      _didInit = true;
+    }
+  }
 
   @override
   void dispose() {

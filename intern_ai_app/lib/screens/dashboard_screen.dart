@@ -12,20 +12,25 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late final ApiService _api;
   List<dynamic> _recentJobs = [];
   Map<String, dynamic>? _analytics;
   bool _isLoading = true;
+  bool _didInit = false;
 
   @override
-  void initState() {
-    super.initState();
-    _loadData();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _api = Provider.of<AuthProvider>(context, listen: false).api;
+      _loadData();
+      _didInit = true;
+    }
   }
 
   Future<void> _loadData() async {
     try {
-      final api = ApiService();
-      final jobs = await api.getLatestJobs();
+      final jobs = await _api.getLatestJobs();
       setState(() {
         _recentJobs = jobs.take(5).toList();
         _isLoading = false;

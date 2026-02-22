@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/app_drawer.dart';
 import 'job_detail_screen.dart';
@@ -11,18 +13,23 @@ class JobListingsScreen extends StatefulWidget {
 }
 
 class _JobListingsScreenState extends State<JobListingsScreen> {
-  final _api = ApiService();
+  late final ApiService _api;
   final _searchController = TextEditingController();
   List<dynamic> _jobs = [];
   bool _isLoading = true;
   String? _error;
   String _filterRole = '';
   String _filterState = '';
+  bool _didInit = false;
 
   @override
-  void initState() {
-    super.initState();
-    _loadJobs();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _api = Provider.of<AuthProvider>(context, listen: false).api;
+      _loadJobs();
+      _didInit = true;
+    }
   }
 
   Future<void> _loadJobs() async {

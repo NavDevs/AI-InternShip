@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../widgets/app_drawer.dart';
 
@@ -11,14 +13,19 @@ class ApplicationTrackerScreen extends StatefulWidget {
 }
 
 class _ApplicationTrackerScreenState extends State<ApplicationTrackerScreen> {
-  final _api = ApiService();
+  late final ApiService _api;
   List<dynamic> _apps = [];
   bool _isLoading = true;
+  bool _didInit = false;
 
   @override
-  void initState() {
-    super.initState();
-    _loadApps();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _api = Provider.of<AuthProvider>(context, listen: false).api;
+      _loadApps();
+      _didInit = true;
+    }
   }
 
   Future<void> _loadApps() async {
