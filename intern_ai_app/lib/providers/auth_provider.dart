@@ -138,6 +138,17 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Reload user data manually after an update
+  Future<void> manualRefreshUserData() async {
+    if (_firebaseUser != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(_firebaseUser!.uid).get();
+      if (doc.exists) {
+        _profile = doc.data();
+        notifyListeners();
+      }
+    }
+  }
+
   // Clear error
   void clearError() {
     _error = null;
