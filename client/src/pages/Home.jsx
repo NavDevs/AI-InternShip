@@ -119,14 +119,6 @@ const Home = () => {
                     <Link to="/jobs" className="inline-flex items-center justify-center gap-2 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 px-6 py-3 font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
                         Browse Jobs
                     </Link>
-                    <a
-                        href="https://github.com/NavDevs/AI-InternShip/releases/download/v1.4.0/Intern-AI-v7.apk"
-                        download="Intern-AI-v7.apk"
-                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-6 py-3 font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors border border-stone-200 dark:border-stone-700 shadow-sm"
-                    >
-                        <Smartphone className="h-5 w-5 text-primary dark:text-primary-light" />
-                        Download App
-                    </a>
                 </motion.div>
 
                 {/* Stats row */}
