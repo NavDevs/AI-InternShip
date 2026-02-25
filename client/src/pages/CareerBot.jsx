@@ -479,7 +479,51 @@ const CareerBot = () => {
                                     </div>
                                 </div>
 
+                                {/* Interview Questions */}
+                                <div className="flex flex-col items-center gap-5">
 
+                                    <div className="w-full space-y-5">
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100">Interview Questions</h3>
+                                                <p className="text-xs text-stone-500">Generated for {interviewQuestions.role}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {Object.entries(interviewQuestions.questionsByRound).map(([round, questions], idx) => (
+                                                <div key={idx} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
+                                                    <h4 className="text-xs font-medium text-primary uppercase tracking-wide mb-4 flex items-center gap-2">
+                                                        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                                        {round}
+                                                    </h4>
+                                                    <div className="space-y-4">
+                                                        {questions.map((q, qIdx) => (
+                                                            <div key={qIdx} className="bg-stone-50 dark:bg-stone-800 p-4 rounded-lg">
+                                                                <div className="flex justify-between items-start gap-3 mb-2">
+                                                                    <h5 className="text-sm font-medium text-stone-800 dark:text-stone-200">
+                                                                        {qIdx + 1}. {q.question}
+                                                                    </h5>
+                                                                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium shrink-0 ${q.difficulty === 'Hard' ? 'bg-rose-100 text-rose-600' :
+                                                                        q.difficulty === 'Medium' ? 'bg-amber-100 text-amber-600' :
+                                                                            'bg-emerald-100 text-emerald-600'
+                                                                        }`}>
+                                                                        {q.difficulty}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="pl-3 border-l-2 border-stone-200 dark:border-stone-700">
+                                                                    <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+                                                                        <span className="font-medium text-primary">Answer:</span> {q.answer}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </motion.div>
                         ) : (
                             /* Eligibility Result */

@@ -20,8 +20,10 @@ import {
     Tag,
     Youtube,
     Award,
-    HelpCircle
+    HelpCircle,
+    Download
 } from 'lucide-react';
+import jsPDF from 'jspdf';
 import { db } from '../firebase';
 import { API_BASE_URL } from '../utils/api';
 import { collection, addDoc } from 'firebase/firestore';
@@ -99,7 +101,76 @@ const JobDetail = () => {
         }
     };
 
+    const handleDownloadInterviewQuestions = async () => {
+        if (!job) return;
+        setDownloadingQuestions(true);
+        try {
+            const res = await axios.post(
+                `${API_BASE_URL}/ai/interview-questions`,
+                { role: job.title.replace(/<[^>]*>?/gm, '') },
+                { headers: { 'X-User-ID': user?.uid || user?._id } }
+            );
+            generateQuestionsPDF(res.data);
+        } catch (err) {
+            console.error('Error fetching questions for PDF:', err);
+            alert('Could not generate PDF. Please try again.');
+        } finally {
+            setDownloadingQuestions(false);
+        }
+    };
 
+    const generateQuestionsPDF = (data) => {
+        const doc = new jsPDF();
+        let yPos = 20;
+        doc.setFontSize(18);
+        doc.setFont(undefined, 'bold');
+        doc.text(`Interview Questions: ${data.role}`, 105, yPos, { align: 'center' });
+        yPos += 10;
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Total: ${data.totalQuestions} Questions | Generated: ${new Date().toLocaleDateString()}`, 105, yPos, { align: 'center' });
+        yPos += 15;
+
+        if (data.questionsByRound) {
+            Object.entries(data.questionsByRound).forEach(([round, questions]) => {
+                if (yPos > 250) { doc.addPage(); yPos = 20; }
+                doc.setFontSize(14);
+                doc.setFont(undefined, 'bold');
+                doc.text(round, 20, yPos);
+                yPos += 8;
+                doc.setFontSize(10);
+                questions.forEach((q, idx) => {
+                    if (yPos > 260) { doc.addPage(); yPos = 20; }
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`Q${idx + 1}. [${q.difficulty}]`, 20, yPos);
+                    yPos += 5;
+                    doc.setFont(undefined, 'normal');
+                    const questionLines = doc.splitTextToSize(q.question, 170);
+                    doc.text(questionLines, 20, yPos);
+                    yPos += questionLines.length * 5 + 3;
+                    doc.setFont(undefined, 'italic');
+                    doc.setTextColor(60, 60, 60);
+                    const answerLines = doc.splitTextToSize(`Answer: ${q.answer}`, 170);
+                    doc.text(answerLines, 20, yPos);
+                    doc.setTextColor(0, 0, 0);
+                    yPos += answerLines.length * 5 + 8;
+                });
+                yPos += 5;
+            });
+        }
+
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'italic');
+            doc.setTextColor(120, 120, 120);
+            doc.text('Prepared by Intern-AI Career Coach', 105, 290, { align: 'center' });
+            doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: 'center' });
+            doc.setTextColor(0, 0, 0);
+        }
+        doc.save(`InterviewQuestions_${data.role.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+    };
 
     if (!job) return null;
 
@@ -258,6 +329,14 @@ const JobDetail = () => {
                                 <div className="flex items-center gap-2 mb-4">
                                     <HelpCircle className="h-4 w-4 text-blue-500" />
                                     <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 flex-1">Previously Asked Questions</h3>
+                                    <button
+                                        onClick={handleDownloadInterviewQuestions}
+                                        disabled={downloadingQuestions}
+                                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-medium transition-colors disabled:opacity-50"
+                                    >
+                                        {downloadingQuestions ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                                        {downloadingQuestions ? 'Generating…' : 'Download PDF'}
+                                    </button>
                                 </div>
                                 <div className="space-y-3">
                                     {eligibility.interviewQuestions.map((q, i) => (
