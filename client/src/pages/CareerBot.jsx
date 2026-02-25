@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import jsPDF from 'jspdf';
 import {
     Sparkles,
     Send,
@@ -16,8 +15,6 @@ import {
     CheckCircle2,
     Lightbulb,
     TrendingUp,
-    AlertCircle,
-    Download,
     FileQuestion
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -104,85 +101,7 @@ const CareerBot = () => {
         }
     };
 
-    const handleGetInterviewQuestions = async () => {
-        if (!result || !result.dreamJob) {
-            alert('Please generate a career roadmap first!');
-            return;
-        }
-        setLoadingQuestions(true);
-        try {
-            const res = await axios.post(
-                `${API_BASE_URL}/ai/interview-questions`,
-                { role: result.dreamJob },
-                { headers: { 'X-User-ID': user?.uid || user?._id } }
-            );
-            setInterviewQuestions(res.data);
-            generateQuestionsPDF(res.data);
-            setMessages(prev => [...prev, {
-                role: 'bot',
-                content: `I've prepared ${res.data.totalQuestions} interview questions for ${res.data.role}. The PDF has been downloaded!`
-            }]);
-        } catch (err) {
-            console.error('Error fetching questions:', err);
-            setMessages(prev => [...prev, {
-                role: 'bot',
-                content: 'Sorry, I couldn\'t fetch interview questions. Please try again.'
-            }]);
-        } finally {
-            setLoadingQuestions(false);
-        }
-    };
 
-    const generateQuestionsPDF = (data) => {
-        const doc = new jsPDF();
-        let yPos = 20;
-        doc.setFontSize(18);
-        doc.setFont(undefined, 'bold');
-        doc.text(`Interview Questions: ${data.role}`, 105, yPos, { align: 'center' });
-        yPos += 10;
-        doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
-        doc.text(`Total: ${data.totalQuestions} Questions | Generated: ${new Date().toLocaleDateString()}`, 105, yPos, { align: 'center' });
-        yPos += 15;
-
-        Object.entries(data.questionsByRound).forEach(([round, questions]) => {
-            if (yPos > 250) { doc.addPage(); yPos = 20; }
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text(round, 20, yPos);
-            yPos += 8;
-            doc.setFontSize(10);
-            questions.forEach((q, idx) => {
-                if (yPos > 260) { doc.addPage(); yPos = 20; }
-                doc.setFont(undefined, 'bold');
-                doc.text(`Q${idx + 1}. [${q.difficulty}]`, 20, yPos);
-                yPos += 5;
-                doc.setFont(undefined, 'normal');
-                const questionLines = doc.splitTextToSize(q.question, 170);
-                doc.text(questionLines, 20, yPos);
-                yPos += questionLines.length * 5 + 3;
-                doc.setFont(undefined, 'italic');
-                doc.setTextColor(60, 60, 60);
-                const answerLines = doc.splitTextToSize(`Answer: ${q.answer}`, 170);
-                doc.text(answerLines, 20, yPos);
-                doc.setTextColor(0, 0, 0);
-                yPos += answerLines.length * 5 + 8;
-            });
-            yPos += 5;
-        });
-
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8);
-            doc.setFont(undefined, 'italic');
-            doc.setTextColor(120, 120, 120);
-            doc.text('Prepared by Intern-AI Career Coach', 105, 290, { align: 'center' });
-            doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: 'center' });
-            doc.setTextColor(0, 0, 0);
-        }
-        doc.save(`InterviewQuestions_${data.role.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
-    };
 
     const handleCareerInsights = async () => {
         setLoading(true);
@@ -560,77 +479,7 @@ const CareerBot = () => {
                                     </div>
                                 </div>
 
-                                {/* Interview Questions */}
-                                <div className="flex flex-col items-center gap-5">
-                                    {!interviewQuestions ? (
-                                        <button
-                                            onClick={handleGetInterviewQuestions}
-                                            disabled={loadingQuestions}
-                                            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors disabled:opacity-50"
-                                        >
-                                            {loadingQuestions ? (
-                                                <>
-                                                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                    Preparing…
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <FileQuestion className="h-4 w-4" />
-                                                    Download Interview Questions
-                                                    <Download className="h-4 w-4" />
-                                                </>
-                                            )}
-                                        </button>
-                                    ) : (
-                                        <div className="w-full space-y-5">
-                                            <div className="flex justify-between items-center">
-                                                <div>
-                                                    <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100">Interview Questions</h3>
-                                                    <p className="text-xs text-stone-500">Generated for {interviewQuestions.role}</p>
-                                                </div>
-                                                <button
-                                                    onClick={() => generateQuestionsPDF(interviewQuestions)}
-                                                    className="inline-flex items-center gap-2 rounded-lg bg-stone-900 dark:bg-white px-4 py-2 text-xs font-medium text-white dark:text-stone-900 hover:opacity-90 transition-opacity"
-                                                >
-                                                    <Download className="h-3.5 w-3.5" /> Download PDF
-                                                </button>
-                                            </div>
 
-                                            <div className="space-y-4">
-                                                {Object.entries(interviewQuestions.questionsByRound).map(([round, questions], idx) => (
-                                                    <div key={idx} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
-                                                        <h4 className="text-xs font-medium text-primary uppercase tracking-wide mb-4 flex items-center gap-2">
-                                                            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                                                            {round}
-                                                        </h4>
-                                                        <div className="space-y-4">
-                                                            {questions.map((q, qIdx) => (
-                                                                <div key={qIdx} className="bg-stone-50 dark:bg-stone-800 p-4 rounded-lg">
-                                                                    <div className="flex justify-between items-start gap-3 mb-2">
-                                                                        <h5 className="text-sm font-medium text-stone-800 dark:text-stone-200">
-                                                                            {qIdx + 1}. {q.question}
-                                                                        </h5>
-                                                                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium shrink-0 ${q.difficulty === 'Hard' ? 'bg-rose-100 text-rose-600' :
-                                                                            q.difficulty === 'Medium' ? 'bg-amber-100 text-amber-600' :
-                                                                                'bg-emerald-100 text-emerald-600'
-                                                                            }`}>
-                                                                            {q.difficulty}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="pl-3 border-l-2 border-stone-200 dark:border-stone-700">
-                                                                        <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
-                                                                            <span className="font-medium text-primary">Answer:</span> {q.answer}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
                             </motion.div>
                         ) : (
                             /* Eligibility Result */
