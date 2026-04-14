@@ -51,38 +51,39 @@ const Login = () => {
     };
 
     return (
-        <div className="flex min-h-[80vh] items-center justify-center py-12 px-4">
+        <div className="flex min-h-[80vh] items-center justify-center py-12 px-6">
             <motion.div
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full max-w-md bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-sm overflow-hidden"
+                transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 25 }}
+                className="w-full max-w-md bg-chassis rounded-2xl overflow-hidden shadow-[12px_12px_24px_#a8b4c4,-12px_-12px_24px_#ffffff]"
             >
-                {/* Colored top accent */}
-                <div className="h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
-                <div className="p-8">
+                {/* Safety orange LED strip */}
+                <div className="h-1.5 bg-accent-primary shadow-[0_0_10px_2px_rgba(255,71,87,0.6)]" />
+                
+                <div className="p-10">
                     <div className="text-center mb-8">
-                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                            <LogIn className="h-5 w-5 text-primary" />
+                        <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-chassis shadow-[6px_6px_12px_#a8b4c4,-6px_-6px_12px_#ffffff,inset_1px_1px_0_#ffffff] mb-4">
+                            <LogIn className="h-7 w-7 text-accent-primary" />
                         </div>
-                        <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100">
+                        <h2 className="text-3xl font-bold tracking-tight text-text-primary drop-shadow-[0_1px_1px_#ffffff]">
                             Welcome back
                         </h2>
-                        <p className="mt-1.5 text-sm text-stone-500 dark:text-stone-400">
+                        <p className="mt-2 text-text-muted">
                             Track your journey to your dream career
                         </p>
                     </div>
 
-                    <form className="space-y-4" onSubmit={handleSubmit}>
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Email address</label>
+                            <label htmlFor="email" className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">Email address</label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-3 h-4 w-4 text-stone-400" />
+                                <Mail className="absolute left-4 top-3.5 h-4 w-4 text-text-muted" />
                                 <input
                                     id="email"
                                     type="email"
                                     required
-                                    className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 pl-10 pr-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                    className="w-full bg-recessed rounded-lg py-3 pl-11 pr-4 text-text-primary placeholder:text-text-muted focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono"
                                     placeholder="you@example.com"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -90,14 +91,14 @@ const Login = () => {
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Password</label>
+                            <label htmlFor="password" className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-3 h-4 w-4 text-stone-400" />
+                                <Lock className="absolute left-4 top-3.5 h-4 w-4 text-text-muted" />
                                 <input
                                     id="password"
                                     type="password"
                                     required
-                                    className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 pl-10 pr-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                    className="w-full bg-recessed rounded-lg py-3 pl-11 pr-4 text-text-primary placeholder:text-text-muted focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono"
                                     placeholder="Your password"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -105,12 +106,12 @@ const Login = () => {
                             </div>
                         </div>
 
-                        {error && <p className="text-center text-sm text-red-600 dark:text-red-400">{error}</p>}
+                        {error && <p className="text-center text-sm font-mono text-accent-primary">{error}</p>}
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 bg-accent-primary text-white py-3.5 text-xs font-bold uppercase tracking-wider rounded-lg shadow-[4px_4px_8px_#a8b4c4,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#a8b4c4,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] active:translate-y-0.5 transition-all duration-200 disabled:opacity-50"
                         >
                             {isLoading ? 'Signing in…' : (
                                 <>
@@ -119,19 +120,19 @@ const Login = () => {
                             )}
                         </button>
 
-                        <div className="relative my-5">
+                        <div className="relative my-6">
                             <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-stone-200 dark:border-stone-700"></div>
+                                <div className="w-full h-px bg-gradient-to-r from-transparent via-shadow-dark to-transparent opacity-30"></div>
                             </div>
                             <div className="relative flex justify-center text-xs">
-                                <span className="bg-white dark:bg-stone-900 px-2 text-stone-500">Or continue with</span>
+                                <span className="bg-chassis px-4 text-text-muted font-mono font-bold uppercase tracking-widest">Or continue with</span>
                             </div>
                         </div>
 
                         <button
                             type="button"
                             onClick={handleGoogleSignIn}
-                            className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 transition-colors"
+                            className="flex w-full items-center justify-center gap-3 bg-chassis text-text-primary py-3.5 text-xs font-bold uppercase tracking-wider rounded-lg shadow-[4px_4px_8px_#a8b4c4,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#a8b4c4,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] active:translate-y-0.5 transition-all duration-200"
                         >
                             <svg className="h-4 w-4" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -143,9 +144,9 @@ const Login = () => {
                         </button>
                     </form>
 
-                    <p className="text-center text-sm text-stone-500 dark:text-stone-400 mt-6">
+                    <p className="text-center text-sm text-text-muted mt-8">
                         Don't have an account?{' '}
-                        <Link to="/register" className="font-medium text-primary hover:underline">
+                        <Link to="/register" className="font-bold text-accent-primary hover:underline">
                             Sign up
                         </Link>
                     </p>

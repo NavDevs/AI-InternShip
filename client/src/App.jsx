@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // Pages
 import Home from './pages/Home';
@@ -15,24 +15,23 @@ import Profile from './pages/Profile';
 import CareerBot from './pages/CareerBot';
 import JobDetail from './pages/JobDetail';
 import Navbar from './components/Navbar';
-import { ThemeProvider } from './context/ThemeContext';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return (
     <div className="flex h-screen items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      <div className="h-8 w-8 animate-spin border-2 border-black border-t-transparent"></div>
     </div>
   );
   return user ? children : <Navigate to="/login" />;
 };
 
-// Simple page wrapper with animation
+// Simple page wrapper with minimal animation
 const PageWrapper = ({ children }) => (
   <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.2 }}
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.15 }}
   >
     {children}
   </motion.div>
@@ -41,28 +40,41 @@ const PageWrapper = ({ children }) => (
 function App() {
   return (
     <AuthProvider>
-      <ThemeProvider>
-        <Router>
-          <div className="min-h-screen bg-[#f8f7f4] dark:bg-[#1a1a2e] transition-colors duration-200">
-            <Navbar />
-            <div className="container mx-auto px-4 py-8">
-              <Routes>
-                <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-                <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-                <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
-                <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
-                <Route path="/jobs" element={<PrivateRoute><PageWrapper><JobListings /></PageWrapper></PrivateRoute>} />
-                <Route path="/job/:id" element={<PrivateRoute><PageWrapper><JobDetail /></PageWrapper></PrivateRoute>} />
-                <Route path="/tracker" element={<PrivateRoute><PageWrapper><ApplicationTracker /></PageWrapper></PrivateRoute>} />
-                <Route path="/analyzer" element={<PrivateRoute><PageWrapper><AIAnalyzer /></PageWrapper></PrivateRoute>} />
-                <Route path="/bot" element={<PrivateRoute><PageWrapper><CareerBot /></PageWrapper></PrivateRoute>} />
-                <Route path="/profile" element={<PrivateRoute><PageWrapper><Profile /></PageWrapper></PrivateRoute>} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </div>
+      <Router>
+        <div className="min-h-screen text-text-primary bg-chassis texture-noise font-sans">
+          {/* Ambient Background layer */}
+          <div className="ambient-bg">
+            <div className="ambient-blob ambient-blob-1"></div>
+            <div className="ambient-blob ambient-blob-2"></div>
+            <div className="ambient-blob ambient-blob-3"></div>
           </div>
-        </Router>
-      </ThemeProvider>
+
+          {/* Skip Navigation Link for Accessibility */}
+          <a 
+            href="#main-content" 
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-600 text-white px-4 py-2 rounded-lg z-[100] font-bold text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+          >
+            Skip to main content
+          </a>
+          
+          <Navbar />
+          <main id="main-content" className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl relative z-10">
+            <Routes>
+              <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+              <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+              <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+              <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
+              <Route path="/jobs" element={<PrivateRoute><PageWrapper><JobListings /></PageWrapper></PrivateRoute>} />
+              <Route path="/job/:id" element={<PrivateRoute><PageWrapper><JobDetail /></PageWrapper></PrivateRoute>} />
+              <Route path="/tracker" element={<PrivateRoute><PageWrapper><ApplicationTracker /></PageWrapper></PrivateRoute>} />
+              <Route path="/analyzer" element={<PrivateRoute><PageWrapper><AIAnalyzer /></PageWrapper></PrivateRoute>} />
+              <Route path="/bot" element={<PrivateRoute><PageWrapper><CareerBot /></PageWrapper></PrivateRoute>} />
+              <Route path="/profile" element={<PrivateRoute><PageWrapper><Profile /></PageWrapper></PrivateRoute>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+        </div>
+      </Router>
     </AuthProvider>
   );
 }

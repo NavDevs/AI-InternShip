@@ -164,48 +164,48 @@ const AIAnalyzer = () => {
         <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl mx-auto space-y-8 animate-fade-in pb-16"
+            className="max-w-3xl mx-auto space-y-8 animate-fade-in pb-16 font-outfit"
         >
             <header className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400">
-                    <Sparkles className="h-3 w-3" /> AI Powered
+                <div className="inline-flex items-center gap-1.5 glass-panel rounded-full px-4 py-1.5 text-xs font-medium text-brand-300 border border-brand-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+                    <Sparkles className="h-3.5 w-3.5 text-brand-400" /> AI Powered
                 </div>
-                <h1 className="text-2xl font-semibold text-stone-900 dark:text-stone-100">Smart Match Analyzer</h1>
-                <p className="text-sm text-stone-500 dark:text-stone-400 max-w-lg">
+                <h1 className="text-3xl font-bold text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.1)]">Smart Match Analyzer</h1>
+                <p className="text-sm text-text-secondary max-w-lg">
                     Paste a job description and let our AI determine how well you match the role.
                 </p>
             </header>
 
             {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg p-3 flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
-                    <AlertCircle className="h-4 w-4 shrink-0" />
+                <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center gap-3 text-sm text-red-400">
+                    <AlertCircle className="h-5 w-5 shrink-0" />
                     <span>{error}</span>
-                    <button onClick={() => setError('')} className="ml-auto p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors">
-                        <X className="h-3.5 w-3.5" />
+                    <button onClick={() => setError('')} className="ml-auto p-1.5 hover:bg-red-500/20 rounded transition-colors">
+                        <X className="h-4 w-4" />
                     </button>
                 </div>
             )}
 
             {/* Input */}
-            <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
+            <div className="glass-card rounded-2xl p-6 sm:p-8">
                 <div className="mb-4">
-                    <h3 className="text-sm font-medium text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-stone-400" />
+                    <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-brand-400" />
                         Paste Job Description
                     </h3>
                 </div>
 
                 <textarea
-                    className="w-full h-48 rounded-lg border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 p-4 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary resize-none placeholder:text-stone-400"
+                    className="w-full h-48 rounded-xl glass-input p-5 text-sm focus:outline-none resize-none placeholder:text-text-muted"
                     placeholder="Paste any job description or internship posting here…"
                     value={jdText}
                     onChange={(e) => setJdText(e.target.value)}
                 />
-                <div className="mt-4 flex justify-end">
+                <div className="mt-6 flex justify-end">
                     <button
                         onClick={handleAnalyze}
                         disabled={isLoading || !jdText.trim()}
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-500 shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-300 disabled:opacity-50 border border-brand-500"
                     >
                         {isLoading ? (
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -225,25 +225,27 @@ const AIAnalyzer = () => {
                         className="space-y-6"
                     >
                         {/* Score */}
-                        <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-8 text-center">
-                            <p className="text-xs font-medium text-stone-500 uppercase tracking-wide mb-4">Overall Match Score</p>
+                        <div className="glass-panel rounded-2xl p-8 text-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-brand-900/20 to-transparent pointer-events-none"></div>
+                            <p className="text-xs font-semibold text-text-secondary uppercase tracking-widest mb-6 relative z-10">Overall Match Score</p>
                             <div className="relative h-32 w-32 mx-auto flex items-center justify-center">
                                 <svg className="h-full w-full transform -rotate-90">
-                                    <circle cx="64" cy="64" r="56" className="stroke-stone-100 dark:stroke-stone-800 fill-none" strokeWidth="8" />
+                                    <circle cx="64" cy="64" r="56" className="stroke-white/10 fill-none" strokeWidth="8" />
                                     <circle
                                         cx="64"
                                         cy="64"
                                         r="56"
-                                        className="stroke-primary fill-none transition-all duration-1000"
+                                        className="stroke-brand-500 fill-none transition-all duration-1000"
                                         strokeWidth="8"
                                         strokeDasharray={352}
                                         strokeDashoffset={352 - (352 * result.matchPercentage) / 100}
                                         strokeLinecap="round"
+                                        style={{ filter: 'drop-shadow(0 0 8px rgba(99,102,241,0.6))' }}
                                     />
                                 </svg>
-                                <span className="absolute text-3xl font-semibold text-stone-900 dark:text-stone-100">{result.matchPercentage}%</span>
+                                <span className="absolute text-3xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">{result.matchPercentage}%</span>
                             </div>
-                            <p className="mt-4 text-sm text-stone-600 dark:text-stone-400">
+                            <p className="mt-6 text-sm font-medium text-brand-100 relative z-10">
                                 {result.matchPercentage > 70 ? "Excellent match — go for it!" :
                                     result.matchPercentage > 40 ? "Good match — just bridge a few skill gaps." :
                                         "You'll need more skills to be competitive."}
@@ -252,65 +254,66 @@ const AIAnalyzer = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {/* Role Details */}
-                            <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
-                                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-4 flex items-center gap-2">
-                                    <Target className="h-4 w-4 text-indigo-600" /> Role Details
+                            <div className="glass-panel rounded-2xl p-6">
+                                <h3 className="text-sm font-semibold text-white mb-5 flex items-center gap-2">
+                                    <Target className="h-4 w-4 text-brand-400" /> Role Details
                                 </h3>
-                                <div className="space-y-3">
+                                <div className="space-y-4">
                                     {[
                                         { label: 'Role', value: result.title },
                                         { label: 'Company', value: result.company },
                                         { label: 'Location', value: result.location },
                                         { label: 'Analyzed', value: new Date().toLocaleDateString() },
                                     ].map((item, i) => (
-                                        <div key={i} className="flex flex-col border-b border-stone-100 dark:border-stone-800 pb-2.5 last:border-0 last:pb-0">
-                                            <span className="text-xs text-stone-400">{item.label}</span>
-                                            <span className="text-sm font-medium text-stone-800 dark:text-stone-200 capitalize">{item.value || 'N/A'}</span>
+                                        <div key={i} className="flex flex-col border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                                            <span className="text-[10px] uppercase tracking-wider text-text-muted mb-1">{item.label}</span>
+                                            <span className="text-sm font-medium text-brand-50 capitalize">{item.value || 'N/A'}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Skills Gap */}
-                            <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
-                                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-4 flex items-center gap-2">
-                                    <Zap className="h-4 w-4 text-amber-600" /> Skill Gaps
+                            <div className="glass-panel rounded-2xl p-6">
+                                <h3 className="text-sm font-semibold text-white mb-5 flex items-center gap-2">
+                                    <Zap className="h-4 w-4 text-orange-400" /> Skill Gaps
                                 </h3>
-                                <div className="space-y-5">
+                                <div className="space-y-6">
                                     <div>
-                                        <p className="text-xs text-stone-500 mb-2 flex items-center gap-1.5">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Matched Skills
+                                        <p className="text-[10px] uppercase tracking-wider text-text-muted mb-3 flex items-center gap-2">
+                                            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" /> Matched Skills
                                         </p>
-                                        <div className="flex flex-wrap gap-1.5">
+                                        <div className="flex flex-wrap gap-2">
                                             {result.matchedSkills.length > 0 ? result.matchedSkills.map((s, i) => (
-                                                <span key={i} className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-md text-xs capitalize">
+                                                <span key={i} className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg text-xs font-medium capitalize shadow-[0_0_10px_rgba(16,185,129,0.1)]">
                                                     {s}
                                                 </span>
-                                            )) : <span className="text-xs text-stone-400 italic">No matches found.</span>}
+                                            )) : <span className="text-xs text-text-muted italic">No matches found.</span>}
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-stone-500 mb-2 flex items-center gap-1.5">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500" /> Missing Skills
+                                        <p className="text-[10px] uppercase tracking-wider text-text-muted mb-3 flex items-center gap-2">
+                                            <span className="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" /> Missing Skills
                                         </p>
-                                        <div className="flex flex-wrap gap-1.5">
+                                        <div className="flex flex-wrap gap-2">
                                             {result.missingSkills.length > 0 ? result.missingSkills.map((s, i) => (
-                                                <span key={i} className="px-2.5 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-md text-xs capitalize">
+                                                <span key={i} className="px-3 py-1 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-xs font-medium capitalize shadow-[0_0_10px_rgba(239,68,68,0.1)]">
                                                     {s}
                                                 </span>
-                                            )) : <span className="text-xs text-emerald-600">You have all core skills.</span>}
+                                            )) : <span className="text-xs text-emerald-400 font-medium">You have all core skills.</span>}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex justify-center pt-2">
+                        <div className="flex justify-center pt-4">
                             <button
                                 onClick={handleDownloadReport}
-                                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
+                                className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-all duration-300 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:-translate-y-0.5"
                             >
-                                Download Report
+                                <FileText className="h-4 w-4 text-brand-400" />
+                                Download PDF Report
                             </button>
                         </div>
                     </motion.div>

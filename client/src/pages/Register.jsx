@@ -56,22 +56,23 @@ const Register = () => {
     return (
         <div className="flex min-h-[80vh] items-center justify-center py-12 px-4">
             <motion.div
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="w-full max-w-lg bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl shadow-sm overflow-hidden"
+                transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 25 }}
+                className="w-full max-w-lg bg-chassis rounded-2xl overflow-hidden shadow-[12px_12px_24px_#a8b4c4,-12px_-12px_24px_#ffffff]"
             >
-                {/* Colored top accent */}
-                <div className="h-1.5 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
+                {/* Safety orange LED strip */}
+                <div className="h-1.5 bg-accent-primary shadow-[0_0_10px_2px_rgba(255,71,87,0.6)]" />
+                
                 <div className="p-8">
                     <div className="text-center mb-8">
-                        <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-4">
-                            <svg className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                        <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-chassis shadow-[6px_6px_12px_#a8b4c4,-6px_-6px_12px_#ffffff,inset_1px_1px_0_#ffffff] mb-4">
+                            <svg className="h-7 w-7 text-accent-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                         </div>
-                        <h2 className="text-2xl font-semibold text-stone-900 dark:text-stone-100">
+                        <h2 className="text-3xl font-bold tracking-tight text-text-primary drop-shadow-[0_1px_1px_#ffffff]">
                             Create your account
                         </h2>
-                        <p className="mt-1.5 text-sm text-stone-500 dark:text-stone-400">
+                        <p className="mt-2 text-text-muted">
                             Join thousands of students tracking their success
                         </p>
                     </div>
@@ -79,13 +80,13 @@ const Register = () => {
                     <form className="space-y-4" onSubmit={handleSubmit}>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div>
-                                <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Full Name</label>
+                                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">Full Name</label>
                                 <div className="relative">
-                                    <User className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+                                    <User className="absolute left-4 top-3.5 h-4 w-4 text-text-muted" />
                                     <input
                                         type="text"
                                         required
-                                        className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 pl-10 pr-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                        className="w-full bg-recessed rounded-lg py-3 pl-11 pr-4 text-text-primary placeholder:text-text-muted focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono text-sm"
                                         placeholder="Your name"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -93,13 +94,13 @@ const Register = () => {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Email</label>
+                                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">Email</label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+                                    <Mail className="absolute left-4 top-3.5 h-4 w-4 text-text-muted" />
                                     <input
                                         type="email"
                                         required
-                                        className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 pl-10 pr-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                        className="w-full bg-recessed rounded-lg py-3 pl-11 pr-4 text-text-primary placeholder:text-text-muted focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono text-sm"
                                         placeholder="you@example.com"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -109,13 +110,13 @@ const Register = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Password</label>
+                            <label className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">Password</label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+                                <Lock className="absolute left-4 top-3.5 h-4 w-4 text-text-muted" />
                                 <input
                                     type="password"
                                     required
-                                    className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 pl-10 pr-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                    className="w-full bg-recessed rounded-lg py-3 pl-11 pr-4 text-text-primary placeholder:text-text-muted focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono text-sm"
                                     placeholder="Create a password"
                                     value={formData.password}
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -124,12 +125,12 @@ const Register = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">Skills</label>
+                            <label className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">Skills</label>
                             <div className="relative">
-                                <Briefcase className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+                                <Briefcase className="absolute left-4 top-3.5 h-4 w-4 text-text-muted" />
                                 <input
                                     type="text"
-                                    className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 pl-10 pr-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                    className="w-full bg-recessed rounded-lg py-3 pl-11 pr-4 text-text-primary placeholder:text-text-muted focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono text-sm"
                                     placeholder="React, Node, SQL (comma separated)"
                                     value={formData.skills}
                                     onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
@@ -139,9 +140,9 @@ const Register = () => {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">I am a</label>
+                                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">I am a</label>
                                 <select
-                                    className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 px-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                    className="w-full bg-recessed rounded-lg py-3 px-4 text-text-primary focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono text-sm"
                                     value={formData.role}
                                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                 >
@@ -150,10 +151,10 @@ const Register = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1.5">State</label>
+                                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-text-muted mb-2">State</label>
                                 <select
                                     required
-                                    className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 px-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                                    className="w-full bg-recessed rounded-lg py-3 px-4 text-text-primary focus:outline-none focus:shadow-[inset_6px_6px_12px_#a8b4c4,inset_-6px_-6px_12px_#ffffff] shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] transition-all duration-200 font-mono text-sm"
                                     value={formData.state}
                                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                                 >
@@ -165,12 +166,12 @@ const Register = () => {
                             </div>
                         </div>
 
-                        {error && <p className="text-center text-sm text-red-600 dark:text-red-400">{error}</p>}
+                        {error && <p className="text-center text-sm font-mono text-accent-primary">{error}</p>}
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-medium text-white hover:bg-primary-hover transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 bg-accent-primary text-white py-3.5 text-xs font-bold uppercase tracking-wider rounded-lg shadow-[4px_4px_8px_#a8b4c4,-4px_-4px_8px_#ffffff] hover:shadow-[6px_6px_12px_#a8b4c4,-6px_-6px_12px_#ffffff] active:shadow-[inset_4px_4px_8px_#a8b4c4,inset_-4px_-4px_8px_#ffffff] active:translate-y-0.5 transition-all duration-200 disabled:opacity-50"
                         >
                             {isLoading ? 'Creating account…' : (
                                 <>
@@ -180,9 +181,9 @@ const Register = () => {
                         </button>
                     </form>
 
-                    <p className="text-center text-sm text-stone-500 dark:text-stone-400 mt-6">
+                    <p className="text-center text-sm text-text-muted mt-6">
                         Already have an account?{' '}
-                        <Link to="/login" className="font-medium text-primary hover:underline">
+                        <Link to="/login" className="font-bold text-accent-primary hover:underline">
                             Sign in
                         </Link>
                     </p>

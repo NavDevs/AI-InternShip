@@ -1,20 +1,11 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
-const ThemeContext = createContext();
+// Theme context removed - app is now light-mode only (Minimalist Monochrome)
+const ThemeContext = createContext({ isDarkMode: false, toggleTheme: () => {} });
 
 export const ThemeProvider = ({ children }) => {
-    // Always dark mode - no toggle
-    useEffect(() => {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-    }, []);
-
-    // Keep isDarkMode for any components that check it
-    const isDarkMode = true;
-    const toggleTheme = () => { }; // No-op
-
     return (
-        <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+        <ThemeContext.Provider value={{ isDarkMode: false, toggleTheme: () => {} }}>
             {children}
         </ThemeContext.Provider>
     );

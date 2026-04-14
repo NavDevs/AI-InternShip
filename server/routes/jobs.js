@@ -25,7 +25,7 @@ const { INDIAN_STATES } = require('../utils/constants');
 // Get All Active Jobs (with location-based filtering and caching)
 router.get('/', async (req, res) => {
     try {
-        const { role, company, skills, state } = req.query;
+        const { role, company, skills, state, keyword, type } = req.query;
 
         // Validation for state
         if (state && !INDIAN_STATES.includes(state)) {
@@ -40,16 +40,49 @@ router.get('/', async (req, res) => {
 
         let query = { status: 'active' };
 
-        if (role) query.title = { $regex: role, $options: 'i' };
-        if (company) query.company = { $regex: company, $options: 'i' };
+        // Support keyword search across multiple fields
+        if (keyword) {
+            query.$or = [
+                { title: { $regex: keyword, $options: 'i' } },
+                { company: { $regex: keyword, $options: 'i' } },
+                { description: { $regex: keyword, $options: 'i' } }
+            ];
+        }
+
+        if (role) {
+            if (query.$or) {
+                query.$or.push({ title: { $regex: role, $options: 'i' } });
+            } else {
+                query.title = { $regex: role, $options: 'i' };
+            }
+        }
+        
+        if (company) {
+            if (query.$or) {
+                query.$or.push({ company: { $regex: company, $options: 'i' } });
+            } else {
+                query.company = { $regex: company, $options: 'i' };
+            }
+        }
+        
         if (skills) query.requiredSkills = { $in: skills.split(',') };
 
+        // Filter by job type (internship vs full-time)
+        if (type) {
+            query.type = type;
+        }
+
         if (state) {
-            query.$or = [
-                { location: { $regex: 'Remote', $options: 'i' } },
-                { location: { $regex: 'Hybrid', $options: 'i' } },
-                { location: { $regex: state, $options: 'i' } }
-            ];
+            const locationFilter = {
+                $or: [
+                    { location: { $regex: 'Remote', $options: 'i' } },
+                    { location: { $regex: 'Hybrid', $options: 'i' } },
+                    { location: { $regex: state, $options: 'i' } }
+                ]
+            };
+            
+            // Combine with existing query
+            query = { $and: [query, locationFilter] };
         }
 
         const jobs = await Job.find(query).sort({ createdAt: -1 });
