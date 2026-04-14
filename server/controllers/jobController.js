@@ -19,7 +19,7 @@ const getLiveJobs = async (req, res) => {
 
         // Fallback to mock data if API key is missing
         if (!rapidApiKey || rapidApiKey === 'your_key_here') {
-            return res.json([
+            const mockJobs = [
                 {
                     id: 'mock_v2_1',
                     title: 'Python Full Stack Using AI',
@@ -50,7 +50,19 @@ const getLiveJobs = async (req, res) => {
                     source: 'live',
                     logo: 'https://logo.clearbit.com/kodnest.com'
                 }
-            ]);
+            ];
+            
+            // Filter mock data based on search keyword
+            const filteredJobs = mockJobs.filter(job => {
+                const searchLower = keyword.toLowerCase();
+                return (
+                    job.title.toLowerCase().includes(searchLower) ||
+                    job.company.toLowerCase().includes(searchLower) ||
+                    job.description.toLowerCase().includes(searchLower)
+                );
+            });
+            
+            return res.json(filteredJobs);
         }
 
         const options = {

@@ -51,30 +51,30 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className="sticky top-0 z-50 w-full bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm border-b border-stone-200 dark:border-stone-800">
-                <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <nav className="sticky top-0 z-50 w-full glass-panel">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
-                                <img src="/logo.png" alt="Intern-AI Logo" className="h-full w-full object-cover" />
+                            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-brand-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                                <img src="/logo.png" alt="Intern-AI Logo" className="h-full w-full object-cover filter brightness-200 invert-[1]" />
                             </div>
-                            <span className="text-lg font-semibold text-stone-900 dark:text-stone-100">
+                            <span className="text-xl font-bold font-outfit text-white tracking-wide">
                                 Intern-AI
                             </span>
                         </Link>
 
                         {/* Desktop Navigation */}
-                        <div className="hidden md:flex items-center gap-1">
+                        <div className="hidden md:flex items-center gap-2">
                             {navLinks.map((link) => (
                                 <Link
                                     key={link.path}
                                     to={link.path}
-                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive(link.path)
-                                        ? 'bg-[#e8eff8] dark:bg-blue-950/50 text-primary dark:text-blue-300 font-semibold'
-                                        : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-stone-200 dark:hover:bg-stone-800'
+                                    className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(link.path)
+                                        ? 'bg-white/10 text-brand-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                                        : 'text-text-secondary hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    <link.icon className="h-4 w-4" />
+                                    <link.icon className={`h-4 w-4 ${isActive(link.path) ? 'text-brand-400' : 'text-text-muted'}`} />
                                     <span>{link.label}</span>
                                 </Link>
                             ))}
@@ -85,9 +85,9 @@ const Navbar = () => {
                                 <div className="hidden md:flex items-center gap-3">
                                     <Link
                                         to="/profile"
-                                        className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 transition-colors hover:bg-stone-100 dark:hover:bg-stone-800"
+                                        className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-all duration-200 hover:bg-white/5 border border-transparent hover:border-white/10"
                                     >
-                                        <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-primary text-xs font-semibold text-white">
+                                        <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-slate-800 border border-slate-700 text-xs font-bold text-brand-400">
                                             {user.photoURL ? (
                                                 <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
                                             ) : (
@@ -95,28 +95,28 @@ const Navbar = () => {
                                             )}
                                         </div>
                                         <div className="hidden xl:flex flex-col items-start">
-                                            <span className="text-sm font-medium text-stone-800 dark:text-stone-200 leading-tight">
+                                            <span className="text-sm font-medium text-white leading-tight">
                                                 {user.name?.split(' ')[0] || 'User'}
                                             </span>
-                                            <span className="text-xs text-stone-500 dark:text-stone-500">
+                                            <span className="text-[10px] uppercase text-text-muted tracking-wider">
                                                 {user.role || 'Student'}
                                             </span>
                                         </div>
                                     </Link>
                                     <button
                                         onClick={handleLogout}
-                                        className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
+                                        className="flex h-9 w-9 items-center justify-center rounded-lg text-text-muted transition-all duration-200 hover:bg-red-500/10 hover:text-red-400"
                                         title="Logout"
                                     >
                                         <LogOut className="h-4 w-4" />
                                     </button>
                                 </div>
                             ) : (
-                                <div className="hidden md:flex items-center gap-2">
-                                    <Link to="/login" className="text-sm font-medium text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200 px-3 py-2 rounded-lg transition-colors">
+                                <div className="hidden md:flex items-center gap-3">
+                                    <Link to="/login" className="text-sm font-medium text-text-secondary hover:text-white px-3 py-2 transition-colors">
                                         Log in
                                     </Link>
-                                    <Link to="/register" className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover">
+                                    <Link to="/register" className="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2 text-sm font-semibold rounded-lg shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-200 border border-brand-500 hover:-translate-y-0.5">
                                         Get Started
                                     </Link>
                                 </div>
@@ -125,7 +125,7 @@ const Navbar = () => {
                             {/* Mobile Hamburger */}
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg text-stone-600 dark:text-stone-400 transition-colors hover:bg-stone-100 dark:hover:bg-stone-800"
+                                className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg text-text-secondary transition-all duration-200 hover:bg-white/10"
                                 aria-label="Toggle menu"
                             >
                                 {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -143,31 +143,31 @@ const Navbar = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.15 }}
+                            transition={{ duration: 0.2 }}
                             onClick={closeMenu}
-                            className="fixed inset-0 z-[60] bg-black/40 md:hidden"
+                            className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm md:hidden"
                         />
 
                         <motion.div
                             initial={{ x: '-100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
-                            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                            className="fixed top-0 left-0 z-[70] h-full w-72 bg-white dark:bg-stone-900 border-r border-stone-200 dark:border-stone-800 md:hidden overflow-y-auto"
+                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                            className="fixed top-0 left-0 z-[70] h-full w-72 glass-panel border-r border-white/10 md:hidden overflow-y-auto"
                         >
                             {/* Sidebar Header */}
-                            <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-800">
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
                                 <Link to="/" onClick={closeMenu} className="flex items-center gap-2.5">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
-                                        <img src="/logo.png" alt="Intern-AI Logo" className="h-full w-full object-cover" />
+                                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-brand-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                                        <img src="/logo.png" alt="Intern-AI Logo" className="h-full w-full object-cover filter brightness-200 invert-[1]" />
                                     </div>
-                                    <span className="text-lg font-semibold text-stone-900 dark:text-stone-100">
+                                    <span className="text-xl font-bold font-outfit text-white tracking-wide">
                                         Intern-AI
                                     </span>
                                 </Link>
                                 <button
                                     onClick={closeMenu}
-                                    className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-500 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+                                    className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted hover:bg-white/10 hover:text-white transition-all duration-200"
                                 >
                                     <X className="h-5 w-5" />
                                 </button>
@@ -175,13 +175,13 @@ const Navbar = () => {
 
                             {/* User Profile (if logged in) */}
                             {user && (
-                                <div className="px-5 py-4 border-b border-stone-200 dark:border-stone-800">
+                                <div className="px-5 py-4 border-b border-white/5">
                                     <Link
                                         to="/profile"
                                         onClick={closeMenu}
-                                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all duration-200 border border-transparent hover:border-white/10"
                                     >
-                                        <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-primary text-sm font-medium text-white">
+                                        <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-slate-800 border border-slate-700 text-sm font-bold text-brand-400">
                                             {user.photoURL ? (
                                                 <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
                                             ) : (
@@ -189,10 +189,10 @@ const Navbar = () => {
                                             )}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-stone-800 dark:text-stone-200">
+                                            <span className="text-sm font-medium text-white">
                                                 {user.name || 'User'}
                                             </span>
-                                            <span className="text-xs text-stone-500">
+                                            <span className="text-[10px] uppercase text-text-muted tracking-wider">
                                                 {user.role || 'Student'}
                                             </span>
                                         </div>
@@ -201,19 +201,19 @@ const Navbar = () => {
                             )}
 
                             {/* Navigation Links */}
-                            <nav className="px-3 py-4">
-                                <div className="space-y-0.5">
+                            <nav className="px-3 py-4 flex-1">
+                                <div className="space-y-1.5">
                                     {navLinks.map((link) => (
                                         <Link
                                             key={link.path}
                                             to={link.path}
                                             onClick={closeMenu}
-                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-l-2 ${isActive(link.path)
-                                                ? 'border-primary bg-[#e8eff8] dark:bg-blue-950/50 text-primary font-semibold'
-                                                : 'border-transparent text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'
+                                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(link.path)
+                                                ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
+                                                : 'text-text-secondary hover:text-white hover:bg-white/5 border border-transparent'
                                                 }`}
                                         >
-                                            <link.icon className="h-5 w-5" />
+                                            <link.icon className={`h-5 w-5 ${isActive(link.path) ? 'text-brand-400' : 'text-text-muted'}`} />
                                             <span>{link.label}</span>
                                         </Link>
                                     ))}
@@ -221,28 +221,28 @@ const Navbar = () => {
                             </nav>
 
                             {/* Bottom Actions */}
-                            <div className="absolute bottom-0 left-0 right-0 px-5 py-4 border-t border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900">
+                            <div className="absolute bottom-0 left-0 right-0 px-5 py-4 border-t border-white/10 bg-slate-900/50 backdrop-blur-md">
                                 {user ? (
                                     <button
                                         onClick={handleLogout}
-                                        className="flex w-full items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                                        className="flex w-full items-center justify-center gap-2 px-4 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-semibold rounded-lg transition-all duration-200 border border-red-500/20 hover:border-red-500/30"
                                     >
                                         <LogOut className="h-4 w-4" />
                                         <span>Log out</span>
                                     </button>
                                 ) : (
-                                    <div className="space-y-2">
+                                    <div className="space-y-2.5">
                                         <Link
                                             to="/login"
                                             onClick={closeMenu}
-                                            className="flex w-full items-center justify-center px-4 py-2.5 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-sm font-medium hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+                                            className="flex w-full items-center justify-center px-4 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-lg transition-all duration-200 border border-white/10"
                                         >
                                             Log in
                                         </Link>
                                         <Link
                                             to="/register"
                                             onClick={closeMenu}
-                                            className="flex w-full items-center justify-center px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors"
+                                            className="flex w-full items-center justify-center px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-200 border border-brand-500"
                                         >
                                             Get Started
                                         </Link>

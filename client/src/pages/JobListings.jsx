@@ -20,7 +20,7 @@ import {
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../firebase';
-import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, setDoc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { INDIAN_STATES } from '../constants/states';
 import { useNavigate } from 'react-router-dom';
@@ -81,12 +81,27 @@ const JobListings = () => {
         setSavingState(true);
         try {
             const userRef = doc(db, 'users', user.uid);
-            await updateDoc(userRef, {
-                'profile.state': newState
-            });
+            const userSnap = await getDoc(userRef);
+            
+            if (userSnap.exists()) {
+                // Update existing document
+                await updateDoc(userRef, {
+                    'profile.state': newState
+                });
+            } else {
+                // Create new document with setDoc
+                await setDoc(userRef, {
+                    profile: {
+                        state: newState
+                    },
+                    email: user.email,
+                    createdAt: new Date().toISOString()
+                });
+            }
             setLocation(newState);
         } catch (err) {
             console.error('Update state failed:', err);
+            alert('Failed to save your state preference. Please try again.');
         } finally {
             setSavingState(false);
         }
@@ -106,17 +121,21 @@ const JobListings = () => {
             const res = await axios.get(`${API_BASE_URL}/jobs/live`, {
                 params: {
                     keyword: searchKeyword,
-                    location: searchLocation
+                    location: searchLocation,
+                    type: type || undefined
                 }
             });
             setJobs(res.data);
         } catch (err) {
             console.error('Fetch error:', err);
             setError('Failed to fetch live opportunities. Using local listings.');
+            setIsLive(false);
             const res = await axios.get(`${API_BASE_URL}/jobs`, {
                 params: {
+                    keyword: search || undefined,
+                    role: role || undefined,
                     type: type || undefined,
-                    state: user?.profile?.state || undefined
+                    state: location || user?.profile?.state || undefined
                 }
             });
             setJobs(res.data);
@@ -125,15 +144,8 @@ const JobListings = () => {
         }
     };
 
-    const filteredJobs = jobs.filter(job => {
-        const currentFilterState = location || user?.profile?.state;
-        if (!currentFilterState) return true;
-
-        const filterState = currentFilterState.toLowerCase();
-        const jobLoc = job.location?.toLowerCase() || '';
-
-        return jobLoc.includes(filterState) || jobLoc.includes('remote');
-    });
+    // All filtering is now done on the backend, so we just display the results
+    const filteredJobs = jobs;
 
     const handleApply = async (job) => {
         if (!user) return;
@@ -192,7 +204,7 @@ const JobListings = () => {
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
                         <input
                             type="text"
-                            placeholder="Skill or company"
+                            placeholder="Search skills, companies, or keywords"
                             className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 py-2.5 pl-10 pr-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-stone-400"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
