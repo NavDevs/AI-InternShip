@@ -70,16 +70,17 @@ router.post('/analyze', auth, async (req, res) => {
             user = await User.findOne({ uid: req.user.id });
         }
 
-        let userSkills = req.body.userSkills || ['React', 'JavaScript', 'Node.js', 'Web Technologies'];
-        if (!req.body.userSkills && user && Array.isArray(user.skills) && user.skills.length > 0) {
-            userSkills = user.skills;
-        }
+        const userContext = req.body.userContext || user || {};
+        let userSkills = userContext.skills || user?.skills || ['React', 'JavaScript', 'Node.js', 'Web Technologies'];
 
         const userProfile = {
-            name: req.body.userName || user?.name || 'Guest User',
+            name: userContext.name || 'Guest User',
+            role: userContext.role || 'Student',
+            location: userContext.profile?.state || 'Not specified',
+            education: userContext.education ? `${userContext.education.degree || ''} at ${userContext.education.college || ''}` : 'Not specified',
             skills: userSkills,
-            experience: user?.experience || [],
-            projects: user?.projects || []
+            experience: userContext.experience || [],
+            projects: userContext.projects || []
         };
 
         const systemPrompt = `You are an expert career advisor. Analyze job descriptions and compare them against candidate profiles. Always respond with valid JSON only.`;
@@ -137,19 +138,35 @@ router.post('/eligibility', auth, async (req, res) => {
             return res.status(400).json({ message: 'Job details are required' });
         }
 
-        const systemPrompt = `You are a career advisor AI that analyzes job requirements and candidate qualifications.
-You must respond ONLY with valid JSON, no other text.`;
+        let user = null;
+        if (mongoose.Types.ObjectId.isValid(req.user.id)) {
+            user = await User.findById(req.user.id);
+        }
+        if (!user && req.user.id) {
+            user = await User.findOne({ uid: req.user.id });
+        }
 
-        const userPrompt = `Analyze if this candidate is eligible for the job position.
+        const userContext = req.body.userContext || user || {};
+        const userSkills = userContext.skills || user?.skills || bodySkills || [];
+        const userProfileStr = `Name: ${userContext.name || 'Not specified'}
+Role: ${userContext.role || 'Not specified'}
+Location: ${userContext.profile?.state || 'Not specified'}
+Education: ${userContext.education ? `${userContext.education.degree || ''} at ${userContext.education.college || ''}` : 'Not specified'}
+Skills: ${userSkills.length > 0 ? userSkills.join(', ') : 'No skills listed'}`;
+
+        const systemPrompt = `You are an expert career advisor. Analyze candidate eligibility for job roles based on their full profile context. Always respond with valid JSON only.`;
+
+        const userPrompt = `
+Analyze the candidate's eligibility for this job role.
 
 JOB DETAILS:
 - Title: ${job.title}
-- Company: ${job.company || 'Not specified'}
+- Company: ${job.company}
 - Description: ${job.description || 'Not provided'}
 - Location: ${job.location || 'Not specified'}
 
-CANDIDATE'S CURRENT SKILLS:
-${bodySkills && bodySkills.length > 0 ? bodySkills.join(', ') : 'No skills listed'}
+CANDIDATE PROFILE:
+${userProfileStr}
 
 Respond with this exact JSON structure:
 {
@@ -279,22 +296,25 @@ router.post('/roadmap', auth, async (req, res) => {
             user = await User.findOne({ uid: req.user.id });
         }
 
-        let userSkills = req.body.userSkills;
-        if (!userSkills || userSkills.length === 0) {
-            if (user && Array.isArray(user.skills) && user.skills.length > 0) {
-                userSkills = user.skills;
-            } else if (user && typeof user.skills === 'string' && user.skills.trim()) {
-                userSkills = user.skills.split(',').map(s => s.trim());
-            } else {
-                userSkills = ['Software Development', 'Problem Solving', 'Communication'];
-            }
+        const userContext = req.body.userContext || user || {};
+        let userSkills = req.body.userSkills || userContext.skills || user?.skills || [];
+        if (typeof userSkills === 'string' && userSkills.trim()) {
+            userSkills = userSkills.split(',').map(s => s.trim());
+        } else if (!Array.isArray(userSkills) || userSkills.length === 0) {
+            userSkills = ['Software Development', 'Problem Solving', 'Communication'];
         }
 
-        const systemPrompt = `You are an expert career coach. Create detailed, actionable career roadmaps. Always respond with valid JSON only.`;
+        const userProfileStr = `Name: ${userContext.name || 'Not specified'}
+Role: ${userContext.role || 'Not specified'}
+Location: ${userContext.profile?.state || 'Not specified'}
+Education: ${userContext.education ? `${userContext.education.degree || ''} at ${userContext.education.college || ''}` : 'Not specified'}
+Skills: ${userSkills.length > 0 ? userSkills.join(', ') : 'No skills listed'}`;
+
+        const systemPrompt = `You are an expert career coach and learning path architect. Your task is to generate a comprehensive, highly personalized 6-month roadmap for a candidate who wants to become a ${dreamJob}.`;
 
         const userPrompt = `
-Create a detailed 6-month career roadmap for a student to become a ${dreamJob}.
-Current User Skills: ${userSkills.join(', ')}
+CANDIDATE CONTEXT:
+${userProfileStr}
 
 Respond with this exact JSON structure:
 {
@@ -401,18 +421,24 @@ router.post('/interview-questions', auth, async (req, res) => {
 // General AI Chat for Career Guidance
 router.post('/chat', auth, async (req, res) => {
     try {
-        const { message, chatHistory, userSkills, userName } = req.body;
+        const { message, chatHistory, userContext } = req.body;
         if (!message) return res.status(400).json({ message: 'Message is required' });
 
         if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
             return res.status(500).json({ message: 'AI Service configuration error. Please set GROQ_API_KEY in .env' });
         }
 
+        const context = userContext || {};
+        const userSkills = context.skills || [];
+
         const systemPrompt = `You are an elite AI Career Coach and Architect. Your goal is to provide helpful, professional, and encouraging career advice.
 
 USER CONTEXT:
-Name: ${userName || 'User'}
-Skills: ${userSkills && userSkills.length > 0 ? userSkills.join(', ') : 'Not provided yet'}
+Name: ${context.name || 'User'}
+Role: ${context.role || 'Not specified'}
+Location: ${context.profile?.state || 'Not specified'}
+Education: ${context.education ? `${context.education.degree || ''} at ${context.education.college || ''}` : 'Not specified'}
+Skills: ${userSkills.length > 0 ? userSkills.join(', ') : 'Not provided yet'}
 
 GUIDELINES:
 - For general conversation (greetings, small talk), be friendly and concise. Address the user by their name if available.
@@ -481,8 +507,12 @@ router.post('/career-advice', auth, async (req, res) => {
                 .lean();
         }
 
-        const userSkills = req.body.userSkills || user?.skills || ['General Skills'];
-        const userName = req.body.userName || user?.name || 'User';
+        const userContext = req.body.userContext || user || {};
+        const userSkills = userContext.skills || user?.skills || ['General Skills'];
+        const userName = userContext.name || user?.name || 'User';
+        const userRole = userContext.role || 'Not specified';
+        const userState = userContext.profile?.state || 'Not specified';
+        const userEdu = userContext.education ? `${userContext.education.degree || ''} at ${userContext.education.college || ''}` : 'Not specified';
 
         // Build application summary for AI
         const applicationSummary = applications.length > 0
@@ -508,17 +538,20 @@ router.post('/career-advice', auth, async (req, res) => {
         const userPrompt = `
 Analyze this user's job search progress and provide strategic career advice.
 
-USER PROFILE:
+Candidate Profile:
 - Name: ${userName}
+- Role: ${userRole}
+- Location: ${userState}
+- Education: ${userEdu}
 - Skills: ${userSkills.join(', ')}
 
+Recent Applications:
 APPLICATION HISTORY (${statusCounts.total} total applications):
 - Applied: ${statusCounts.applied}
 - In Interview: ${statusCounts.interview}
 - Offers: ${statusCounts.offer}
 - Rejected: ${statusCounts.rejected}
 
-RECENT APPLICATIONS:
 ${JSON.stringify(applicationSummary.slice(0, 10), null, 2)}
 
 Respond with this exact JSON structure:

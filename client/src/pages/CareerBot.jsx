@@ -121,22 +121,21 @@ const CareerBot = () => {
                     {
                         message: userInput,
                         chatHistory: messages.map(m => ({ role: m.role === 'bot' ? 'model' : 'user', parts: [{ text: m.content }] })),
-                        userSkills: user?.skills || [],
-                        userName: user?.name
+                        userContext: user
                     },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setMessages(prev => [...prev, { role: 'bot', content: res.data.text }]);
             } else if (effectiveMode === 'analyze') {
                 const res = await axios.post(`${API_BASE_URL}/ai/analyze`,
-                    { jdText: userInput, userSkills: user?.skills || [], userName: user?.name },
+                    { jdText: userInput, userContext: user },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
                 setMessages(prev => [...prev, { role: 'bot', content: `Your match score for this role is ${res.data.matchPercentage}%. I've generated a report for you below.` }]);
             } else if (effectiveMode === 'roadmap') {
                 const res = await axios.post(`${API_BASE_URL}/ai/roadmap`,
-                    { dreamJob: userInput, userSkills: user?.skills || [], userName: user?.name },
+                    { dreamJob: userInput, userContext: user },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
@@ -161,7 +160,7 @@ const CareerBot = () => {
         setLoading(true);
         setMessages(prev => [...prev, { role: 'bot', content: "Analyzing your applications and generating career insights..." }]);
         try {
-            const res = await axios.post(`${API_BASE_URL}/ai/career-advice`, { userSkills: user?.skills || [], userName: user?.name },
+            const res = await axios.post(`${API_BASE_URL}/ai/career-advice`, { userContext: user },
                 { headers: { 'X-User-ID': user?.uid || user?._id } }
             );
             setCareerAdvice(res.data);

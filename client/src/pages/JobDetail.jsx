@@ -68,7 +68,7 @@ const JobDetail = () => {
                         description: job.description?.replace(/<[^>]*>?/gm, ''),
                         location: job.location
                     },
-                    userSkills: user?.skills || []
+                    userContext: user
                 },
                 { headers: { 'X-User-ID': user.uid } }
             );

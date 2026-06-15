@@ -36,8 +36,7 @@ const AIAnalyzer = () => {
             const res = await axios.post(`${API_BASE_URL}/ai/analyze`,
                 { 
                     jdText,
-                    userSkills: user?.skills || [],
-                    userName: user?.name 
+                    userContext: user 
                 },
                 {
                     headers: {
