@@ -21,10 +21,20 @@ import { API_BASE_URL } from '../utils/api';
 
 const AIAnalyzer = () => {
     const { user } = useAuth();
-    const [jdText, setJdText] = useState('');
-    const [result, setResult] = useState(null);
+    const [jdText, setJdText] = useState(() => localStorage.getItem(`analyzer_jdText_${user?.uid}`) || '');
+    const [result, setResult] = useState(() => {
+        const saved = localStorage.getItem(`analyzer_result_${user?.uid}`);
+        return saved ? JSON.parse(saved) : null;
+    });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (!user?.uid) return;
+        localStorage.setItem(`analyzer_jdText_${user.uid}`, jdText);
+        if (result) localStorage.setItem(`analyzer_result_${user.uid}`, JSON.stringify(result));
+        else localStorage.removeItem(`analyzer_result_${user.uid}`);
+    }, [jdText, result, user?.uid]);
 
     const handleAnalyze = async (e) => {
         e.preventDefault();
@@ -192,10 +202,24 @@ const AIAnalyzer = () => {
             {/* Input */}
             <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
                 <div className="mb-4">
-                    <h3 className="text-sm font-medium text-stone-900 dark:text-stone-100 flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-stone-400" />
-                        Paste Job Description
-                    </h3>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold text-stone-800 dark:text-stone-100 flex items-center">
+                                <FileText className="w-5 h-5 mr-2 text-primary" />
+                                Paste Job Description
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setJdText('');
+                                    setResult(null);
+                                    setError('');
+                                }}
+                                className="p-2 text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors"
+                                title="Clear"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
                 </div>
 
                 <textarea
