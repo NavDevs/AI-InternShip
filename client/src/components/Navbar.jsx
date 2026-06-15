@@ -55,10 +55,10 @@ const Navbar = () => {
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
-                            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-brand-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                            <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-bitcoin-orange shadow-[0_0_15px_rgba(247,147,26,0.5)]">
                                 <img src="/logo.png" alt="Intern-AI Logo" className="h-full w-full object-cover filter brightness-200 invert-[1]" />
                             </div>
-                            <span className="text-xl font-bold font-outfit text-white tracking-wide">
+                            <span className="text-xl font-bold font-heading text-white tracking-wide">
                                 Intern-AI
                             </span>
                         </Link>
@@ -69,12 +69,12 @@ const Navbar = () => {
                                 <Link
                                     key={link.path}
                                     to={link.path}
-                                    className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(link.path)
-                                        ? 'bg-white/10 text-brand-400 shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
-                                        : 'text-text-secondary hover:text-white hover:bg-white/5'
+                                    className={`flex items-center gap-1.5 px-4 py-2 text-sm font-mono font-medium transition-all duration-200 rounded-lg ${isActive(link.path)
+                                        ? 'bg-white/10 text-bitcoin-orange shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]'
+                                        : 'text-text-muted hover:text-white hover:bg-white/5'
                                         }`}
                                 >
-                                    <link.icon className={`h-4 w-4 ${isActive(link.path) ? 'text-brand-400' : 'text-text-muted'}`} />
+                                    <link.icon className={`h-4 w-4 ${isActive(link.path) ? 'text-bitcoin-orange' : 'text-text-muted'}`} />
                                     <span>{link.label}</span>
                                 </Link>
                             ))}
@@ -87,7 +87,7 @@ const Navbar = () => {
                                         to="/profile"
                                         className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg transition-all duration-200 hover:bg-white/5 border border-transparent hover:border-white/10"
                                     >
-                                        <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-slate-800 border border-slate-700 text-xs font-bold text-brand-400">
+                                        <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-bg-surface border border-border text-xs font-bold font-mono text-bitcoin-orange">
                                             {user.photoURL ? (
                                                 <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
                                             ) : (
@@ -95,10 +95,10 @@ const Navbar = () => {
                                             )}
                                         </div>
                                         <div className="hidden xl:flex flex-col items-start">
-                                            <span className="text-sm font-medium text-white leading-tight">
+                                            <span className="text-sm font-medium font-body text-white leading-tight">
                                                 {user.name?.split(' ')[0] || 'User'}
                                             </span>
-                                            <span className="text-[10px] uppercase text-text-muted tracking-wider">
+                                            <span className="text-[10px] uppercase font-mono text-text-muted tracking-wider">
                                                 {user.role || 'Student'}
                                             </span>
                                         </div>
@@ -113,10 +113,10 @@ const Navbar = () => {
                                 </div>
                             ) : (
                                 <div className="hidden md:flex items-center gap-3">
-                                    <Link to="/login" className="text-sm font-medium text-text-secondary hover:text-white px-3 py-2 transition-colors">
+                                    <Link to="/login" className="text-sm font-medium font-mono text-text-muted hover:text-white px-3 py-2 transition-colors">
                                         Log in
                                     </Link>
-                                    <Link to="/register" className="bg-brand-600 hover:bg-brand-500 text-white px-5 py-2 text-sm font-semibold rounded-lg shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-200 border border-brand-500 hover:-translate-y-0.5">
+                                    <Link to="/register" className="btn-primary">
                                         Get Started
                                     </Link>
                                 </div>
@@ -125,7 +125,7 @@ const Navbar = () => {
                             {/* Mobile Hamburger */}
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg text-text-secondary transition-all duration-200 hover:bg-white/10"
+                                className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg text-text-muted transition-all duration-200 hover:bg-white/10"
                                 aria-label="Toggle menu"
                             >
                                 {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -158,10 +158,10 @@ const Navbar = () => {
                             {/* Sidebar Header */}
                             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
                                 <Link to="/" onClick={closeMenu} className="flex items-center gap-2.5">
-                                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-brand-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]">
+                                    <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-bitcoin-orange shadow-[0_0_15px_rgba(247,147,26,0.5)]">
                                         <img src="/logo.png" alt="Intern-AI Logo" className="h-full w-full object-cover filter brightness-200 invert-[1]" />
                                     </div>
-                                    <span className="text-xl font-bold font-outfit text-white tracking-wide">
+                                    <span className="text-xl font-bold font-heading text-white tracking-wide">
                                         Intern-AI
                                     </span>
                                 </Link>
@@ -181,7 +181,7 @@ const Navbar = () => {
                                         onClick={closeMenu}
                                         className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-all duration-200 border border-transparent hover:border-white/10"
                                     >
-                                        <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-slate-800 border border-slate-700 text-sm font-bold text-brand-400">
+                                        <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-bg-surface border border-border text-sm font-bold font-mono text-bitcoin-orange">
                                             {user.photoURL ? (
                                                 <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
                                             ) : (
@@ -189,10 +189,10 @@ const Navbar = () => {
                                             )}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-white">
+                                            <span className="text-sm font-medium font-body text-white">
                                                 {user.name || 'User'}
                                             </span>
-                                            <span className="text-[10px] uppercase text-text-muted tracking-wider">
+                                            <span className="text-[10px] uppercase font-mono text-text-muted tracking-wider">
                                                 {user.role || 'Student'}
                                             </span>
                                         </div>
@@ -208,12 +208,12 @@ const Navbar = () => {
                                             key={link.path}
                                             to={link.path}
                                             onClick={closeMenu}
-                                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(link.path)
-                                                ? 'bg-brand-500/10 text-brand-400 border border-brand-500/20'
-                                                : 'text-text-secondary hover:text-white hover:bg-white/5 border border-transparent'
+                                            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium font-mono transition-all duration-200 rounded-lg ${isActive(link.path)
+                                                ? 'bg-bitcoin-orange/10 text-bitcoin-orange border border-bitcoin-orange/20'
+                                                : 'text-text-muted hover:text-white hover:bg-white/5 border border-transparent'
                                                 }`}
                                         >
-                                            <link.icon className={`h-5 w-5 ${isActive(link.path) ? 'text-brand-400' : 'text-text-muted'}`} />
+                                            <link.icon className={`h-5 w-5 ${isActive(link.path) ? 'text-bitcoin-orange' : 'text-text-muted'}`} />
                                             <span>{link.label}</span>
                                         </Link>
                                     ))}
@@ -221,7 +221,7 @@ const Navbar = () => {
                             </nav>
 
                             {/* Bottom Actions */}
-                            <div className="absolute bottom-0 left-0 right-0 px-5 py-4 border-t border-white/10 bg-slate-900/50 backdrop-blur-md">
+                            <div className="absolute bottom-0 left-0 right-0 px-5 py-4 border-t border-white/10 bg-bg-void/50 backdrop-blur-md">
                                 {user ? (
                                     <button
                                         onClick={handleLogout}
@@ -242,7 +242,7 @@ const Navbar = () => {
                                         <Link
                                             to="/register"
                                             onClick={closeMenu}
-                                            className="flex w-full items-center justify-center px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all duration-200 border border-brand-500"
+                                            className="btn-primary w-full text-center"
                                         >
                                             Get Started
                                         </Link>

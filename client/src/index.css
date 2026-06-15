@@ -1,32 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
-  --color-brand-950: #1e1b4b;
-  
-  --color-accent-primary: #818cf8;
-  --color-accent-hover: #6366f1;
-  
-  --color-chassis: #0b0f19;
-  --color-panel: #111827;
-  --color-recessed: #1e293b;
-  
-  --color-text-primary: #f8fafc;
-  --color-text-secondary: #cbd5e1;
-  --color-text-muted: #94a3b8;
-  
-  /* Semantic Status Colors */
+  /* Bitcoin DeFi Color Palette */
+  --color-bg-void: #030304;
+  --color-bg-surface: #0F1115;
+  --color-text-primary: #FFFFFF;
+  --color-text-muted: #94A3B8;
+  --color-border: #1E293B;
+
+  --color-bitcoin-orange: #F7931A;
+  --color-burnt-orange: #EA580C;
+  --color-digital-gold: #FFD600;
+
+  /* Status Colors */
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
@@ -34,10 +21,22 @@
 }
 
 :root {
-  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #0b0f19;
-  color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #030304;
+  color: #FFFFFF;
   color-scheme: dark;
+}
+
+.font-heading {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 body {
@@ -46,7 +45,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Stunning Ambient Background Layer */
+/* Bitcoin DeFi Void Background Layer */
 .ambient-bg {
   position: fixed;
   top: 0;
@@ -54,7 +53,7 @@ body {
   width: 100vw;
   height: 100vh;
   z-index: -1;
-  background-color: #0b0f19;
+  background-color: #030304;
   overflow: hidden;
   pointer-events: none;
 }
@@ -62,7 +61,7 @@ body {
 .ambient-blob {
   position: absolute;
   filter: blur(120px);
-  opacity: 0.5;
+  opacity: 0.3;
   border-radius: 50%;
   animation: float 25s infinite ease-in-out alternate;
 }
@@ -72,7 +71,7 @@ body {
   left: -10%;
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(247,147,26,0.15) 0%, rgba(0,0,0,0) 70%);
   animation-delay: 0s;
 }
 
@@ -81,7 +80,7 @@ body {
   right: -10%;
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(234,88,12,0.1) 0%, rgba(0,0,0,0) 70%);
   animation-delay: -5s;
 }
 
@@ -90,8 +89,17 @@ body {
   right: 10%;
   width: 40vw;
   height: 40vw;
-  background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle, rgba(255,214,0,0.08) 0%, rgba(0,0,0,0) 70%);
   animation-delay: -10s;
+}
+
+/* Grid Pattern Background */
+.bg-grid-pattern {
+  background-size: 50px 50px;
+  background-image:
+    linear-gradient(to right, rgba(30, 41, 59, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.5) 1px, transparent 1px);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
 }
 
 @keyframes float {
@@ -117,9 +125,9 @@ body {
   z-index: 100;
 }
 
-/* Glassmorphism Utilities */
+/* Bitcoin DeFi Glass Morphism Utilities */
 .glass-panel {
-  background: rgba(17, 24, 39, 0.4);
+  background: rgba(15, 17, 21, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255,255,255,0.05);
@@ -128,7 +136,7 @@ body {
 }
 
 .glass-card {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);
+  background: rgba(15, 17, 21, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -138,49 +146,137 @@ body {
 }
 
 .glass-card:hover {
-  border-color: rgba(99, 102, 241, 0.3);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(99, 102, 241, 0.1) inset;
+  border-color: rgba(247, 147, 26, 0.3);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(247, 147, 26, 0.1) inset;
   transform: translateY(-4px);
 }
 
 .glass-input {
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f8fafc;
+  background: rgba(15, 17, 21, 0.4);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  color: #FFFFFF;
   transition: all 0.2s ease;
 }
 
 .glass-input:focus {
-  border-color: var(--color-brand-400);
-  background: rgba(15, 23, 42, 0.6);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: #F7931A;
+  background: rgba(15, 17, 21, 0.6);
+  box-shadow: 0 10px 20px -10px rgba(247, 147, 26, 0.3);
 }
 
-/* Gradient Text */
+/* Bitcoin Gradient Text */
 .text-gradient {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(to right, #818cf8, #c084fc, #e879f9);
+  background-image: linear-gradient(to right, #EA580C, #F7931A, #FFD600);
 }
 
-/* Custom Scrollbar - Dark Sleek */
+/* Bitcoin DeFi Button Styles */
+.btn-primary {
+  background: linear-gradient(to right, #EA580C, #F7931A);
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  min-height: 44px;
+  box-shadow: 0 0 20px -5px rgba(234, 88, 12, 0.5);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px -5px rgba(247, 147, 26, 0.6);
+}
+
+.btn-outline {
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  min-height: 44px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: white;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  min-height: 44px;
+  transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #F7931A;
+}
+
+/* Glow Effects */
+.glow-orange {
+  box-shadow: 0 0 20px -5px rgba(234, 88, 12, 0.5);
+}
+
+.glow-orange:hover {
+  box-shadow: 0 0 30px -5px rgba(247, 147, 26, 0.6);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(255, 214, 0, 0.3);
+}
+
+/* Card Styles */
+.card-standard {
+  background: #0F1115;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card-standard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(247, 147, 26, 0.5);
+  box-shadow: 0 0 30px -10px rgba(247, 147, 26, 0.2);
+}
+
+.card-glass {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+/* Custom Scrollbar - Bitcoin Dark */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0b0f19;
+  background: #030304;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(71, 85, 105, 0.4);
+  background: rgba(30, 41, 59, 0.4);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.8);
+  background: rgba(247, 147, 26, 0.6);
 }
 
 /* Mechanical Transitions */
@@ -190,7 +286,7 @@ body {
 
 /* Accessibility: Global Focus Styles */
 *:focus-visible {
-  outline: 2px solid var(--color-brand-400);
+  outline: 2px solid #F7931A;
   outline-offset: 2px;
 }
 
@@ -201,9 +297,22 @@ select:focus-visible,
 textarea:focus-visible,
 [tabindex]:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.3);
+  box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.3);
 }
 
 *:focus:not(:focus-visible) {
   outline: none;
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Spinning Orbital Rings */
+.animate-spin-slow {
+  animation: spin 10s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin 15s linear infinite reverse;
 }

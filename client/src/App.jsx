@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+// Demo Pages
+import SignInDemo from './pages/SignInDemo';
 import { motion } from 'framer-motion';
 
 // Pages
@@ -41,37 +43,38 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen text-text-primary bg-chassis texture-noise font-sans">
-          {/* Ambient Background layer */}
-          <div className="ambient-bg">
-            <div className="ambient-blob ambient-blob-1"></div>
-            <div className="ambient-blob ambient-blob-2"></div>
-            <div className="ambient-blob ambient-blob-3"></div>
-          </div>
+        <div className="min-h-screen text-text-primary bg-bg-void font-body">
+           {/* Ambient Background layer */}
+           <div className="ambient-bg bg-grid-pattern">
+             <div className="ambient-blob ambient-blob-1"></div>
+             <div className="ambient-blob ambient-blob-2"></div>
+             <div className="ambient-blob ambient-blob-3"></div>
+           </div>
 
           {/* Skip Navigation Link for Accessibility */}
           <a 
             href="#main-content" 
-            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-brand-600 text-white px-4 py-2 rounded-lg z-[100] font-bold text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(99,102,241,0.5)]"
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 btn-primary z-[100]"
           >
             Skip to main content
           </a>
           
           <Navbar />
           <main id="main-content" className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-7xl relative z-10">
-            <Routes>
-              <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-              <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-              <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
-              <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
-              <Route path="/jobs" element={<PrivateRoute><PageWrapper><JobListings /></PageWrapper></PrivateRoute>} />
-              <Route path="/job/:id" element={<PrivateRoute><PageWrapper><JobDetail /></PageWrapper></PrivateRoute>} />
-              <Route path="/tracker" element={<PrivateRoute><PageWrapper><ApplicationTracker /></PageWrapper></PrivateRoute>} />
-              <Route path="/analyzer" element={<PrivateRoute><PageWrapper><AIAnalyzer /></PageWrapper></PrivateRoute>} />
-              <Route path="/bot" element={<PrivateRoute><PageWrapper><CareerBot /></PageWrapper></PrivateRoute>} />
-              <Route path="/profile" element={<PrivateRoute><PageWrapper><Profile /></PageWrapper></PrivateRoute>} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+  <Routes>
+    <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+    <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+    <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+    <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
+    <Route path="/jobs" element={<PrivateRoute><PageWrapper><JobListings /></PageWrapper></PrivateRoute>} />
+    <Route path="/job/:id" element={<PrivateRoute><PageWrapper><JobDetail /></PageWrapper></PrivateRoute>} />
+    <Route path="/tracker" element={<PrivateRoute><PageWrapper><ApplicationTracker /></PageWrapper></PrivateRoute>} />
+    <Route path="/analyzer" element={<PrivateRoute><PageWrapper><AIAnalyzer /></PageWrapper></PrivateRoute>} />
+    <Route path="/bot" element={<PrivateRoute><PageWrapper><CareerBot /></PageWrapper></PrivateRoute>} />
+    <Route path="/profile" element={<PrivateRoute><PageWrapper><Profile /></PageWrapper></PrivateRoute>} />
+    <Route path="/signin-demo" element={<PageWrapper><SignInDemo /></PageWrapper>} />
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
           </main>
         </div>
       </Router>

@@ -38,7 +38,9 @@ const CareerBot = () => {
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (window.innerWidth > 768) {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
     };
 
     useEffect(() => {
@@ -124,8 +126,8 @@ const CareerBot = () => {
     return (
         <div className="max-w-6xl mx-auto space-y-8 pb-16 animate-fade-in font-outfit">
             <header className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 shadow-[0_0_10px_rgba(99,102,241,0.2)] px-3 py-1 text-xs font-medium text-brand-300">
-                    <Bot className="h-3 w-3" /> AI Career Coach
+                <div className="inline-flex items-center gap-1.5 rounded-full bg-bitcoin-orange/10 border border-bitcoin-orange/20 glow-orange px-3 py-1 text-xs font-mono text-bitcoin-orange uppercase tracking-wider">
+                    <Sparkles className="h-3.5 w-3.5 text-bitcoin-orange" /> AI Career Coach
                 </div>
                 <h1 className="text-2xl font-semibold text-white">Career Architect</h1>
                 <p className="text-sm text-text-muted">Get roadmaps, eligibility checks, and personalized career advice.</p>
@@ -133,7 +135,7 @@ const CareerBot = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 {/* Chat Panel */}
-                <div className="lg:col-span-4 h-[700px] flex flex-col glass-card rounded-2xl overflow-hidden">
+                <div className="lg:col-span-4 h-[700px] flex flex-col card-standard rounded-2xl overflow-hidden">
                     <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="h-9 w-9 rounded-lg bg-brand-500 flex items-center justify-center">
@@ -178,7 +180,7 @@ const CareerBot = () => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <div className="p-4 border-t border-white/10 space-y-3 glass-panel">
+                    <div className="p-4 border-t border-white/10 space-y-3 card-standard">
                         {mode === 'menu' && (
                             <div className="grid grid-cols-3 gap-2">
                                 <button
@@ -223,7 +225,7 @@ const CareerBot = () => {
                             <button
                                 onClick={handleSend}
                                 disabled={!inputText.trim() || loading}
-                                className="h-10 w-10 rounded-lg bg-brand-600 flex items-center justify-center text-white hover:bg-brand-500 shadow-[0_0_15px_rgba(99,102,241,0.4)] transition-colors disabled:opacity-50 shrink-0"
+                                className="btn-primary !p-0 !w-10 !h-10 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                             >
                                 <Send className="h-4 w-4" />
                             </button>
