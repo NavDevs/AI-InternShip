@@ -10,7 +10,7 @@ const { getQuestionsByRound } = require('../utils/interviewQuestions');
 
 // Initialize Groq client
 const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
+    apiKey: process.env.GROQ_API_KEY || 'missing_api_key'
 });
 
 // Model to use - Llama 3.3 70B is fast and capable
@@ -70,13 +70,13 @@ router.post('/analyze', auth, async (req, res) => {
             user = await User.findOne({ uid: req.user.id });
         }
 
-        let userSkills = ['React', 'JavaScript', 'Node.js', 'Web Technologies'];
-        if (user && Array.isArray(user.skills) && user.skills.length > 0) {
+        let userSkills = req.body.userSkills || ['React', 'JavaScript', 'Node.js', 'Web Technologies'];
+        if (!req.body.userSkills && user && Array.isArray(user.skills) && user.skills.length > 0) {
             userSkills = user.skills;
         }
 
         const userProfile = {
-            name: user?.name || 'Guest User',
+            name: req.body.userName || user?.name || 'Guest User',
             skills: userSkills,
             experience: user?.experience || [],
             projects: user?.projects || []
@@ -126,7 +126,7 @@ Respond with this exact JSON structure:
 // AI Job Eligibility Checker - Compares user skills with job requirements
 router.post('/eligibility', auth, async (req, res) => {
     try {
-        const { job, userSkills } = req.body;
+        const { job, userSkills: bodySkills } = req.body;
         console.log('Checking eligibility for user:', req.user.id, 'Job:', job?.title);
 
         if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
@@ -149,7 +149,7 @@ JOB DETAILS:
 - Location: ${job.location || 'Not specified'}
 
 CANDIDATE'S CURRENT SKILLS:
-${userSkills && userSkills.length > 0 ? userSkills.join(', ') : 'No skills listed'}
+${bodySkills && bodySkills.length > 0 ? bodySkills.join(', ') : 'No skills listed'}
 
 Respond with this exact JSON structure:
 {
@@ -279,11 +279,15 @@ router.post('/roadmap', auth, async (req, res) => {
             user = await User.findOne({ uid: req.user.id });
         }
 
-        let userSkills = ['Software Development', 'Problem Solving', 'Communication'];
-        if (user && Array.isArray(user.skills) && user.skills.length > 0) {
-            userSkills = user.skills;
-        } else if (user && typeof user.skills === 'string' && user.skills.trim()) {
-            userSkills = user.skills.split(',').map(s => s.trim());
+        let userSkills = req.body.userSkills;
+        if (!userSkills || userSkills.length === 0) {
+            if (user && Array.isArray(user.skills) && user.skills.length > 0) {
+                userSkills = user.skills;
+            } else if (user && typeof user.skills === 'string' && user.skills.trim()) {
+                userSkills = user.skills.split(',').map(s => s.trim());
+            } else {
+                userSkills = ['Software Development', 'Problem Solving', 'Communication'];
+            }
         }
 
         const systemPrompt = `You are an expert career coach. Create detailed, actionable career roadmaps. Always respond with valid JSON only.`;
@@ -473,8 +477,8 @@ router.post('/career-advice', auth, async (req, res) => {
                 .lean();
         }
 
-        const userSkills = user?.skills || ['General Skills'];
-        const userName = user?.name || 'User';
+        const userSkills = req.body.userSkills || user?.skills || ['General Skills'];
+        const userName = req.body.userName || user?.name || 'User';
 
         // Build application summary for AI
         const applicationSummary = applications.length > 0

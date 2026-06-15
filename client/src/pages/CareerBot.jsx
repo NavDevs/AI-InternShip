@@ -58,14 +58,23 @@ class ErrorBoundary extends React.Component {
 
 const CareerBot = () => {
     const { user } = useAuth();
-    const [mode, setMode] = useState('menu');
+    const [mode, setMode] = useState(() => localStorage.getItem(`careerBot_mode_${user?.uid}`) || 'menu');
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState(null);
-    const [messages, setMessages] = useState([
-        { role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! I'm your AI Career Coach. How can I help you today?` }
-    ]);
-    const [careerAdvice, setCareerAdvice] = useState(null);
+    const [result, setResult] = useState(() => {
+        const saved = localStorage.getItem(`careerBot_result_${user?.uid}`);
+        return saved ? JSON.parse(saved) : null;
+    });
+    const [messages, setMessages] = useState(() => {
+        const saved = localStorage.getItem(`careerBot_messages_${user?.uid}`);
+        return saved ? JSON.parse(saved) : [
+            { role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! I'm your AI Career Coach. How can I help you today?` }
+        ];
+    });
+    const [careerAdvice, setCareerAdvice] = useState(() => {
+        const saved = localStorage.getItem(`careerBot_advice_${user?.uid}`);
+        return saved ? JSON.parse(saved) : null;
+    });
     const [interviewQuestions, setInterviewQuestions] = useState(null);
     const [loadingQuestions, setLoadingQuestions] = useState(false);
     const messagesEndRef = useRef(null);
@@ -77,6 +86,16 @@ const CareerBot = () => {
     useEffect(() => {
         scrollToBottom();
     }, [messages, loading]);
+
+    useEffect(() => {
+        if (!user?.uid) return;
+        localStorage.setItem(`careerBot_mode_${user.uid}`, mode);
+        localStorage.setItem(`careerBot_messages_${user.uid}`, JSON.stringify(messages));
+        if (result) localStorage.setItem(`careerBot_result_${user.uid}`, JSON.stringify(result));
+        else localStorage.removeItem(`careerBot_result_${user.uid}`);
+        if (careerAdvice) localStorage.setItem(`careerBot_advice_${user.uid}`, JSON.stringify(careerAdvice));
+        else localStorage.removeItem(`careerBot_advice_${user.uid}`);
+    }, [mode, messages, result, careerAdvice, user?.uid]);
 
     const handleSend = async () => {
         if (!inputText.trim()) return;
@@ -101,21 +120,23 @@ const CareerBot = () => {
                 const res = await axios.post(`${API_BASE_URL}/ai/chat`,
                     {
                         message: userInput,
-                        chatHistory: messages.map(m => ({ role: m.role === 'bot' ? 'model' : 'user', parts: [{ text: m.content }] }))
+                        chatHistory: messages.map(m => ({ role: m.role === 'bot' ? 'model' : 'user', parts: [{ text: m.content }] })),
+                        userSkills: user?.skills || [],
+                        userName: user?.name
                     },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setMessages(prev => [...prev, { role: 'bot', content: res.data.text }]);
             } else if (effectiveMode === 'analyze') {
                 const res = await axios.post(`${API_BASE_URL}/ai/analyze`,
-                    { jdText: userInput },
+                    { jdText: userInput, userSkills: user?.skills || [], userName: user?.name },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
                 setMessages(prev => [...prev, { role: 'bot', content: `Your match score for this role is ${res.data.matchPercentage}%. I've generated a report for you below.` }]);
             } else if (effectiveMode === 'roadmap') {
                 const res = await axios.post(`${API_BASE_URL}/ai/roadmap`,
-                    { dreamJob: userInput },
+                    { dreamJob: userInput, userSkills: user?.skills || [], userName: user?.name },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
@@ -140,7 +161,7 @@ const CareerBot = () => {
         setLoading(true);
         setMessages(prev => [...prev, { role: 'bot', content: "Analyzing your applications and generating career insights..." }]);
         try {
-            const res = await axios.post(`${API_BASE_URL}/ai/career-advice`, {},
+            const res = await axios.post(`${API_BASE_URL}/ai/career-advice`, { userSkills: user?.skills || [], userName: user?.name },
                 { headers: { 'X-User-ID': user?.uid || user?._id } }
             );
             setCareerAdvice(res.data);
@@ -180,7 +201,12 @@ const CareerBot = () => {
                             </div>
                         </div>
                         <button
-                            onClick={() => { setMode('menu'); setResult(null); setMessages([{ role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! How can I help you today?` }]); }}
+                            onClick={() => { 
+                                setMode('menu'); 
+                                setResult(null); 
+                                setCareerAdvice(null);
+                                setMessages([{ role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! How can I help you today?` }]); 
+                            }}
                             className="p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors"
                             title="Reset"
                         >

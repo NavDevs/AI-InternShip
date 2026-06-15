@@ -13,7 +13,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { db } from '../firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, setDoc } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { INDIAN_STATES } from '../constants/states';
 
@@ -66,7 +66,7 @@ const Profile = () => {
         setMessage('');
         try {
             const userRef = doc(db, 'users', user.uid);
-            await updateDoc(userRef, {
+            await setDoc(userRef, {
                 name: formData.name,
                 skills: skills,
                 role: formData.role,
@@ -77,7 +77,7 @@ const Profile = () => {
                     college: formData.college,
                     degree: formData.degree
                 }
-            });
+            }, { merge: true });
             setMessage('Profile updated successfully!');
             setTimeout(() => setMessage(''), 3000);
         } catch (err) {
