@@ -401,7 +401,7 @@ router.post('/interview-questions', auth, async (req, res) => {
 // General AI Chat for Career Guidance
 router.post('/chat', auth, async (req, res) => {
     try {
-        const { message, chatHistory } = req.body;
+        const { message, chatHistory, userSkills, userName } = req.body;
         if (!message) return res.status(400).json({ message: 'Message is required' });
 
         if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
@@ -410,9 +410,13 @@ router.post('/chat', auth, async (req, res) => {
 
         const systemPrompt = `You are an elite AI Career Coach and Architect. Your goal is to provide helpful, professional, and encouraging career advice.
 
+USER CONTEXT:
+Name: ${userName || 'User'}
+Skills: ${userSkills && userSkills.length > 0 ? userSkills.join(', ') : 'Not provided yet'}
+
 GUIDELINES:
-- For general conversation (greetings, small talk), be friendly and concise.
-- For career advice, be professional and insightful.
+- For general conversation (greetings, small talk), be friendly and concise. Address the user by their name if available.
+- For career advice, be professional and insightful, specifically taking into account the user's current skills.
 - If the user explicitly asks for a "Roadmap" or "Job Analysis", guide them to use the specific UI buttons for those features.
 - Keep responses natural and engaging.
 - Be encouraging and supportive.`;
