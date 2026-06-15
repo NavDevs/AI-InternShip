@@ -23,6 +23,39 @@ import { getYouTubePlaylistForSkill } from '../constants/youtubeLinks';
 import { Youtube } from 'lucide-react';
 import { API_BASE_URL } from '../utils/api';
 
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+    componentDidCatch(error, errorInfo) {
+        console.error("CareerBot ErrorBoundary caught an error:", error, errorInfo);
+    }
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="flex flex-col items-center justify-center p-8 bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-800">
+                    <h3 className="text-lg font-semibold text-rose-600 dark:text-rose-400 mb-2">Display Error</h3>
+                    <p className="text-sm text-stone-600 dark:text-stone-300 mb-4 text-center">Something went wrong while rendering the results. Please copy the error below:</p>
+                    <pre className="w-full text-xs text-left bg-white dark:bg-stone-900 p-4 rounded-lg overflow-auto border border-rose-100 dark:border-rose-900/50 text-rose-500 mb-4 max-h-60">
+                        {this.state.error?.toString()}
+                    </pre>
+                    <button 
+                        onClick={() => { this.setState({ hasError: false }); this.props.onReset(); }}
+                        className="px-4 py-2 bg-rose-600 text-white text-sm font-medium rounded-lg hover:bg-rose-700 transition-colors"
+                    >
+                        Reset Panel
+                    </button>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
 const CareerBot = () => {
     const { user } = useAuth();
     const [mode, setMode] = useState('menu');
@@ -233,8 +266,9 @@ const CareerBot = () => {
 
                 {/* Display Panel */}
                 <div className="lg:col-span-8 min-h-[700px] relative">
-                    <AnimatePresence mode="wait">
-                        {loading ? (
+                    <ErrorBoundary onReset={() => { setResult(null); setMode('menu'); }}>
+                        <AnimatePresence mode="wait">
+                            {loading ? (
                             <motion.div
                                 key="loading"
                                 initial={{ opacity: 0 }}
@@ -403,19 +437,19 @@ const CareerBot = () => {
                                 </div>
 
                                 <div className="space-y-4">
-                                    {result.phases.map((phase, i) => (
+                                    {(result.phases || []).map((phase, i) => (
                                         <div key={i} className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
                                                     <span className="text-xs text-primary font-medium">{phase.month}</span>
-                                                    <h4 className="text-base font-semibold text-stone-900 dark:text-stone-100 mt-0.5">{phase.topics[0]}</h4>
+                                                    <h4 className="text-base font-semibold text-stone-900 dark:text-stone-100 mt-0.5">{(phase.topics || [])[0]}</h4>
                                                 </div>
                                                 <div className="h-8 w-8 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-xs text-stone-500 font-medium shrink-0">
                                                     {i + 1}
                                                 </div>
                                             </div>
                                             <div className="space-y-2 mb-4">
-                                                {phase.actionItems.map((item, j) => (
+                                                {(phase.actionItems || []).map((item, j) => (
                                                     <div key={j} className="flex items-start gap-2.5 p-3 bg-stone-50 dark:bg-stone-800 rounded-lg">
                                                         <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                                                         <span className="text-sm text-stone-600 dark:text-stone-300 leading-snug">{item}</span>
@@ -427,7 +461,7 @@ const CareerBot = () => {
                                             <div className="pt-3 border-t border-stone-100 dark:border-stone-800">
                                                 <p className="text-xs text-stone-400 mb-2">Recommended</p>
                                                 <div className="flex flex-col gap-1.5">
-                                                    {phase.topics?.slice(0, 2).map((topic, idx) => {
+                                                    {(phase.topics || []).slice(0, 2).map((topic, idx) => {
                                                         const playlist = getYouTubePlaylistForSkill(topic);
                                                         return (
                                                             <a
@@ -470,7 +504,13 @@ const CareerBot = () => {
                                                     </h5>
                                                     {resourceUrl && (
                                                         <p className="text-xs text-stone-400 mt-1.5 truncate">
-                                                            {new URL(resourceUrl).hostname.replace('www.', '')}
+                                                            {(() => {
+                                                                try {
+                                                                    return new URL(resourceUrl).hostname.replace('www.', '');
+                                                                } catch {
+                                                                    return 'View Resource';
+                                                                }
+                                                            })()}
                                                         </p>
                                                     )}
                                                 </a>
@@ -480,6 +520,7 @@ const CareerBot = () => {
                                 </div>
 
                                 {/* Interview Questions */}
+                                {interviewQuestions && (
                                 <div className="flex flex-col items-center gap-5">
 
                                     <div className="w-full space-y-5">
@@ -524,6 +565,7 @@ const CareerBot = () => {
                                         </div>
                                     </div>
                                 </div>
+                                )}
                             </motion.div>
                         ) : (
                             /* Eligibility Result */
@@ -535,15 +577,15 @@ const CareerBot = () => {
                                                 <circle cx="72" cy="72" r="60" className="stroke-stone-100 dark:stroke-stone-800 fill-none" strokeWidth="10" />
                                                 <motion.circle
                                                     initial={{ strokeDashoffset: 377 }}
-                                                    animate={{ strokeDashoffset: 377 - (377 * result.matchPercentage) / 100 }}
+                                                    animate={{ strokeDashoffset: 377 - (377 * (result.matchPercentage || 0)) / 100 }}
                                                     transition={{ duration: 1.5, ease: "circOut" }}
                                                     cx="72" cy="72" r="60"
-                                                    className={`fill-none ${result.matchPercentage > 80 ? 'stroke-emerald-500' : result.matchPercentage > 50 ? 'stroke-primary' : 'stroke-rose-500'}`}
+                                                    className={`fill-none ${(result.matchPercentage || 0) > 80 ? 'stroke-emerald-500' : (result.matchPercentage || 0) > 50 ? 'stroke-primary' : 'stroke-rose-500'}`}
                                                     strokeWidth="10" strokeDasharray={377} strokeLinecap="round"
                                                 />
                                             </svg>
                                             <div className="absolute text-center">
-                                                <span className="text-3xl font-semibold text-stone-900 dark:text-stone-100">{result.matchPercentage}%</span>
+                                                <span className="text-3xl font-semibold text-stone-900 dark:text-stone-100">{result.matchPercentage || 0}%</span>
                                             </div>
                                         </div>
 
@@ -579,7 +621,7 @@ const CareerBot = () => {
                                             <ArrowRight className="h-4 w-4" /> Missing Skills
                                         </h4>
                                         <div className="flex flex-wrap gap-1.5">
-                                            {result.missingSkills.length > 0 ? result.missingSkills.map((s, i) => (
+                                            {result.missingSkills && result.missingSkills.length > 0 ? result.missingSkills.map((s, i) => (
                                                 <span key={i} className="px-2.5 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-md text-xs">
                                                     {s}
                                                 </span>
@@ -591,7 +633,7 @@ const CareerBot = () => {
                                             <Sparkles className="h-4 w-4" /> Matched Skills
                                         </h4>
                                         <div className="flex flex-wrap gap-1.5">
-                                            {result.matchedSkills.length > 0 ? result.matchedSkills.map((s, i) => (
+                                            {result.matchedSkills && result.matchedSkills.length > 0 ? result.matchedSkills.map((s, i) => (
                                                 <span key={i} className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-md text-xs">
                                                     {s}
                                                 </span>
@@ -601,7 +643,8 @@ const CareerBot = () => {
                                 </div>
                             </motion.div>
                         )}
-                    </AnimatePresence>
+                        </AnimatePresence>
+                    </ErrorBoundary>
                 </div>
             </div>
         </div>
