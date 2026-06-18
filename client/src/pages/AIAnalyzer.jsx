@@ -21,10 +21,14 @@ import { API_BASE_URL } from '../utils/api';
 
 const AIAnalyzer = () => {
     const { user } = useAuth();
-    const [jdText, setJdText] = useState(() => localStorage.getItem(`analyzer_jdText_${user?.uid}`) || '');
+    const [jdText, setJdText] = useState(() => {
+        try { return localStorage.getItem(`analyzer_jdText_${user?.uid}`) || ''; } catch { return ''; }
+    });
     const [result, setResult] = useState(() => {
-        const saved = localStorage.getItem(`analyzer_result_${user?.uid}`);
-        return saved ? JSON.parse(saved) : null;
+        try {
+            const saved = localStorage.getItem(`analyzer_result_${user?.uid}`);
+            return saved ? JSON.parse(saved) : null;
+        } catch { return null; }
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');

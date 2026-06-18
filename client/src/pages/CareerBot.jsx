@@ -58,22 +58,32 @@ class ErrorBoundary extends React.Component {
 
 const CareerBot = () => {
     const { user } = useAuth();
-    const [mode, setMode] = useState(() => localStorage.getItem(`careerBot_mode_${user?.uid}`) || 'menu');
+    const [mode, setMode] = useState(() => {
+        try { return localStorage.getItem(`careerBot_mode_${user?.uid}`) || 'menu'; } catch { return 'menu'; }
+    });
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState(() => {
-        const saved = localStorage.getItem(`careerBot_result_${user?.uid}`);
-        return saved ? JSON.parse(saved) : null;
+        try {
+            const saved = localStorage.getItem(`careerBot_result_${user?.uid}`);
+            return saved ? JSON.parse(saved) : null;
+        } catch { return null; }
     });
     const [messages, setMessages] = useState(() => {
-        const saved = localStorage.getItem(`careerBot_messages_${user?.uid}`);
-        return saved ? JSON.parse(saved) : [
-            { role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! I'm your AI Career Coach. How can I help you today?` }
-        ];
+        try {
+            const saved = localStorage.getItem(`careerBot_messages_${user?.uid}`);
+            return saved ? JSON.parse(saved) : [
+                { role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! I'm your AI Career Coach. How can I help you today?` }
+            ];
+        } catch {
+            return [{ role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! I'm your AI Career Coach. How can I help you today?` }];
+        }
     });
     const [careerAdvice, setCareerAdvice] = useState(() => {
-        const saved = localStorage.getItem(`careerBot_advice_${user?.uid}`);
-        return saved ? JSON.parse(saved) : null;
+        try {
+            const saved = localStorage.getItem(`careerBot_advice_${user?.uid}`);
+            return saved ? JSON.parse(saved) : null;
+        } catch { return null; }
     });
     const [interviewQuestions, setInterviewQuestions] = useState(null);
     const [loadingQuestions, setLoadingQuestions] = useState(false);
