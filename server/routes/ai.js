@@ -146,53 +146,104 @@ router.post('/analyze', auth, async (req, res) => {
             skills: userSkills
         };
 
-        const skillList = userSkills.join(', ') || 'No skills listed';
+        const systemPrompt = `You are an expert technical recruiter. Extract job details and a precise list of required skills from the job description. Respond with valid JSON only.`;
 
-        const systemPrompt = `You are an expert technical recruiter and career advisor. Your job is to accurately compare a candidate's skills against a job description. You must do case-insensitive matching — "react.js", "React.js", and "ReactJS" are all the same skill. Always respond with valid JSON only.`;
-
-        const userPrompt = `Compare this candidate's skills against the job description below and calculate an accurate match score.
-
-CANDIDATE SKILLS ARRAY:
-${JSON.stringify(userSkills)}
-
-CANDIDATE PROFILE:
-- Name: ${userProfile.name}
-- Role: ${userProfile.role}
-- Location: ${userProfile.location}
-- Education: ${userProfile.education}
-
-JOB DESCRIPTION:
+        const userPrompt = `Extract the following details from this JOB DESCRIPTION:
 ${jdText}
 
-STEP 1: Identify ALL the skills required or preferred in the JOB DESCRIPTION.
-STEP 2: For EACH required skill, check if it exists in the CANDIDATE SKILLS ARRAY.
-- Use case-insensitive matching ("react" = "React").
-- Use semantic matching ("Node.js" = "NodeJS", "ML" = "Machine Learning", "Postgres" = "PostgreSQL").
-- If the candidate has the skill, add it to "matchedSkills".
-- If the candidate DOES NOT have the skill, add it to "missingSkills".
-STEP 3: Calculate matchPercentage = (Matched / Total Required) * 100. Round to the nearest integer.
-
-Return ONLY this JSON (do not include the steps or any markdown, just the JSON):
+Return ONLY this JSON (no markdown, no extra text):
 {
     "title": "Job Title from JD",
     "company": "Company Name from JD",
     "location": "Location from JD",
-    "matchPercentage": 75,
-    "matchedSkills": ["skill1", "skill2"],
-    "missingSkills": ["skill1", "skill2"],
-    "isEligible": true,
-    "advice": "2-3 sentences of specific, actionable advice for this candidate for this exact role"
+    "requiredSkills": ["skill1", "skill2", "skill3"],
+    "advice": "2-3 sentences of specific, actionable advice for a candidate applying to this role"
 }`;
 
         const response = await callGroq(systemPrompt, userPrompt, true);
         console.log('Groq Raw Response (Analyze):', response);
 
-        let analysis;
+        let extracted;
         try {
-            analysis = JSON.parse(response);
+            extracted = JSON.parse(response);
         } catch (e) {
-            analysis = extractJson(response);
+            extracted = extractJson(response);
         }
+
+        // Hard-core Deterministic JS Matching Logic
+        const normalizeSkill = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        
+        // Dictionary of common tech synonyms
+        const synonyms = {
+            'nodejs': 'node.js', 'node': 'node.js',
+            'reactjs': 'react.js', 'react': 'react.js',
+            'nextjs': 'next.js', 'next': 'next.js',
+            'expressjs': 'express.js', 'express': 'express.js',
+            'postgres': 'postgresql',
+            'ml': 'machine learning',
+            'nlp': 'natural language processing',
+            'aws': 'amazon web services',
+            'gcp': 'google cloud platform',
+            'js': 'javascript',
+            'ts': 'typescript',
+            'vuejs': 'vue.js', 'vue': 'vue.js'
+        };
+
+        const getCanonical = (skill) => {
+            const norm = normalizeSkill(skill);
+            return synonyms[norm] || norm;
+        };
+
+        const userCanonicalSkills = new Set(userSkills.map(getCanonical));
+        
+        const matchedSkills = [];
+        const missingSkills = [];
+        const requiredSkills = Array.isArray(extracted.requiredSkills) ? extracted.requiredSkills : [];
+
+        if (requiredSkills.length === 0) {
+            matchedSkills.push(...userSkills.slice(0, 5)); // dummy if JD has no skills
+        } else {
+            requiredSkills.forEach(reqSkill => {
+                const reqCanonical = getCanonical(reqSkill);
+                
+                // Exact or synonym match
+                if (userCanonicalSkills.has(reqCanonical)) {
+                    matchedSkills.push(reqSkill);
+                    return;
+                }
+                
+                // Partial match (e.g. "Python programming" matches "Python")
+                let foundPartial = false;
+                for (const uSkill of userSkills) {
+                    const uCanon = getCanonical(uSkill);
+                    if (reqCanonical.includes(uCanon) || uCanon.includes(reqCanonical)) {
+                        matchedSkills.push(reqSkill);
+                        foundPartial = true;
+                        break;
+                    }
+                }
+                
+                if (!foundPartial) {
+                    missingSkills.push(reqSkill);
+                }
+            });
+        }
+
+        const totalRequired = matchedSkills.length + missingSkills.length;
+        const matchPercentage = totalRequired > 0 
+            ? Math.round((matchedSkills.length / totalRequired) * 100) 
+            : 0;
+
+        const analysis = {
+            title: extracted.title || 'Unknown Role',
+            company: extracted.company || 'Unknown Company',
+            location: extracted.location || 'Unknown Location',
+            matchPercentage,
+            matchedSkills,
+            missingSkills,
+            isEligible: matchPercentage > 40,
+            advice: extracted.advice || "Tailor your resume to match the required skills."
+        };
 
         res.json(analysis);
 
