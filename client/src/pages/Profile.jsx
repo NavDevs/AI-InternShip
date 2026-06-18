@@ -41,10 +41,11 @@ const Profile = () => {
 
     // Resume extraction state
     const [resumeFile, setResumeFile] = useState(null);
+    const [isDragOver, setIsDragOver] = useState(false);
     const [isExtracting, setIsExtracting] = useState(false);
     const [extractedData, setExtractedData] = useState(null);
     const [extractError, setExtractError] = useState('');
-    const [isDragOver, setIsDragOver] = useState(false);
+    const [showResumeModal, setShowResumeModal] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -173,6 +174,7 @@ const Profile = () => {
         setSkills(mergedSkills);
         setExtractedData(null);
         setResumeFile(null);
+        setShowResumeModal(false);
         setMessage('Resume data applied! Review and click "Save changes".');
         setTimeout(() => setMessage(''), 4000);
     };
@@ -198,9 +200,21 @@ const Profile = () => {
                             </div>
                         )}
                     </div>
-                    <div className="text-center md:text-left">
-                        <h1 className="text-2xl font-semibold">{formData.name || 'Your Name'}</h1>
-                        <p className="mt-1 text-stone-400">{user?.role || 'Student'} · {user?.email}</p>
+                    <div className="text-center md:text-left flex-1 w-full">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <h1 className="text-2xl font-semibold">{formData.name || 'Your Name'}</h1>
+                                <p className="mt-1 text-stone-400">{user?.role || 'Student'} · {user?.email}</p>
+                            </div>
+                            <button 
+                                type="button"
+                                onClick={() => setShowResumeModal(true)}
+                                className="flex items-center justify-center gap-2 rounded-lg bg-blue-600/10 border border-blue-500/20 px-4 py-2 text-sm font-medium text-blue-400 hover:bg-blue-600/20 hover:border-blue-500/30 transition-all shadow-sm"
+                            >
+                                <Sparkles className="h-4 w-4" />
+                                Auto-fill with AI
+                            </button>
+                        </div>
                         <div className="mt-3 flex flex-wrap justify-center gap-2 md:justify-start">
                             <span className="flex items-center gap-1 rounded-md bg-white/10 px-2.5 py-1 text-xs">
                                 <Shield className="h-3 w-3 text-emerald-400" /> Member since {user?.metadata?.creationTime ? new Date(user?.metadata?.creationTime).getFullYear() : new Date().getFullYear()}
@@ -210,154 +224,169 @@ const Profile = () => {
                 </div>
             </header>
 
-            {/* ===== RESUME UPLOAD SECTION ===== */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800/50 rounded-xl p-6">
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-                        <Sparkles className="h-4 w-4" />
-                    </div>
-                    <div>
-                        <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100">AI Resume Parser</h2>
-                        <p className="text-xs text-stone-500 dark:text-stone-400">Upload your resume and let AI auto-fill your profile</p>
-                    </div>
-                </div>
-
-                {/* Drop Zone */}
-                <div
-                    onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-                    onDragLeave={() => setIsDragOver(false)}
-                    onDrop={handleDrop}
-                    onClick={() => !resumeFile && fileInputRef.current?.click()}
-                    className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 transition-all cursor-pointer
-                        ${isDragOver
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                            : resumeFile
-                                ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 cursor-default'
-                                : 'border-stone-300 dark:border-stone-700 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
-                        }`}
-                >
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".pdf"
-                        className="hidden"
-                        onChange={(e) => handleFileSelect(e.target.files[0])}
-                    />
-
-                    {resumeFile ? (
-                        <>
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
-                                <FileText className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                            </div>
-                            <div className="text-center">
-                                <p className="text-sm font-medium text-stone-800 dark:text-stone-200">{resumeFile.name}</p>
-                                <p className="text-xs text-stone-500 mt-0.5">{(resumeFile.size / 1024).toFixed(1)} KB · PDF</p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); setResumeFile(null); setExtractedData(null); setExtractError(''); }}
-                                className="absolute top-3 right-3 p-1 rounded-md hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
-                            >
-                                <X className="h-4 w-4 text-stone-500" />
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40">
-                                <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                            </div>
-                            <div className="text-center">
-                                <p className="text-sm font-medium text-stone-700 dark:text-stone-300">Drop your resume here or <span className="text-blue-600 dark:text-blue-400">browse</span></p>
-                                <p className="text-xs text-stone-400 mt-0.5">PDF only · Max 5MB</p>
-                            </div>
-                        </>
-                    )}
-                </div>
-
-                {/* Error */}
-                <AnimatePresence>
-                    {extractError && (
-                        <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                            className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 p-3 text-sm text-red-600 dark:text-red-400">
-                            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                            <span>{extractError}</span>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Extract Button */}
-                {resumeFile && !extractedData && (
-                    <motion.button
-                        initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                        type="button"
-                        onClick={handleExtract}
-                        disabled={isExtracting}
-                        className="mt-4 w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60 transition-colors"
+            {/* ===== RESUME UPLOAD MODAL ===== */}
+            <AnimatePresence>
+                {showResumeModal && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto"
                     >
-                        {isExtracting ? (
-                            <><Loader2 className="h-4 w-4 animate-spin" /> Extracting with AI…</>
-                        ) : (
-                            <><Sparkles className="h-4 w-4" /> Extract Profile from Resume</>
-                        )}
-                    </motion.button>
-                )}
-
-                {/* Extracted Data Preview */}
-                <AnimatePresence>
-                    {extractedData && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                            className="mt-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-stone-900 p-5 space-y-4"
+                        <motion.div 
+                            initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                            className="w-full max-w-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl shadow-2xl overflow-hidden my-8"
                         >
-                            <div className="flex items-center gap-2">
-                                <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
-                                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">AI found the following in your resume</h3>
-                            </div>
-
-                            {extractedData.summary && (
-                                <p className="text-xs text-stone-500 dark:text-stone-400 italic border-l-2 border-blue-300 pl-3">{extractedData.summary}</p>
-                            )}
-
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                                {extractedData.name && <div><span className="text-xs text-stone-400 block">Name</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.name}</span></div>}
-                                {extractedData.college && <div><span className="text-xs text-stone-400 block">College</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.college}</span></div>}
-                                {extractedData.degree && <div><span className="text-xs text-stone-400 block">Degree</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.degree}</span></div>}
-                                {extractedData.state && <div><span className="text-xs text-stone-400 block">State</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.state}</span></div>}
-                            </div>
-
-                            {extractedData.skills?.length > 0 && (
-                                <div>
-                                    <span className="text-xs text-stone-400 block mb-2">Skills extracted ({extractedData.skills.length})</span>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {extractedData.skills.map(skill => (
-                                            <span key={skill} className="rounded-md bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
-                                                {skill}
-                                            </span>
-                                        ))}
+                            <div className="flex items-center justify-between p-6 border-b border-stone-100 dark:border-stone-800/50 bg-stone-50 dark:bg-stone-900/50">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400">
+                                        <Sparkles className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100">AI Resume Parser</h2>
+                                        <p className="text-xs text-stone-500 dark:text-stone-400">Upload your PDF to auto-fill your profile details</p>
                                     </div>
                                 </div>
-                            )}
-
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => { setExtractedData(null); setResumeFile(null); }}
-                                    className="flex-1 rounded-lg border border-stone-200 dark:border-stone-700 py-2.5 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
-                                >
-                                    Discard
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={applyExtractedData}
-                                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-emerald-600 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors"
-                                >
-                                    <RefreshCw className="h-4 w-4" /> Apply to Profile
+                                <button onClick={() => setShowResumeModal(false)} className="text-stone-400 hover:text-stone-600 dark:hover:text-white transition-colors">
+                                    <X className="h-5 w-5" />
                                 </button>
                             </div>
+
+                            <div className="p-6 space-y-6">
+                                {/* Drop Zone */}
+                                <div
+                                    onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                                    onDragLeave={() => setIsDragOver(false)}
+                                    onDrop={handleDrop}
+                                    onClick={() => !resumeFile && fileInputRef.current?.click()}
+                                    className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 transition-all cursor-pointer
+                                        ${isDragOver
+                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                            : resumeFile
+                                                ? 'border-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 cursor-default'
+                                                : 'border-stone-300 dark:border-stone-700 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
+                                        }`}
+                                >
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept=".pdf"
+                                        className="hidden"
+                                        onChange={(e) => handleFileSelect(e.target.files[0])}
+                                    />
+
+                                    {resumeFile ? (
+                                        <>
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
+                                                <FileText className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="font-medium text-stone-900 dark:text-stone-100">{resumeFile.name}</p>
+                                                <p className="text-xs text-stone-500 mt-1">{(resumeFile.size / 1024).toFixed(1)} KB · PDF</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); setResumeFile(null); setExtractError(''); }}
+                                                className="absolute right-4 top-4 rounded-md p-1.5 text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-800 hover:text-stone-600 dark:hover:text-stone-300"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40">
+                                                <Upload className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="font-medium text-stone-900 dark:text-stone-100">Drop your resume here or <span className="text-blue-500">browse</span></p>
+                                                <p className="text-xs text-stone-500 mt-1">PDF only · Max 5MB</p>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+
+                                {extractError && (
+                                    <div className="flex items-start gap-2 rounded-lg bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-400">
+                                        <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                                        <p>{extractError}</p>
+                                    </div>
+                                )}
+
+                                {/* Analyze Button */}
+                                {resumeFile && !extractedData && (
+                                    <motion.button
+                                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                                        type="button"
+                                        onClick={handleExtract}
+                                        disabled={isExtracting}
+                                        className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-70 transition-all shadow-md shadow-blue-600/20"
+                                    >
+                                        {isExtracting ? (
+                                            <><Loader2 className="h-4 w-4 animate-spin" /> Analyzing Document...</>
+                                        ) : (
+                                            <><Sparkles className="h-4 w-4" /> Extract Profile from Resume</>
+                                        )}
+                                    </motion.button>
+                                )}
+
+                                {/* Extracted Data Preview */}
+                                <AnimatePresence>
+                                    {extractedData && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                                            className="rounded-xl border border-emerald-200 dark:border-emerald-800/50 bg-white dark:bg-stone-900/50 p-5 space-y-4 shadow-sm"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
+                                                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">AI found the following in your resume</h3>
+                                            </div>
+
+                                            {extractedData.summary && (
+                                                <p className="text-xs text-stone-500 dark:text-stone-400 italic border-l-2 border-blue-300 dark:border-blue-500/50 pl-3">{extractedData.summary}</p>
+                                            )}
+
+                                            <div className="grid grid-cols-2 gap-4 text-sm bg-stone-50 dark:bg-stone-800/30 p-3 rounded-lg border border-stone-100 dark:border-stone-800/50">
+                                                {extractedData.name && <div><span className="text-xs text-stone-500 dark:text-stone-400 block mb-0.5">Name</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.name}</span></div>}
+                                                {extractedData.college && <div><span className="text-xs text-stone-500 dark:text-stone-400 block mb-0.5">College</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.college}</span></div>}
+                                                {extractedData.degree && <div><span className="text-xs text-stone-500 dark:text-stone-400 block mb-0.5">Degree</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.degree}</span></div>}
+                                                {extractedData.state && <div><span className="text-xs text-stone-500 dark:text-stone-400 block mb-0.5">State</span><span className="font-medium text-stone-800 dark:text-stone-200">{extractedData.state}</span></div>}
+                                            </div>
+
+                                            {extractedData.skills?.length > 0 && (
+                                                <div>
+                                                    <span className="text-xs text-stone-500 dark:text-stone-400 block mb-2 font-medium">Skills extracted ({extractedData.skills.length})</span>
+                                                    <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+                                                        {extractedData.skills.map(skill => (
+                                                            <span key={skill} className="rounded-md bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-300">
+                                                                {skill}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="flex gap-3 pt-3 border-t border-stone-100 dark:border-stone-800/50">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setExtractedData(null); setResumeFile(null); }}
+                                                    className="flex-1 rounded-lg border border-stone-200 dark:border-stone-700 py-2.5 text-sm font-medium text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                                                >
+                                                    Discard
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={applyExtractedData}
+                                                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-emerald-600 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-all shadow-sm shadow-emerald-600/20"
+                                                >
+                                                    <RefreshCw className="h-4 w-4" /> Apply to Profile
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
                         </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <form onSubmit={handleSave} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div className="lg:col-span-2 space-y-6">
