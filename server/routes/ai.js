@@ -49,6 +49,62 @@ const callGroq = async (systemPrompt, userPrompt, jsonMode = false) => {
     return completion.choices[0]?.message?.content || '';
 };
 
+// Resume Parser — Extracts structured profile data from raw resume text
+router.post('/extract-resume', auth, async (req, res) => {
+    try {
+        const { resumeText } = req.body;
+
+        if (!resumeText || resumeText.trim().length < 50) {
+            return res.status(400).json({ message: 'Resume text is too short or empty. Please upload a valid resume PDF.' });
+        }
+
+        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
+            return res.status(500).json({ message: 'AI Service not configured.' });
+        }
+
+        const systemPrompt = `You are an expert resume parser. Extract structured information from resume text and return ONLY valid JSON. Be thorough and accurate.`;
+
+        const userPrompt = `Extract the following information from this resume text and return it as a JSON object.
+
+RESUME TEXT:
+${resumeText.substring(0, 6000)}
+
+Return ONLY this JSON structure (no markdown, no extra text):
+{
+  "name": "Full name of the candidate",
+  "college": "College or University name (empty string if not found)",
+  "degree": "Degree and major e.g. B.Tech Computer Science (empty string if not found)",
+  "skills": ["skill1", "skill2", "skill3"],
+  "state": "Indian state if mentioned (empty string if not found)",
+  "role": "student or employed or unemployed based on context",
+  "summary": "One sentence summary of the candidate's profile"
+}
+
+Rules:
+- skills must be an array of individual technical and soft skills extracted from the resume
+- Split compound skills into individual items e.g. "React, Node.js" becomes ["React", "Node.js"]
+- Include programming languages, frameworks, tools, databases, and soft skills
+- For role: use "student" if currently studying, "employed" if currently working, "unemployed" otherwise
+- All fields must be present, use empty string "" if information not found
+- skills must have at least 1 item if any technical content exists`;
+
+        const response = await callGroq(systemPrompt, userPrompt, true);
+        const parsed = extractJson(response);
+
+        // Validate structure
+        if (!parsed.skills || !Array.isArray(parsed.skills)) {
+            parsed.skills = [];
+        }
+        // Clean up skills — remove empty, duplicates, trim
+        parsed.skills = [...new Set(parsed.skills.map(s => s.trim()).filter(s => s.length > 0))];
+
+        res.json(parsed);
+    } catch (err) {
+        console.error('Resume extraction error:', err.message);
+        res.status(500).json({ message: 'Failed to extract resume data: ' + err.message });
+    }
+});
+
 // AI Job Description Analyzer (Eligibility Check)
 router.post('/analyze', auth, async (req, res) => {
     try {
