@@ -126,25 +126,32 @@ const CareerBot = () => {
         try {
             if (effectiveMode === 'menu' || isGreeting) {
                 setResult(null);
+                const cleanUser = {
+                    name: user?.name || '',
+                    role: user?.role || 'student',
+                    skills: Array.isArray(user?.skills) ? user.skills : [],
+                    education: user?.education || {},
+                    profile: user?.profile || {}
+                };
                 const res = await api.post('/ai/chat',
                     {
                         message: userInput,
                         chatHistory: messages.map(m => ({ role: m.role === 'bot' ? 'model' : 'user', parts: [{ text: m.content }] })),
-                        userContext: user
+                        userContext: cleanUser
                     },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setMessages(prev => [...prev, { role: 'bot', content: res.data.text }]);
             } else if (effectiveMode === 'analyze') {
                 const res = await api.post('/ai/analyze',
-                    { jdText: userInput, userContext: user },
+                    { jdText: userInput, userContext: cleanUser },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
                 setMessages(prev => [...prev, { role: 'bot', content: `Your match score for this role is ${res.data.matchPercentage}%. I've generated a report for you below.` }]);
             } else if (effectiveMode === 'roadmap') {
                 const res = await api.post('/ai/roadmap',
-                    { dreamJob: userInput, userContext: user },
+                    { dreamJob: userInput, userContext: cleanUser },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
@@ -169,7 +176,14 @@ const CareerBot = () => {
         setLoading(true);
         setMessages(prev => [...prev, { role: 'bot', content: "Analyzing your applications and generating career insights..." }]);
         try {
-            const res = await api.post('/ai/career-advice', { userContext: user },
+            const cleanUser = {
+                name: user?.name || '',
+                role: user?.role || 'student',
+                skills: Array.isArray(user?.skills) ? user.skills : [],
+                education: user?.education || {},
+                profile: user?.profile || {}
+            };
+            const res = await api.post('/ai/career-advice', { userContext: cleanUser },
                 { headers: { 'X-User-ID': user?.uid || user?._id } }
             );
             setCareerAdvice(res.data);

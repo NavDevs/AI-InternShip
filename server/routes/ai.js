@@ -127,30 +127,53 @@ router.post('/analyze', auth, async (req, res) => {
         }
 
         const userContext = req.body.userContext || user || {};
-        let userSkills = userContext.skills || user?.skills || ['React', 'JavaScript', 'Node.js', 'Web Technologies'];
+        // Ensure skills is always a clean array — never undefined or null
+        let userSkills = [];
+        if (Array.isArray(userContext.skills) && userContext.skills.length > 0) {
+            userSkills = userContext.skills;
+        } else if (Array.isArray(user?.skills) && user.skills.length > 0) {
+            userSkills = user.skills;
+        }
+        console.log('Analyze: userSkills received =', userSkills);
 
         const userProfile = {
-            name: userContext.name || 'Guest User',
-            role: userContext.role || 'Student',
-            location: userContext.profile?.state || 'Not specified',
-            education: userContext.education ? `${userContext.education.degree || ''} at ${userContext.education.college || ''}` : 'Not specified',
-            skills: userSkills,
-            experience: userContext.experience || [],
-            projects: userContext.projects || []
+            name: userContext.name || user?.name || 'Candidate',
+            role: userContext.role || user?.role || 'Student',
+            location: userContext.profile?.state || user?.profile?.state || 'Not specified',
+            education: (userContext.education?.degree || user?.education?.degree)
+                ? `${userContext.education?.degree || user?.education?.degree} at ${userContext.education?.college || user?.education?.college}`
+                : 'Not specified',
+            skills: userSkills
         };
 
-        const systemPrompt = `You are an expert career advisor. Analyze job descriptions and compare them against candidate profiles. Always respond with valid JSON only.`;
+        const skillList = userSkills.join(', ') || 'No skills listed';
 
-        const userPrompt = `
-Analyze the following job description and compare it against the user's profile.
+        const systemPrompt = `You are an expert technical recruiter and career advisor. Your job is to accurately compare a candidate's skills against a job description. You must do case-insensitive matching — "react.js", "React.js", and "ReactJS" are all the same skill. Always respond with valid JSON only.`;
 
-USER PROFILE:
-${JSON.stringify(userProfile)}
+        const userPrompt = `Compare this candidate's skills against the job description below and calculate an accurate match score.
+
+CANDIDATE SKILLS (these are the EXACT skills this person has):
+${skillList}
+
+CANDIDATE PROFILE:
+- Name: ${userProfile.name}
+- Role: ${userProfile.role}
+- Location: ${userProfile.location}
+- Education: ${userProfile.education}
 
 JOB DESCRIPTION:
 ${jdText}
 
-Respond with this exact JSON structure:
+INSTRUCTIONS FOR MATCHING:
+1. Compare each skill required in the JD against the candidate's skill list above
+2. Use CASE-INSENSITIVE matching — "javascript" matches "JavaScript", "react.js" matches "React.js"
+3. Use SEMANTIC matching — "Node.js" matches "NodeJS", "Postgres" matches "PostgreSQL", "ML" matches "Machine Learning"
+4. A skill is MATCHED if the candidate has it in their list (even approximately)
+5. A skill is MISSING only if it genuinely does not appear in any form in the candidate's list
+6. matchPercentage = (number of matched required skills / total required skills) * 100
+7. Round matchPercentage to nearest integer
+
+Respond with ONLY this JSON (no markdown, no extra text):
 {
     "title": "Job Title from JD",
     "company": "Company Name from JD",
@@ -159,7 +182,7 @@ Respond with this exact JSON structure:
     "matchedSkills": ["skill1", "skill2"],
     "missingSkills": ["skill1", "skill2"],
     "isEligible": true,
-    "advice": "Short professional advice for the candidate"
+    "advice": "2-3 sentences of specific, actionable advice for this candidate for this exact role"
 }`;
 
         const response = await callGroq(systemPrompt, userPrompt, true);

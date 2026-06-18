@@ -49,7 +49,15 @@ const AIAnalyzer = () => {
             const res = await api.post('/ai/analyze',
                 { 
                     jdText,
-                    userContext: user 
+                    // Send clean serialized object — raw Firebase user has non-serializable properties
+                    // that cause skills to be dropped silently during JSON.stringify
+                    userContext: {
+                        name: user?.name || '',
+                        role: user?.role || 'student',
+                        skills: Array.isArray(user?.skills) ? user.skills : [],
+                        education: user?.education || {},
+                        profile: user?.profile || {}
+                    }
                 },
                 {
                     headers: {
