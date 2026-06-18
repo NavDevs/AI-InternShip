@@ -96,7 +96,10 @@ const Profile = () => {
     // --- Resume Extraction Logic ---
     const extractTextFromPDF = async (file) => {
         const pdfjsLib = await import('pdfjs-dist');
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+        // Use the worker bundled with the npm package via Vite's ?url import
+        // This avoids CDN version mismatches entirely
+        const { default: workerSrc } = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
 
         const arrayBuffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
