@@ -91,3 +91,19 @@ process.on('unhandledRejection', (reason, promise) => {
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err.message);
 });
+
+// Render Keep-Alive Cron Job
+// Render spins down free tier instances after 15 minutes of inactivity.
+// This internal cron job pings the server's own health route every 14 minutes to keep it awake.
+const RENDER_EXTERNAL_URL = process.env.RENDER_EXTERNAL_URL;
+if (RENDER_EXTERNAL_URL) {
+  const https = require('https');
+  setInterval(() => {
+    https.get(`${RENDER_EXTERNAL_URL}/`, (res) => {
+      console.log(`[Keep-Alive] Pinged ${RENDER_EXTERNAL_URL}. Status: ${res.statusCode} at ${new Date().toISOString()}`);
+    }).on('error', (e) => {
+      console.error(`[Keep-Alive] Ping failed: ${e.message}`);
+    });
+  }, 14 * 60 * 1000); // 14 minutes
+  console.log(`[Keep-Alive] Cron job activated for ${RENDER_EXTERNAL_URL} (14m interval)`);
+}
