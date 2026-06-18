@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import {
     ArrowLeft,
@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { db } from '../firebase';
-import { API_BASE_URL } from '../utils/api';
+
 import { collection, addDoc } from 'firebase/firestore';
 import { getYouTubePlaylistForSkill } from '../constants/youtubeLinks';
 
@@ -59,8 +59,8 @@ const JobDetail = () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.post(
-                `${API_BASE_URL}/ai/eligibility`,
+            const res = await api.post(
+                '/ai/eligibility',
                 {
                     job: {
                         title: job.title?.replace(/<[^>]*>?/gm, ''),
@@ -105,8 +105,8 @@ const JobDetail = () => {
         if (!job) return;
         setDownloadingQuestions(true);
         try {
-            const res = await axios.post(
-                `${API_BASE_URL}/ai/interview-questions`,
+            const res = await api.post(
+                '/ai/interview-questions',
                 { role: job.title.replace(/<[^>]*>?/gm, '') },
                 { headers: { 'X-User-ID': user?.uid || user?._id } }
             );

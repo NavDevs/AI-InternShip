@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import {
     Sparkles,
     Send,
@@ -21,7 +21,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { getYouTubePlaylistForSkill } from '../constants/youtubeLinks';
 import { Youtube } from 'lucide-react';
-import { API_BASE_URL } from '../utils/api';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -127,7 +126,7 @@ const CareerBot = () => {
         try {
             if (effectiveMode === 'menu' || isGreeting) {
                 setResult(null);
-                const res = await axios.post(`${API_BASE_URL}/ai/chat`,
+                const res = await api.post('/ai/chat',
                     {
                         message: userInput,
                         chatHistory: messages.map(m => ({ role: m.role === 'bot' ? 'model' : 'user', parts: [{ text: m.content }] })),
@@ -137,14 +136,14 @@ const CareerBot = () => {
                 );
                 setMessages(prev => [...prev, { role: 'bot', content: res.data.text }]);
             } else if (effectiveMode === 'analyze') {
-                const res = await axios.post(`${API_BASE_URL}/ai/analyze`,
+                const res = await api.post('/ai/analyze',
                     { jdText: userInput, userContext: user },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
                 setResult(res.data);
                 setMessages(prev => [...prev, { role: 'bot', content: `Your match score for this role is ${res.data.matchPercentage}%. I've generated a report for you below.` }]);
             } else if (effectiveMode === 'roadmap') {
-                const res = await axios.post(`${API_BASE_URL}/ai/roadmap`,
+                const res = await api.post('/ai/roadmap',
                     { dreamJob: userInput, userContext: user },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
@@ -170,7 +169,7 @@ const CareerBot = () => {
         setLoading(true);
         setMessages(prev => [...prev, { role: 'bot', content: "Analyzing your applications and generating career insights..." }]);
         try {
-            const res = await axios.post(`${API_BASE_URL}/ai/career-advice`, { userContext: user },
+            const res = await api.post('/ai/career-advice', { userContext: user },
                 { headers: { 'X-User-ID': user?.uid || user?._id } }
             );
             setCareerAdvice(res.data);

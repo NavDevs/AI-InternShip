@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import api, { API_BASE_URL } from '../utils/api';
 import jsPDF from 'jspdf';
 import {
     Sparkles,
@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { API_BASE_URL } from '../utils/api';
 
 const AIAnalyzer = () => {
     const { user } = useAuth();
@@ -47,7 +46,7 @@ const AIAnalyzer = () => {
         setIsLoading(true);
         setError('');
         try {
-            const res = await axios.post(`${API_BASE_URL}/ai/analyze`,
+            const res = await api.post('/ai/analyze',
                 { 
                     jdText,
                     userContext: user 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import {
     Search,
     MapPin,
@@ -24,7 +24,7 @@ import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 import { INDIAN_STATES } from '../constants/states';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE_URL } from '../utils/api';
+
 
 const SkeletonCard = () => (
     <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 animate-pulse space-y-4">
@@ -103,7 +103,7 @@ const JobListings = () => {
             const searchLocation = location.trim() || user?.profile?.state || 'India';
             const searchKeyword = `${role} ${search}`.trim() || 'internship';
 
-            const res = await axios.get(`${API_BASE_URL}/jobs/live`, {
+            const res = await api.get('/jobs/live', {
                 params: {
                     keyword: searchKeyword,
                     location: searchLocation
@@ -113,13 +113,18 @@ const JobListings = () => {
         } catch (err) {
             console.error('Fetch error:', err);
             setError('Failed to fetch live opportunities. Using local listings.');
-            const res = await axios.get(`${API_BASE_URL}/jobs`, {
-                params: {
-                    type: type || undefined,
-                    state: user?.profile?.state || undefined
-                }
-            });
-            setJobs(res.data);
+            try {
+                const res = await api.get('/jobs', {
+                    params: {
+                        type: type || undefined,
+                        state: user?.profile?.state || undefined
+                    }
+                });
+                setJobs(res.data);
+            } catch (fallbackErr) {
+                console.error('Fallback fetch also failed:', fallbackErr);
+                setJobs([]);
+            }
         } finally {
             setLoading(false);
         }
