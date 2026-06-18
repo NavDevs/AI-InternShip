@@ -152,8 +152,8 @@ router.post('/analyze', auth, async (req, res) => {
 
         const userPrompt = `Compare this candidate's skills against the job description below and calculate an accurate match score.
 
-CANDIDATE SKILLS (these are the EXACT skills this person has):
-${skillList}
+CANDIDATE SKILLS ARRAY:
+${JSON.stringify(userSkills)}
 
 CANDIDATE PROFILE:
 - Name: ${userProfile.name}
@@ -164,16 +164,15 @@ CANDIDATE PROFILE:
 JOB DESCRIPTION:
 ${jdText}
 
-INSTRUCTIONS FOR MATCHING:
-1. Compare each skill required in the JD against the candidate's skill list above
-2. Use CASE-INSENSITIVE matching — "javascript" matches "JavaScript", "react.js" matches "React.js"
-3. Use SEMANTIC matching — "Node.js" matches "NodeJS", "Postgres" matches "PostgreSQL", "ML" matches "Machine Learning"
-4. A skill is MATCHED if the candidate has it in their list (even approximately)
-5. A skill is MISSING only if it genuinely does not appear in any form in the candidate's list
-6. matchPercentage = (number of matched required skills / total required skills) * 100
-7. Round matchPercentage to nearest integer
+STEP 1: Identify ALL the skills required or preferred in the JOB DESCRIPTION.
+STEP 2: For EACH required skill, check if it exists in the CANDIDATE SKILLS ARRAY.
+- Use case-insensitive matching ("react" = "React").
+- Use semantic matching ("Node.js" = "NodeJS", "ML" = "Machine Learning", "Postgres" = "PostgreSQL").
+- If the candidate has the skill, add it to "matchedSkills".
+- If the candidate DOES NOT have the skill, add it to "missingSkills".
+STEP 3: Calculate matchPercentage = (Matched / Total Required) * 100. Round to the nearest integer.
 
-Respond with ONLY this JSON (no markdown, no extra text):
+Return ONLY this JSON (do not include the steps or any markdown, just the JSON):
 {
     "title": "Job Title from JD",
     "company": "Company Name from JD",
