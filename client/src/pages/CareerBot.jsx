@@ -315,17 +315,36 @@ const CareerBot = () => {
                             </div>
                         )}
 
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                placeholder={mode === 'analyze' ? 'Paste JD here…' : mode === 'roadmap' ? 'Target job title…' : 'Ask me anything…'}
-                                className="flex-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 px-4 py-2.5 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-stone-400"
+                        <div className="flex gap-2 items-end">
+                            <textarea
+                                placeholder={mode === 'analyze' ? 'Paste full JD here…' : mode === 'roadmap' ? 'Target job title…' : 'Ask me anything…'}
+                                className="flex-1 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 px-4 py-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-stone-400 resize-none overflow-y-auto custom-scrollbar leading-relaxed"
+                                style={{ minHeight: '44px', maxHeight: '200px', height: '44px' }}
                                 value={inputText}
-                                onChange={(e) => setInputText(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                onChange={(e) => {
+                                    setInputText(e.target.value);
+                                    e.target.style.height = '44px';
+                                    e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        if (inputText.trim() && !loading) {
+                                            handleSend();
+                                            e.target.style.height = '44px';
+                                        }
+                                    }
+                                }}
                             />
                             <button
-                                onClick={handleSend}
+                                onClick={() => {
+                                    if (inputText.trim() && !loading) {
+                                        handleSend();
+                                        // Reset height using a hacky query selector since we don't have a ref directly in this inline scope
+                                        const ta = document.querySelector('textarea[placeholder*="Ask"], textarea[placeholder*="Target"], textarea[placeholder*="Paste"]');
+                                        if (ta) ta.style.height = '44px';
+                                    }
+                                }}
                                 disabled={!inputText.trim() || loading}
                                 className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
                             >
