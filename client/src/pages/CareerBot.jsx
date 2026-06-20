@@ -168,6 +168,7 @@ const CareerBot = () => {
                     { jdText: userInput, userContext: cleanUser },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
+                setCareerAdvice(null);
                 setResult(res.data);
                 setMessages(prev => [...prev, { role: 'bot', content: `Your match score for this role is ${res.data.matchPercentage}%. I've generated a report for you below.` }]);
             } else if (effectiveMode === 'roadmap') {
@@ -175,6 +176,7 @@ const CareerBot = () => {
                     { dreamJob: userInput, userContext: cleanUser },
                     { headers: { 'X-User-ID': user?.uid || user?._id } }
                 );
+                setCareerAdvice(null);
                 setResult(res.data);
                 setMessages(prev => [...prev, { role: 'bot', content: `I've crafted a personalized 6-month roadmap for you to become a ${res.data.dreamJob}. Check it out!` }]);
                 setMode('menu');
