@@ -259,6 +259,38 @@ const CareerBot = () => {
                         </button>
                     </div>
 
+                    <div className="px-4 py-3 bg-stone-50/50 dark:bg-stone-900/50 border-b border-stone-200 dark:border-stone-800 z-10 shrink-0">
+                        <div className="grid grid-cols-3 gap-2">
+                            <button
+                                onClick={() => { if(mode !== 'analyze') { setMode('analyze'); setMessages(p => [...p, { role: 'bot', content: "Please paste the job description you'd like me to analyze." }]); } }}
+                                className={`p-2 rounded-lg flex flex-col items-center gap-1 transition-colors text-center ${mode === 'analyze' ? 'bg-stone-200 dark:bg-stone-700 ring-1 ring-blue-500/50 shadow-sm' : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                            >
+                                <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+                                    <Target className="h-3 w-3" />
+                                </div>
+                                <span className="text-[10px] font-medium text-stone-700 dark:text-stone-300">Eligibility</span>
+                            </button>
+                            <button
+                                onClick={() => { if(mode !== 'roadmap') { setMode('roadmap'); setMessages(p => [...p, { role: 'bot', content: "What's your target role? I'll build a roadmap for you." }]); } }}
+                                className={`p-2 rounded-lg flex flex-col items-center gap-1 transition-colors text-center ${mode === 'roadmap' ? 'bg-stone-200 dark:bg-stone-700 ring-1 ring-purple-500/50 shadow-sm' : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                            >
+                                <div className="h-6 w-6 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center">
+                                    <Award className="h-3 w-3" />
+                                </div>
+                                <span className="text-[10px] font-medium text-stone-700 dark:text-stone-300">Roadmap</span>
+                            </button>
+                            <button
+                                onClick={() => { setMode('insights'); setCareerAdvice(null); handleCareerInsights(); }}
+                                className={`p-2 rounded-lg flex flex-col items-center gap-1 transition-colors text-center ${mode === 'insights' ? 'bg-stone-200 dark:bg-stone-700 ring-1 ring-amber-500/50 shadow-sm' : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                            >
+                                <div className="h-6 w-6 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
+                                    <Lightbulb className="h-3 w-3" />
+                                </div>
+                                <span className="text-[10px] font-medium text-stone-700 dark:text-stone-300">Insights</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 custom-scrollbar scroll-smooth">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
@@ -282,38 +314,7 @@ const CareerBot = () => {
                         )}
                     </div>
 
-                    <div className="p-4 border-t border-stone-200 dark:border-stone-800 space-y-3 bg-white dark:bg-stone-900">
-                        {mode === 'menu' && (
-                            <div className="grid grid-cols-3 gap-2">
-                                <button
-                                    onClick={() => { setMode('analyze'); setMessages(p => [...p, { role: 'bot', content: "Please paste the job description you'd like me to analyze." }]); }}
-                                    className="p-3 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg flex flex-col items-center gap-1.5 transition-colors text-center"
-                                >
-                                    <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
-                                        <Target className="h-4 w-4" />
-                                    </div>
-                                    <span className="text-xs text-stone-600 dark:text-stone-400">Eligibility</span>
-                                </button>
-                                <button
-                                    onClick={() => { setMode('roadmap'); setMessages(p => [...p, { role: 'bot', content: "What's your target role? I'll build a roadmap for you." }]); }}
-                                    className="p-3 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg flex flex-col items-center gap-1.5 transition-colors text-center"
-                                >
-                                    <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center">
-                                        <Award className="h-4 w-4" />
-                                    </div>
-                                    <span className="text-xs text-stone-600 dark:text-stone-400">Roadmap</span>
-                                </button>
-                                <button
-                                    onClick={() => { setCareerAdvice(null); handleCareerInsights(); }}
-                                    className="p-3 bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg flex flex-col items-center gap-1.5 transition-colors text-center"
-                                >
-                                    <div className="h-8 w-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
-                                        <Lightbulb className="h-4 w-4" />
-                                    </div>
-                                    <span className="text-xs text-stone-600 dark:text-stone-400">Insights</span>
-                                </button>
-                            </div>
-                        )}
+                    <div className="p-4 border-t border-stone-200 dark:border-stone-800 space-y-3 bg-white dark:bg-stone-900 shrink-0">
 
                         <div className="flex gap-2 items-end">
                             <textarea
