@@ -55,6 +55,22 @@ class ErrorBoundary extends React.Component {
     }
 }
 
+const formatMessageText = (text) => {
+    if (!text) return '';
+    // Replace **text** with bold tags
+    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-stone-900 dark:text-stone-100">$1</strong>');
+    // Replace *text* with italic tags
+    formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+    // Replace bullet points at the start of a line
+    formatted = formatted.replace(/^(\s*)-\s+(.*)/gm, '<li class="ml-4 list-disc">$2</li>');
+    formatted = formatted.replace(/^(\s*)\*\s+(.*)/gm, '<li class="ml-4 list-disc">$2</li>');
+    // Replace numbered lists
+    formatted = formatted.replace(/^(\s*)\d+\.\s+(.*)/gm, '<li class="ml-4 list-decimal">$2</li>');
+    // Replace newlines with breaks
+    formatted = formatted.replace(/\n/g, '<br />');
+    return formatted;
+};
+
 const CareerBot = () => {
     const { user } = useAuth();
     const [mode, setMode] = useState(() => {
@@ -86,16 +102,18 @@ const CareerBot = () => {
     });
     const [interviewQuestions, setInterviewQuestions] = useState(null);
     const [loadingQuestions, setLoadingQuestions] = useState(false);
-    const messagesEndRef = useRef(null);
+    const chatContainerRef = useRef(null);
 
     const scrollToBottom = () => {
-        setTimeout(() => {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-        }, 100);
+        if (chatContainerRef.current) {
+            // Use container scrollTop to prevent the main browser window from jumping
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
     };
 
     useEffect(() => {
-        scrollToBottom();
+        const timeout = setTimeout(scrollToBottom, 50);
+        return () => clearTimeout(timeout);
     }, [messages, loading]);
 
     useEffect(() => {
@@ -239,27 +257,27 @@ const CareerBot = () => {
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto p-4 pb-28 space-y-3">
+                    <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 custom-scrollbar scroll-smooth">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
-                                <div className={`max-w-[85%] px-4 py-2.5 rounded-xl text-sm leading-relaxed ${msg.role === 'bot'
-                                    ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
-                                    : 'bg-primary text-white rounded-tr-sm'
-                                    }`}>
-                                    {msg.content}
-                                </div>
+                                <div 
+                                    className={`max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'bot'
+                                        ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
+                                        : 'bg-primary text-white rounded-tr-sm'
+                                    }`}
+                                    dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
+                                />
                             </div>
                         ))}
                         {loading && (
                             <div className="flex justify-start">
-                                <div className="bg-stone-100 dark:bg-stone-800 px-4 py-3 rounded-xl rounded-tl-sm flex gap-1.5 items-center">
+                                <div className="bg-stone-100 dark:bg-stone-800 px-4 py-3 rounded-2xl rounded-tl-sm flex gap-1.5 items-center">
                                     <div className="h-1.5 w-1.5 bg-stone-400 rounded-full animate-bounce" />
                                     <div className="h-1.5 w-1.5 bg-stone-400 rounded-full animate-bounce [animation-delay:0.2s]" />
                                     <div className="h-1.5 w-1.5 bg-stone-400 rounded-full animate-bounce [animation-delay:0.4s]" />
                                 </div>
                             </div>
                         )}
-                        <div ref={messagesEndRef} />
                     </div>
 
                     <div className="p-4 border-t border-stone-200 dark:border-stone-800 space-y-3 bg-white dark:bg-stone-900">
