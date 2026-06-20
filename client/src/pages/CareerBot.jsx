@@ -89,7 +89,9 @@ const CareerBot = () => {
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        setTimeout(() => {
+            messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+        }, 100);
     };
 
     useEffect(() => {
@@ -123,16 +125,17 @@ const CareerBot = () => {
             effectiveMode = 'roadmap';
         }
 
+        const cleanUser = {
+            name: user?.name || '',
+            role: user?.role || 'student',
+            skills: Array.isArray(user?.skills) ? user.skills : [],
+            education: user?.education || {},
+            profile: user?.profile || {}
+        };
+
         try {
             if (effectiveMode === 'menu' || isGreeting) {
                 setResult(null);
-                const cleanUser = {
-                    name: user?.name || '',
-                    role: user?.role || 'student',
-                    skills: Array.isArray(user?.skills) ? user.skills : [],
-                    education: user?.education || {},
-                    profile: user?.profile || {}
-                };
                 const res = await api.post('/ai/chat',
                     {
                         message: userInput,
