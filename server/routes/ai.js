@@ -77,17 +77,23 @@ const executeGroqWithFallback = async (messages, options = {}, res = null) => {
                     break; // break retry loop, go to next model
                 }
 
-                // 429 Rate Limit or 500+ Server Error
-                if (status === 429 || status >= 500) {
+                // 429 Rate Limit - Fall back immediately to next model (different bucket)
+                if (status === 429) {
+                    console.warn(`[Groq] Model ${model} rate limited (429). Falling back to next model immediately.`);
+                    break;
+                }
+
+                // 500+ Server Error - Retry exactly once with a short 1s delay
+                if (status >= 500) {
                     retries++;
-                    if (retries > maxRetries) {
+                    if (retries > 1) {
                         console.warn(`[Groq] Model ${model} exhausted retries (${status}). Falling back to next model.`);
                         break;
                     }
-                    const delay = Math.pow(2, retries) * 1000; // 2s, 4s, 8s
-                    console.warn(`[Groq] Model ${model} hit ${status}. Retrying in ${delay}ms (Attempt ${retries}/${maxRetries})...`);
+                    const delay = 1000;
+                    console.warn(`[Groq] Model ${model} hit ${status}. Retrying in ${delay}ms...`);
                     await sleep(delay);
-                    continue; // loop again with same model
+                    continue;
                 }
 
                 // Any other unhandled error, break and try next model

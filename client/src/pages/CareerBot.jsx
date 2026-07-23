@@ -231,7 +231,9 @@ const CareerBot = () => {
             let message = "Sorry, something went wrong. Please try again.";
             if (status === 429) message = "Please wait about 30 seconds before trying again — rate limit reached.";
             else if (status === 500) message = "The AI service encountered an error. Please try again in a moment.";
-            else if (!err.response) message = "Can't reach the server. Please check your connection.";
+            else if (!err.response) {
+                message = err.message?.includes('timed out') ? err.message : "Can't reach the server. Please check your connection.";
+            }
             setMessages(prev => [...prev, { role: 'bot', content: message }]);
         } finally {
             setLoading(false);
