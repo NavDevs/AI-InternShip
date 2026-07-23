@@ -71,6 +71,48 @@ const formatMessageText = (text) => {
     return formatted;
 };
 
+const TypewriterMessage = ({ msg, isLastAi, onUpdate }) => {
+    const [displayedText, setDisplayedText] = useState(isLastAi ? '' : msg.content);
+    const onUpdateRef = useRef(onUpdate);
+
+    useEffect(() => {
+        onUpdateRef.current = onUpdate;
+    }, [onUpdate]);
+
+    useEffect(() => {
+        if (!isLastAi) {
+            setDisplayedText(msg.content);
+            return;
+        }
+
+        setDisplayedText('');
+        let i = 0;
+        const interval = setInterval(() => {
+            i += 5;
+            if (i >= msg.content.length) {
+                setDisplayedText(msg.content);
+                clearInterval(interval);
+                onUpdateRef.current?.();
+            } else {
+                setDisplayedText(msg.content.substring(0, i));
+                onUpdateRef.current?.();
+            }
+        }, 15);
+
+        return () => clearInterval(interval);
+    }, [msg.content, isLastAi]);
+
+    const dynamicPadding = Math.min(Math.max(16 + (msg.content.length * 0.05), 16), 64);
+
+    return (
+        <div 
+            className="max-w-[90%] rounded-2xl text-sm leading-relaxed bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm"
+            style={{ padding: `${dynamicPadding}px` }}
+            dangerouslySetInnerHTML={{ __html: formatMessageText(displayedText) }}
+        />
+    );
+};
+
 const CareerBot = () => {
     const { user } = useAuth();
     const [mode, setMode] = useState(() => {
@@ -294,13 +336,18 @@ const CareerBot = () => {
                     <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 custom-scrollbar scroll-smooth">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
-                                <div 
-                                    className={`max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'bot'
-                                        ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
-                                        : 'bg-primary text-white rounded-tr-sm'
-                                    }`}
-                                    dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
-                                />
+                                {msg.role === 'bot' ? (
+                                    <TypewriterMessage 
+                                        msg={msg} 
+                                        isLastAi={i === messages.length - 1} 
+                                        onUpdate={scrollToBottom} 
+                                    />
+                                ) : (
+                                    <div 
+                                        className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed bg-primary text-white rounded-tr-sm"
+                                        dangerouslySetInnerHTML={{ __html: msg.content }}
+                                    />
+                                )}
                             </div>
                         ))}
                         {loading && (
