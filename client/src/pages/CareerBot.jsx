@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import api from '../utils/api';
+import api, { API_BASE_URL } from '../utils/api';
 import {
     Sparkles,
     Send,
@@ -66,53 +66,6 @@ const formatMessageText = (text) => {
     formatted = formatted.replace(/^(\s*)\*\s+(.*)/gm, '<li class="ml-4 list-disc">$2</li>');
     // Replace numbered lists
     formatted = formatted.replace(/^(\s*)\d+\.\s+(.*)/gm, '<li class="ml-4 list-decimal">$2</li>');
-    // Replace newlines with breaks
-    formatted = formatted.replace(/\n/g, '<br />');
-    return formatted;
-};
-
-const TypewriterMessage = ({ msg, isLastAi, onUpdate }) => {
-    const [displayedText, setDisplayedText] = useState(isLastAi ? '' : msg.content);
-    const onUpdateRef = useRef(onUpdate);
-
-    useEffect(() => {
-        onUpdateRef.current = onUpdate;
-    }, [onUpdate]);
-
-    useEffect(() => {
-        if (!isLastAi) {
-            setDisplayedText(msg.content);
-            return;
-        }
-
-        setDisplayedText('');
-        let i = 0;
-        const interval = setInterval(() => {
-            i += 1; // Slowed down from 5 to 1 char per tick so it's clearly visible
-            if (i >= msg.content.length) {
-                setDisplayedText(msg.content);
-                clearInterval(interval);
-                onUpdateRef.current?.();
-            } else {
-                setDisplayedText(msg.content.substring(0, i));
-                onUpdateRef.current?.();
-            }
-        }, 15);
-
-        return () => clearInterval(interval);
-    }, [msg.content, isLastAi]);
-
-    const dynamicPadding = Math.min(Math.max(16 + (msg.content.length * 0.05), 16), 64);
-
-    return (
-        <div 
-            className="max-w-[90%] rounded-2xl text-sm leading-relaxed bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm"
-            style={{ padding: `${dynamicPadding}px` }}
-            dangerouslySetInnerHTML={{ __html: formatMessageText(displayedText) }}
-        />
-    );
-};
-
 const CareerBot = () => {
     const { user } = useAuth();
     const [mode, setMode] = useState(() => {
@@ -196,15 +149,65 @@ const CareerBot = () => {
         try {
             if (effectiveMode === 'menu' || isGreeting) {
                 setResult(null);
-                const res = await api.post('/ai/chat',
-                    {
+                
+                // Add initial empty bot message placeholder
+                setMessages(prev => [...prev, { role: 'bot', content: '' }]);
+                
+                const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-ID': user?.uid || user?._id || ''
+                    },
+                    body: JSON.stringify({
                         message: userInput,
                         chatHistory: messages.map(m => ({ role: m.role === 'bot' ? 'model' : 'user', parts: [{ text: m.content }] })),
                         userContext: cleanUser
-                    },
-                    { headers: { 'X-User-ID': user?.uid || user?._id } }
-                );
-                setMessages(prev => [...prev, { role: 'bot', content: res.data.text }]);
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let done = false;
+                let fullText = '';
+                
+                setLoading(false); // Hide spinner as soon as stream connection opens
+
+                while (!done) {
+                    const { value, done: doneReading } = await reader.read();
+                    done = doneReading;
+                    if (value) {
+                        const chunkValue = decoder.decode(value, { stream: true });
+                        const lines = chunkValue.split('\n');
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                const dataStr = line.replace('data: ', '');
+                                if (dataStr === '[DONE]') break;
+                                try {
+                                    const data = JSON.parse(dataStr);
+                                    if (data.text) {
+                                        fullText += data.text;
+                                        setMessages(prev => {
+                                            const newMessages = [...prev];
+                                            newMessages[newMessages.length - 1].content = fullText;
+                                            return newMessages;
+                                        });
+                                        // Scroll to bottom manually as stream chunks arrive
+                                        if (chatContainerRef.current) {
+                                            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+                                        }
+                                    }
+                                } catch (e) {
+                                    // Ignore partial JSON parses across chunks
+                                }
+                            }
+                        }
+                    }
+                }
             } else if (effectiveMode === 'analyze') {
                 const res = await api.post('/ai/analyze',
                     { jdText: userInput, userContext: cleanUser },
@@ -336,18 +339,14 @@ const CareerBot = () => {
                     <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 custom-scrollbar scroll-smooth">
                         {messages.map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
-                                {msg.role === 'bot' ? (
-                                    <TypewriterMessage 
-                                        msg={msg} 
-                                        isLastAi={i === messages.length - 1} 
-                                        onUpdate={scrollToBottom} 
-                                    />
-                                ) : (
-                                    <div 
-                                        className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed bg-primary text-white rounded-tr-sm"
-                                        dangerouslySetInnerHTML={{ __html: msg.content }}
-                                    />
-                                )}
+                                <div 
+                                    className={`max-w-[90%] rounded-2xl text-sm leading-relaxed ${msg.role === 'bot'
+                                        ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
+                                        : 'bg-primary text-white rounded-tr-sm px-4 py-3'
+                                    }`}
+                                    style={msg.role === 'bot' ? { padding: `${Math.min(Math.max(16 + ((msg.content?.length || 0) * 0.05), 16), 64)}px` } : {}}
+                                    dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
+                                />
                             </div>
                         ))}
                         {loading && (

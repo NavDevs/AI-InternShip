@@ -21,7 +21,7 @@ const FALLBACK_MODELS = [
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-const executeGroqWithFallback = async (messages, options = {}) => {
+const executeGroqWithFallback = async (messages, options = {}, res = null) => {
     let lastError = null;
 
     for (const model of FALLBACK_MODELS) {
@@ -30,15 +30,46 @@ const executeGroqWithFallback = async (messages, options = {}) => {
 
         while (retries <= maxRetries) {
             try {
-                const completion = await groq.chat.completions.create({
-                    model: model,
-                    messages: messages,
-                    ...options
-                });
-                return completion.choices[0]?.message?.content || '';
+                if (res) {
+                    const stream = await groq.chat.completions.create({
+                        model: model,
+                        messages: messages,
+                        ...options,
+                        stream: true
+                    });
+                    
+                    res.setHeader('Content-Type', 'text/event-stream');
+                    res.setHeader('Cache-Control', 'no-cache');
+                    res.setHeader('Connection', 'keep-alive');
+
+                    for await (const chunk of stream) {
+                        const content = chunk.choices[0]?.delta?.content || '';
+                        if (content) {
+                            res.write(`data: ${JSON.stringify({ text: content })}\n\n`);
+                        }
+                    }
+                    res.write('data: [DONE]\n\n');
+                    res.end();
+                    return;
+                } else {
+                    const completion = await groq.chat.completions.create({
+                        model: model,
+                        messages: messages,
+                        ...options
+                    });
+                    return completion.choices[0]?.message?.content || '';
+                }
             } catch (err) {
                 lastError = err;
                 const status = err.status || err.response?.status;
+
+                if (res && res.headersSent) {
+                    console.error(`[Groq] Stream failed mid-way for model ${model}:`, err.message);
+                    res.write(`data: ${JSON.stringify({ error: 'Stream interrupted' })}\n\n`);
+                    res.write('data: [DONE]\n\n');
+                    res.end();
+                    return;
+                }
 
                 // 400 Bad Request (Model decommissioned) or 404 Not Found
                 if (status === 400 || status === 404) {
@@ -641,12 +672,10 @@ GUIDELINES:
 
         messages.push({ role: 'user', content: message });
 
-        const responseText = await executeGroqWithFallback(messages, {
+        await executeGroqWithFallback(messages, {
             temperature: 0.8,
             max_tokens: 500
-        });
-
-        res.json({ text: responseText || 'Sorry, I could not generate a response.' });
+        }, res);
 
     } catch (err) {
         console.error('Groq Chat Error:', err);
