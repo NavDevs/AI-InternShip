@@ -66,6 +66,42 @@ const formatMessageText = (text) => {
     formatted = formatted.replace(/^(\s*)\*\s+(.*)/gm, '<li class="ml-4 list-disc">$2</li>');
     // Replace numbered lists
     formatted = formatted.replace(/^(\s*)\d+\.\s+(.*)/gm, '<li class="ml-4 list-decimal">$2</li>');
+    return formatted;
+};
+
+const ChatMessage = ({ msg }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    // Very rough heuristic for long text without parsing HTML tags
+    const isLong = msg.content && msg.content.length > 500;
+    
+    return (
+        <div className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'} group`}>
+            <div 
+                className={`max-w-[90%] rounded-2xl text-sm leading-relaxed relative ${msg.role === 'bot'
+                    ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
+                    : 'bg-primary text-white rounded-tr-sm px-4 py-3'
+                }`}
+                style={msg.role === 'bot' ? { padding: '16px' } : {}}
+            >
+                <div 
+                    className={`prose prose-sm dark:prose-invert max-w-none ${!isExpanded && isLong && msg.role === 'bot' ? 'line-clamp-[8] overflow-hidden' : ''}`}
+                    dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
+                />
+                
+                {isLong && msg.role === 'bot' && (
+                    <button 
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="mt-3 text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors"
+                    >
+                        {isExpanded ? 'Show less' : 'Read more'}
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
 const CareerBot = () => {
     const { user } = useAuth();
     const [mode, setMode] = useState(() => {
@@ -340,16 +376,7 @@ const CareerBot = () => {
 
                     <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 custom-scrollbar scroll-smooth">
                         {messages.map((msg, i) => (
-                            <div key={i} className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
-                                <div 
-                                    className={`max-w-[90%] rounded-2xl text-sm leading-relaxed ${msg.role === 'bot'
-                                        ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
-                                        : 'bg-primary text-white rounded-tr-sm px-4 py-3'
-                                    }`}
-                                    style={msg.role === 'bot' ? { padding: `${Math.min(Math.max(16 + ((msg.content?.length || 0) * 0.05), 16), 64)}px` } : {}}
-                                    dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
-                                />
-                            </div>
+                            <ChatMessage key={i} msg={msg} />
                         ))}
                         {loading && (
                             <div className="flex justify-start">
