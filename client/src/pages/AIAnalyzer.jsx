@@ -320,7 +320,7 @@ const AIAnalyzer = () => {
                                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Matched Skills
                                         </p>
                                         <div className="flex flex-wrap gap-1.5">
-                                            {result.matchedSkills.length > 0 ? result.matchedSkills.map((s, i) => (
+                                            {result.matchedSkills && result.matchedSkills.length > 0 ? result.matchedSkills.map((s, i) => (
                                                 <span key={i} className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-md text-xs capitalize">
                                                     {s}
                                                 </span>
@@ -332,7 +332,7 @@ const AIAnalyzer = () => {
                                             <span className="h-1.5 w-1.5 rounded-full bg-rose-500" /> Missing Skills
                                         </p>
                                         <div className="flex flex-wrap gap-1.5">
-                                            {result.missingSkills.length > 0 ? result.missingSkills.map((s, i) => (
+                                            {result.missingSkills && result.missingSkills.length > 0 ? result.missingSkills.map((s, i) => (
                                                 <span key={i} className="px-2.5 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 rounded-md text-xs capitalize">
                                                     {s}
                                                 </span>
