@@ -13,8 +13,61 @@ const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY || 'missing_api_key'
 });
 
-// Model to use - Llama 3.3 70B is fast and capable
-const MODEL = 'llama-3.3-70b-versatile';
+const FALLBACK_MODELS = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-8b-instant",
+    "mixtral-8x7b-32768"
+];
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const executeGroqWithFallback = async (messages, options = {}) => {
+    let lastError = null;
+
+    for (const model of FALLBACK_MODELS) {
+        let retries = 0;
+        const maxRetries = 3;
+
+        while (retries <= maxRetries) {
+            try {
+                const completion = await groq.chat.completions.create({
+                    model: model,
+                    messages: messages,
+                    ...options
+                });
+                return completion.choices[0]?.message?.content || '';
+            } catch (err) {
+                lastError = err;
+                const status = err.status || err.response?.status;
+
+                // 400 Bad Request (Model decommissioned) or 404 Not Found
+                if (status === 400 || status === 404) {
+                    console.warn(`[Groq] Model ${model} failed with ${status}. Falling back to next model.`);
+                    break; // break retry loop, go to next model
+                }
+
+                // 429 Rate Limit or 500+ Server Error
+                if (status === 429 || status >= 500) {
+                    retries++;
+                    if (retries > maxRetries) {
+                        console.warn(`[Groq] Model ${model} exhausted retries (${status}). Falling back to next model.`);
+                        break;
+                    }
+                    const delay = Math.pow(2, retries) * 1000; // 2s, 4s, 8s
+                    console.warn(`[Groq] Model ${model} hit ${status}. Retrying in ${delay}ms (Attempt ${retries}/${maxRetries})...`);
+                    await sleep(delay);
+                    continue; // loop again with same model
+                }
+
+                // Any other unhandled error, break and try next model
+                console.warn(`[Groq] Model ${model} encountered unexpected error ${status || err.message}. Falling back.`);
+                break;
+            }
+        }
+    }
+
+    throw new Error(`All Groq models failed. Last error: ${lastError?.message}`);
+};
 
 const extractJson = (text) => {
     try {
@@ -38,15 +91,11 @@ const callGroq = async (systemPrompt, userPrompt, jsonMode = false) => {
         { role: 'user', content: userPrompt }
     ];
 
-    const completion = await groq.chat.completions.create({
-        model: MODEL,
-        messages: messages,
+    return await executeGroqWithFallback(messages, {
         temperature: 0.7,
         max_tokens: 2048,
         response_format: jsonMode ? { type: 'json_object' } : undefined
     });
-
-    return completion.choices[0]?.message?.content || '';
 };
 
 // Resume Parser — Extracts structured profile data from raw resume text
@@ -592,15 +641,12 @@ GUIDELINES:
 
         messages.push({ role: 'user', content: message });
 
-        const completion = await groq.chat.completions.create({
-            model: MODEL,
-            messages: messages,
+        const responseText = await executeGroqWithFallback(messages, {
             temperature: 0.8,
             max_tokens: 500
         });
 
-        const responseText = completion.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
-        res.json({ text: responseText });
+        res.json({ text: responseText || 'Sorry, I could not generate a response.' });
 
     } catch (err) {
         console.error('Groq Chat Error:', err);
