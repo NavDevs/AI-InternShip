@@ -1,12 +1,12 @@
 import axios from 'axios';
 
 // API Base URL Configuration
-const RENDER_BACKEND_URL = 'https://ai-internship.onrender.com/api';
 const LOCAL_BACKEND_URL = 'http://localhost:5000/api';
+const PROD_BACKEND_URL = import.meta.env.VITE_API_URL || 'https://ai-internship.onrender.com/api';
 
 // Automatically use production URL when not in development
 const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
-export const API_BASE_URL = isDevelopment ? LOCAL_BACKEND_URL : RENDER_BACKEND_URL;
+export const API_BASE_URL = isDevelopment ? LOCAL_BACKEND_URL : PROD_BACKEND_URL;
 
 // Create a pre-configured axios instance with timeout and base URL
 const api = axios.create({
