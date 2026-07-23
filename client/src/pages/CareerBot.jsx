@@ -88,7 +88,7 @@ const TypewriterMessage = ({ msg, isLastAi, onUpdate }) => {
         setDisplayedText('');
         let i = 0;
         const interval = setInterval(() => {
-            i += 5;
+            i += 1; // Slowed down from 5 to 1 char per tick so it's clearly visible
             if (i >= msg.content.length) {
                 setDisplayedText(msg.content);
                 clearInterval(interval);
