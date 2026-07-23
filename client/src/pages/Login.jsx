@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import { auth, db } from '../firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 
@@ -14,12 +14,11 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleGoogleSignIn = async () => {
-        const provider = new GoogleAuthProvider();
-        try {
-            const result = await signInWithPopup(auth, provider);
+    // Handle redirect result after returning from Google
+    React.useEffect(() => {
+        getRedirectResult(auth).then(async (result) => {
+            if (!result) return;
             const user = result.user;
-
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (!userDoc.exists()) {
                 await setDoc(doc(db, 'users', user.uid), {
@@ -31,8 +30,18 @@ const Login = () => {
                 });
             }
             navigate('/');
+        }).catch(() => {
+            setError('Google sign-in failed. Please try again.');
+        });
+    }, []);
+
+    const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        try {
+            await signInWithRedirect(auth, provider);
         } catch (err) {
-            setError('Google sign-in failed');
+            setError('Google sign-in failed. Please try again.');
         }
     };
 
