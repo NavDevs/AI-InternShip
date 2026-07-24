@@ -70,34 +70,15 @@ const formatMessageText = (text) => {
 };
 
 const ChatMessage = ({ msg }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    
-    // Very rough heuristic for long text without parsing HTML tags
-    const isLong = msg.content && msg.content.length > 500;
-    
     return (
-        <div className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'} group`}>
-            <div 
-                className={`max-w-[90%] rounded-2xl text-sm leading-relaxed relative ${msg.role === 'bot'
+        <div className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
+            <div
+                className={`max-w-[90%] rounded-2xl text-sm leading-relaxed p-4 ${msg.role === 'bot'
                     ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
-                    : 'bg-primary text-white rounded-tr-sm px-4 py-3'
+                    : 'bg-primary text-white rounded-tr-sm'
                 }`}
-                style={msg.role === 'bot' ? { padding: '16px' } : {}}
-            >
-                <div 
-                    className={`prose prose-sm dark:prose-invert max-w-none ${!isExpanded && isLong && msg.role === 'bot' ? 'line-clamp-[8] overflow-hidden' : ''}`}
-                    dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
-                />
-                
-                {isLong && msg.role === 'bot' && (
-                    <button 
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="mt-3 text-xs font-semibold text-primary hover:text-primary-hover flex items-center gap-1.5 transition-colors"
-                    >
-                        {isExpanded ? 'Show less' : 'Read more'}
-                    </button>
-                )}
-            </div>
+                dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
+            />
         </div>
     );
 };
