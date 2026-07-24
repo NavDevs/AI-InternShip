@@ -70,6 +70,8 @@ const formatMessageText = (text) => {
 };
 
 const ChatMessage = ({ msg }) => {
+    if (msg.role === 'bot' && !msg.content) return null;
+
     return (
         <div className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
             <div
