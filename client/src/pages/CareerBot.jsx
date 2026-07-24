@@ -225,6 +225,15 @@ const CareerBot = () => {
                         }
                     }
                 }
+
+                // If stream ended but no text was received, show error instead of empty bubble
+                if (!fullText) {
+                    setMessages(prev => {
+                        const newMessages = [...prev];
+                        newMessages[newMessages.length - 1].content = "Sorry, I didn't get a response. The server may be starting up — please try again in a moment.";
+                        return newMessages;
+                    });
+                }
             } else if (effectiveMode === 'analyze') {
                 const res = await api.post('/ai/analyze',
                     { jdText: userInput, userContext: cleanUser },
