@@ -17,19 +17,22 @@ const Login = () => {
     // Automatically redirect if the user is already authenticated
     React.useEffect(() => {
         if (user) {
-            navigate('/');
+            navigate('/dashboard');
         }
     }, [user, navigate]);
 
     const handleGoogleSignIn = async () => {
+        setError('');
+        setIsLoading(true);
         const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
         try {
             const result = await signInWithPopup(auth, provider);
             const googleUser = result.user;
-            const userDoc = await getDoc(doc(db, 'users', googleUser.uid));
+            // Create Firestore profile if first time
+            const userDocRef = doc(db, 'users', googleUser.uid);
+            const userDoc = await getDoc(userDocRef);
             if (!userDoc.exists()) {
-                await setDoc(doc(db, 'users', googleUser.uid), {
+                await setDoc(userDocRef, {
                     uid: googleUser.uid,
                     name: googleUser.displayName,
                     email: googleUser.email,
@@ -37,10 +40,15 @@ const Login = () => {
                     createdAt: new Date().toISOString()
                 });
             }
-            navigate('/');
+            // onAuthStateChanged in AuthContext will detect this and set user,
+            // which triggers the useEffect above to navigate to /dashboard
         } catch (err) {
             console.error('Google sign-in error:', err);
-            setError(`Google sign-in failed: ${err.message}`);
+            // Use window.alert so the error is visible even if the page reloads
+            window.alert('Google Sign-In Error: ' + err.code + ' — ' + err.message);
+            setError(err.message || 'Google sign-in failed');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -50,7 +58,7 @@ const Login = () => {
         setError('');
         try {
             await signInWithEmailAndPassword(auth, formData.email, formData.password);
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             setError('Invalid email or password');
         } finally {
