@@ -38,8 +38,9 @@ const Login = () => {
                 });
             }
             navigate('/');
-        }).catch(() => {
-            setError('Google sign-in failed. Please try again.');
+        }).catch((err) => {
+            console.error(err);
+            setError(`Google sign-in failed: ${err.message}`);
         });
     }, []);
 

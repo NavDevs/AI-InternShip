@@ -54,7 +54,8 @@ const Register = () => {
             login(userData);
             navigate('/');
         } catch (err) {
-            setError(err.message || 'Registration failed');
+            console.error(err);
+            setError(`Google sign-in failed: ${err.message}`);
         } finally {
             setIsLoading(false);
         }
