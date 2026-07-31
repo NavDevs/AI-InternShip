@@ -11,8 +11,16 @@ const Login = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
+
+    // Automatically redirect if the user is already authenticated
+    // This catches the state update after a successful Google Redirect
+    React.useEffect(() => {
+        if (user) {
+            navigate('/');
+        }
+    }, [user, navigate]);
 
     // Handle redirect result after returning from Google
     React.useEffect(() => {
