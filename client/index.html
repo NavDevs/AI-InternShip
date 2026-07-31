@@ -5,6 +5,10 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Intern-AI | Your Personal Career Assistant</title>
+    <!-- Prevent browser from caching this HTML file -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <style>
       /* Inline fallback styles — visible until React mounts */
       .app-loader{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a2e;flex-direction:column;gap:12px}
@@ -14,7 +18,7 @@
     </style>
   </head>
   <body>
-    <!-- React replaces this content when it mounts. If JS fails, the user sees the spinner instead of a white screen. -->
+    <!-- React replaces this content when it mounts. If JS fails, user sees a spinner instead of white screen. -->
     <div id="root">
       <div class="app-loader">
         <div class="spinner"></div>
@@ -23,28 +27,34 @@
     </div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
-      // Catch JS module load failures (stale cache, 404 assets) and force a clean reload
+      // PERMANENT FIX: Unregister ALL old service workers and clear ALL caches
+      // This runs on every page load to clean up stale PWA data from any browser
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          registrations.forEach(function(registration) {
+            registration.unregister();
+            console.log('[Cleanup] Unregistered service worker:', registration.scope);
+          });
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          names.forEach(function(name) {
+            caches.delete(name);
+            console.log('[Cleanup] Deleted cache:', name);
+          });
+        });
+      }
+
+      // Catch JS module load failures (stale cache / 404) and force a clean reload
       window.addEventListener('error', function(e) {
         if (e.message && (e.message.includes('Failed to fetch dynamically imported module') || e.message.includes('Loading chunk') || e.message.includes('Loading CSS chunk'))) {
-          // Clear service workers and caches, then hard reload
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(regs) {
-              regs.forEach(function(r) { r.unregister(); });
-            });
-          }
-          if ('caches' in window) {
-            caches.keys().then(function(names) {
-              names.forEach(function(name) { caches.delete(name); });
-            });
-          }
-          // Reload once (use sessionStorage flag to prevent infinite loop)
           if (!sessionStorage.getItem('_reloaded')) {
             sessionStorage.setItem('_reloaded', '1');
             window.location.reload();
           }
         }
       });
-      // Clear the reload flag on successful load
       window.addEventListener('load', function() {
         sessionStorage.removeItem('_reloaded');
       });
