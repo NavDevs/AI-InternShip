@@ -232,19 +232,21 @@ router.post('/analyze', auth, async (req, res) => {
             skills: userSkills
         };
 
-        const systemPrompt = `You are an expert technical recruiter. Extract job details and a precise list of required skills from the job description. Respond with valid JSON only.`;
+        const systemPrompt = `You are an elite technical recruiter and AI Career Coach. Your job is to analyze a job description with extreme precision. Extract highly accurate technical and soft skills, job title, company, and location. Provide very clear, specific, and highly actionable advice tailored to the exact requirements. Respond strictly with valid JSON only.`;
 
-        const userPrompt = `Extract the following details from this JOB DESCRIPTION:
+        const userPrompt = `Thoroughly and accurately analyze this JOB DESCRIPTION:
 ${jdText}
 
-Return ONLY this JSON (no markdown, no extra text):
+Return ONLY this exact JSON structure (no markdown, no extra text, strictly JSON):
 {
-    "title": "Job Title from JD",
-    "company": "Company Name from JD",
-    "location": "Location from JD",
+    "title": "Exact Job Title from JD",
+    "company": "Company Name from JD (if mentioned, else 'Not specified')",
+    "location": "Location from JD (if mentioned, else 'Not specified')",
     "requiredSkills": ["skill1", "skill2", "skill3"],
-    "advice": "2-3 sentences of specific, actionable advice for a candidate applying to this role"
-}`;
+    "advice": "3-4 sentences of highly specific, actionable advice for a candidate. Focus on exactly what they need to highlight or learn based on the core technical requirements."
+}
+
+Ensure "requiredSkills" is an array containing every distinct technical and soft skill mentioned (e.g. split "React/Node" into ["React", "Node"]). Be extremely precise.`;
 
         const response = await callGroq(systemPrompt, userPrompt, true);
         console.log('Groq Raw Response (Analyze):', response);
@@ -646,7 +648,7 @@ router.post('/chat', auth, async (req, res) => {
         const context = userContext || {};
         const userSkills = context.skills || [];
 
-        const systemPrompt = `You are an elite AI Career Coach and Architect. Your goal is to provide helpful, professional, and encouraging career advice.
+        const systemPrompt = `You are an elite AI Career Coach and Technical Architect. Your goal is to provide highly accurate, incredibly detailed, and deeply insightful career advice.
 
 USER CONTEXT:
 Name: ${context.name || 'User'}
@@ -656,11 +658,12 @@ Education: ${context.education ? `${context.education.degree || ''} at ${context
 Skills: ${userSkills.length > 0 ? userSkills.join(', ') : 'Not provided yet'}
 
 GUIDELINES:
+- Be EXTREMELY accurate and highly specific. Do not give generic advice. Provide concrete, step-by-step guidance tailored to the user's precise skills and background.
+- If asked technical questions, provide clear, accurate, and deeply knowledgeable answers.
+- If asked about industry trends, salaries, or job markets, provide highly accurate data-driven insights.
 - For general conversation (greetings, small talk), be friendly and concise. Address the user by their name if available.
-- For career advice, be professional and insightful, specifically taking into account the user's current skills.
 - If the user explicitly asks for a "Roadmap" or "Job Analysis", guide them to use the specific UI buttons for those features.
-- Keep responses natural and engaging.
-- Be encouraging and supportive.`;
+- Keep responses professional, highly engaging, and immediately actionable.`;
 
         // Convert chat history to Groq format
         const messages = [{ role: 'system', content: systemPrompt }];

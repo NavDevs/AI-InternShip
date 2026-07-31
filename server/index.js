@@ -10,14 +10,11 @@ const aiRoutes = require('./routes/ai');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allow requests from any Render, Vercel, or Koyeb frontend + localhost
+// Allow requests from any Render frontend subdomain + localhost
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  /\.onrender\.com$/,    // any *.onrender.com domain
-  /\.vercel\.app$/,      // any *.vercel.app domain
-  /\.koyeb\.app$/,       // any *.koyeb.app domain
-  /\.netlify\.app$/,     // any *.netlify.app domain
+  /\.onrender\.com$/,  // any *.onrender.com domain
 ];
 
 app.use(cors({
