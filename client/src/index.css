@@ -18,9 +18,11 @@
 
 :root {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--color-background);
   color: #1c1917;
 }
+
+/* The app's background is controlled by component classes (bg-[#f8f7f4] dark:bg-[#1a1a2e])
+   Setting it here caused a white flash on page reload before React mounts. */
 
 body {
   margin: 0;

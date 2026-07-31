@@ -5,12 +5,14 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Intern-AI | Your Personal Career Assistant</title>
-    <!-- Prevent browser from caching this HTML file -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <style>
-      /* Inline fallback styles — visible until React mounts */
+      /* CRITICAL: Set dark background BEFORE any CSS/JS loads. 
+         This prevents the "white flash" that looks like a broken page.
+         React's ThemeProvider will set the real theme once mounted. */
+      html, body { margin:0; background-color:#1a1a2e !important; }
       .app-loader{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#1a1a2e;flex-direction:column;gap:12px}
       .app-loader .spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top-color:#3b82f6;border-radius:50%;animation:spin .6s linear infinite}
       .app-loader p{color:#a8a29e;font-size:14px;font-family:system-ui,sans-serif}
@@ -18,7 +20,6 @@
     </style>
   </head>
   <body>
-    <!-- React replaces this content when it mounts. If JS fails, user sees a spinner instead of white screen. -->
     <div id="root">
       <div class="app-loader">
         <div class="spinner"></div>
@@ -27,26 +28,18 @@
     </div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
-      // PERMANENT FIX: Unregister ALL old service workers and clear ALL caches
-      // This runs on every page load to clean up stale PWA data from any browser
+      // Clean up old service workers and caches from previous PWA
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          registrations.forEach(function(registration) {
-            registration.unregister();
-            console.log('[Cleanup] Unregistered service worker:', registration.scope);
-          });
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
         });
       }
       if ('caches' in window) {
         caches.keys().then(function(names) {
-          names.forEach(function(name) {
-            caches.delete(name);
-            console.log('[Cleanup] Deleted cache:', name);
-          });
+          names.forEach(function(name) { caches.delete(name); });
         });
       }
-
-      // Catch JS module load failures (stale cache / 404) and force a clean reload
+      // Auto-recover from stale JS/CSS chunks
       window.addEventListener('error', function(e) {
         if (e.message && (e.message.includes('Failed to fetch dynamically imported module') || e.message.includes('Loading chunk') || e.message.includes('Loading CSS chunk'))) {
           if (!sessionStorage.getItem('_reloaded')) {
@@ -55,9 +48,7 @@
           }
         }
       });
-      window.addEventListener('load', function() {
-        sessionStorage.removeItem('_reloaded');
-      });
+      window.addEventListener('load', function() { sessionStorage.removeItem('_reloaded'); });
     </script>
   </body>
 </html>
