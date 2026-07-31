@@ -226,14 +226,16 @@ const JobDetail = () => {
                     {job.description?.replace(/<[^>]*>?/gm, '') || 'No detailed description available. Click "Apply Now" to learn more on the company\'s website.'}
                 </p>
 
-                <div className="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/50">
-                    <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4 text-amber-600" />
-                        <p className="text-xs text-amber-700 dark:text-amber-400">
-                            Job offer upto ₹ 3.0 LPA to 34 LPA (per annum) post Internship
-                        </p>
+                {(job.offer || job.salary) && (
+                    <div className="mt-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/50">
+                        <div className="flex items-center gap-2">
+                            <Tag className="h-4 w-4 text-amber-600" />
+                            <p className="text-xs text-amber-700 dark:text-amber-400">
+                                {job.offer || job.salary}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* AI Eligibility */}

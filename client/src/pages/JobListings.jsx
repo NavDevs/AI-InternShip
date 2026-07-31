@@ -329,12 +329,14 @@ const JobListings = () => {
                                         {job.description?.replace(/<[^>]*>?/gm, '')}
                                     </p>
 
-                                    <div className="bg-amber-50 dark:bg-amber-900/10 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900/30 flex items-center gap-2">
-                                        <Tag className="h-3 w-3 text-amber-600 shrink-0" />
-                                        <p className="text-xs text-amber-700 dark:text-amber-400">
-                                            Job offer upto ₹ 3.0 LPA to 34 LPA post Internship
-                                        </p>
-                                    </div>
+                                    {(job.offer || job.salary) && (
+                                        <div className="bg-amber-50 dark:bg-amber-900/10 rounded-lg p-2.5 border border-amber-100 dark:border-amber-900/30 flex items-center gap-2">
+                                            <Tag className="h-3 w-3 text-amber-600 shrink-0" />
+                                            <p className="text-xs text-amber-700 dark:text-amber-400">
+                                                {job.offer || job.salary}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="border-t border-stone-100 dark:border-stone-800 py-3 px-5 flex items-center justify-between bg-stone-50/50 dark:bg-stone-900/50">
