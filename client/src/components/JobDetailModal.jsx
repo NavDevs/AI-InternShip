@@ -19,13 +19,13 @@ import {
     Target,
     ChevronRight
 } from 'lucide-react';
+import JobDescriptionRenderer from './JobDescriptionRenderer';
 
 const JobDetailModal = ({ job, isOpen, onClose }) => {
     const { user } = useAuth();
     const [eligibility, setEligibility] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [descExpanded, setDescExpanded] = useState(false);
 
     useEffect(() => {
         if (isOpen && job) {
@@ -123,26 +123,13 @@ const JobDetailModal = ({ job, isOpen, onClose }) => {
                         </div>
 
                         {/* Description */}
-                        {(() => {
-                            const descText = job.description?.replace(/<[^>]*>?/gm, '') || 'No description available for this position.';
-                            const isLong = descText.length > 200;
-                            return (
-                                <div className="mb-6 p-4 rounded-lg bg-stone-50 dark:bg-stone-800">
-                                    <h3 className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-2">About This Role</h3>
-                                    <p className={`text-xs text-stone-600 dark:text-stone-400 leading-relaxed ${!descExpanded && isLong ? 'line-clamp-3' : 'whitespace-pre-wrap'}`}>
-                                        {descText}
-                                    </p>
-                                    {isLong && (
-                                        <button
-                                            onClick={() => setDescExpanded(!descExpanded)}
-                                            className="mt-2 text-xs font-medium text-primary hover:underline"
-                                        >
-                                            {descExpanded ? 'Show Less' : 'Read More'}
-                                        </button>
-                                    )}
-                                </div>
-                            );
-                        })()}
+                        <div className="mb-6 p-4 rounded-lg bg-stone-50 dark:bg-stone-800">
+                            <h3 className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-2">About This Role</h3>
+                            <JobDescriptionRenderer 
+                                text={job.description} 
+                                className="text-xs text-stone-600 dark:text-stone-400" 
+                            />
+                        </div>
 
                         {/* AI Eligibility */}
                         <div className="mb-6">
