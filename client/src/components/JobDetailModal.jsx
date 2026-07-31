@@ -129,7 +129,7 @@ const JobDetailModal = ({ job, isOpen, onClose }) => {
                             return (
                                 <div className="mb-6 p-4 rounded-lg bg-stone-50 dark:bg-stone-800">
                                     <h3 className="text-sm font-medium text-stone-900 dark:text-stone-100 mb-2">About This Role</h3>
-                                    <p className={`text-xs text-stone-600 dark:text-stone-400 leading-relaxed ${!descExpanded && isLong ? 'line-clamp-3' : ''}`}>
+                                    <p className={`text-xs text-stone-600 dark:text-stone-400 leading-relaxed ${!descExpanded && isLong ? 'line-clamp-3' : 'whitespace-pre-wrap'}`}>
                                         {descText}
                                     </p>
                                     {isLong && (

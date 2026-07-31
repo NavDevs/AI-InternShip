@@ -222,8 +222,8 @@ const JobDetail = () => {
             {/* Description */}
             <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 mb-5">
                 <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-3">About This Role</h2>
-                <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed">
-                    {job.description?.replace(/<[^>]*>?/gm, '') || 'No detailed description available. Click "Apply Now" to learn more on the company\'s website.'}
+                <p className="text-sm text-stone-600 dark:text-stone-400 leading-relaxed whitespace-pre-wrap">
+                    {job.description?.replace(/<[^>]*>?/gm, '\n') || 'No detailed description available. Click "Apply Now" to learn more on the company\'s website.'}
                 </p>
 
                 {(job.offer || job.salary) && (
