@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import { auth, db } from '../firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,42 +15,32 @@ const Login = () => {
     const navigate = useNavigate();
 
     // Automatically redirect if the user is already authenticated
-    // This catches the state update after a successful Google Redirect
     React.useEffect(() => {
         if (user) {
             navigate('/');
         }
     }, [user, navigate]);
 
-    // Handle redirect result after returning from Google
-    React.useEffect(() => {
-        getRedirectResult(auth).then(async (result) => {
-            if (!result) return;
-            const user = result.user;
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
+    const handleGoogleSignIn = async () => {
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const googleUser = result.user;
+            const userDoc = await getDoc(doc(db, 'users', googleUser.uid));
             if (!userDoc.exists()) {
-                await setDoc(doc(db, 'users', user.uid), {
-                    uid: user.uid,
-                    name: user.displayName,
-                    email: user.email,
+                await setDoc(doc(db, 'users', googleUser.uid), {
+                    uid: googleUser.uid,
+                    name: googleUser.displayName,
+                    email: googleUser.email,
                     role: 'student',
                     createdAt: new Date().toISOString()
                 });
             }
             navigate('/');
-        }).catch((err) => {
-            console.error(err);
-            setError(`Google sign-in failed: ${err.message}`);
-        });
-    }, []);
-
-    const handleGoogleSignIn = async () => {
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        try {
-            await signInWithRedirect(auth, provider);
         } catch (err) {
-            setError('Google sign-in failed. Please try again.');
+            console.error('Google sign-in error:', err);
+            setError(`Google sign-in failed: ${err.message}`);
         }
     };
 
