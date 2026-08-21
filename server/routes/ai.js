@@ -40,8 +40,11 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const executeGroqWithFallback = async (messages, options = {}, res = null) => {
     let lastError = null;
+    let modelsToTry = [...FALLBACK_MODELS];
+    let modelsFetched = false;
 
-    for (const model of FALLBACK_MODELS) {
+    for (let i = 0; i < modelsToTry.length; i++) {
+        const model = modelsToTry[i];
         let retries = 0;
         const maxRetries = 3;
 
@@ -71,12 +74,13 @@ const executeGroqWithFallback = async (messages, options = {}, res = null) => {
                     res.end();
                     return;
                 } else {
-                    const completion = await groq.chat.completions.create({
+                    const response = await groq.chat.completions.create({
                         model: model,
                         messages: messages,
-                        ...options
+                        ...options,
+                        stream: false
                     });
-                    return completion.choices[0]?.message?.content || '';
+                    return response.choices[0].message.content;
                 }
             } catch (err) {
                 lastError = err;
@@ -92,13 +96,33 @@ const executeGroqWithFallback = async (messages, options = {}, res = null) => {
 
                 // 400 Bad Request (Model decommissioned) or 404 Not Found
                 if (status === 400 || status === 404) {
-                    console.warn(`[Groq] Model ${model} failed with ${status}. Falling back to next model.`);
+                    console.warn(`[Groq] Model ${model} failed with ${status}. Falling back...`);
+                    
+                    // If we are at the end of our list, dynamically fetch fresh models to try
+                    if (i === modelsToTry.length - 1 && !modelsFetched) {
+                        try {
+                            console.warn('[Groq] Hardcoded models exhausted. Fetching active models dynamically...');
+                            const modelsRes = await groq.models.list();
+                            const activeModels = modelsRes.data.map(m => m.id).filter(id => !id.includes('whisper'));
+                            
+                            // Add up to 2 dynamically fetched models to our queue
+                            for (let j = 0; j < Math.min(2, activeModels.length); j++) {
+                                if (!modelsToTry.includes(activeModels[j])) {
+                                    modelsToTry.push(activeModels[j]);
+                                }
+                            }
+                            modelsFetched = true;
+                        } catch (fetchErr) {
+                            console.error('[Groq] Failed to fetch dynamic models:', fetchErr.message);
+                        }
+                    }
+                    
                     break; // break retry loop, go to next model
                 }
 
                 // 429 Rate Limit - Fall back immediately to next model (different bucket)
                 if (status === 429) {
-                    console.warn(`[Groq] Model ${model} rate limited (429). Falling back to next model immediately.`);
+                    console.warn(`[Groq] Model ${model} rate limited (429). Falling back immediately.`);
                     break;
                 }
 
@@ -106,7 +130,7 @@ const executeGroqWithFallback = async (messages, options = {}, res = null) => {
                 if (status >= 500) {
                     retries++;
                     if (retries > 1) {
-                        console.warn(`[Groq] Model ${model} exhausted retries (${status}). Falling back to next model.`);
+                        console.warn(`[Groq] Model ${model} exhausted retries (${status}).`);
                         break;
                     }
                     const delay = 1000;
@@ -116,7 +140,7 @@ const executeGroqWithFallback = async (messages, options = {}, res = null) => {
                 }
 
                 // Any other unhandled error, break and try next model
-                console.warn(`[Groq] Model ${model} encountered unexpected error ${status || err.message}. Falling back.`);
+                console.warn(`[Groq] Model ${model} encountered unexpected error ${status || err.message}.`);
                 break;
             }
         }
