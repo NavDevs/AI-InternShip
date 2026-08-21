@@ -8,15 +8,32 @@ const mongoose = require('mongoose');
 const { getResourcesForRole } = require('../utils/learningResources');
 const { getQuestionsByRound } = require('../utils/interviewQuestions');
 
+// Safe MongoDB user lookup — returns null instead of crashing if DB is unavailable
+const safeFindUser = async (userId) => {
+    try {
+        if (mongoose.connection.readyState !== 1) return null;
+        if (mongoose.Types.ObjectId.isValid(userId)) {
+            const user = await User.findById(userId).maxTimeMS(3000);
+            if (user) return user;
+        }
+        if (userId) {
+            return await User.findOne({ uid: userId }).maxTimeMS(3000);
+        }
+    } catch (err) {
+        console.warn('MongoDB user lookup failed:', err.message);
+    }
+    return null;
+};
+
 // Initialize Groq client
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY || 'missing_api_key'
 });
 
 const FALLBACK_MODELS = [
-    "llama-3.3-70b-versatile",
-    "llama-3.1-8b-instant",
-    "mixtral-8x7b-32768"
+    "openai/gpt-oss-120b",
+    "qwen/qwen3.6-27b",
+    "groq/compound"
 ];
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -41,6 +58,8 @@ const executeGroqWithFallback = async (messages, options = {}, res = null) => {
                     res.setHeader('Content-Type', 'text/event-stream');
                     res.setHeader('Cache-Control', 'no-cache');
                     res.setHeader('Connection', 'keep-alive');
+                    res.setHeader('X-Accel-Buffering', 'no');
+                    res.flushHeaders();
 
                     for await (const chunk of stream) {
                         const content = chunk.choices[0]?.delta?.content || '';
@@ -144,8 +163,8 @@ router.post('/extract-resume', auth, async (req, res) => {
             return res.status(400).json({ message: 'Resume text is too short or empty. Please upload a valid resume PDF.' });
         }
 
-        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
-            return res.status(500).json({ message: 'AI Service not configured.' });
+        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here' || process.env.GROQ_API_KEY === 'missing_api_key') {
+            return res.status(500).json({ message: 'AI Service not configured. GROQ_API_KEY is missing.' });
         }
 
         const systemPrompt = `You are an expert resume parser. Extract structured information from resume text and return ONLY valid JSON. Be thorough and accurate.`;
@@ -197,20 +216,14 @@ router.post('/analyze', auth, async (req, res) => {
         const { jdText } = req.body;
         console.log('Starting Groq Analysis for user:', req.user.id);
 
-        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
+        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here' || process.env.GROQ_API_KEY === 'missing_api_key') {
             console.error('GROQ_API_KEY is not configured correctly in .env');
-            return res.status(500).json({ message: 'AI Service configuration error. Please set GROQ_API_KEY in .env' });
+            return res.status(500).json({ message: 'AI Service configuration error. GROQ_API_KEY is missing.' });
         }
 
         if (!jdText) return res.status(400).json({ message: 'JD text is required' });
 
-        let user = null;
-        if (mongoose.Types.ObjectId.isValid(req.user.id)) {
-            user = await User.findById(req.user.id);
-        }
-        if (!user && req.user.id) {
-            user = await User.findOne({ uid: req.user.id });
-        }
+        let user = await safeFindUser(req.user.id);
 
         const userContext = req.body.userContext || user || {};
         // Ensure skills is always a clean array — never undefined or null
@@ -347,21 +360,15 @@ router.post('/eligibility', auth, async (req, res) => {
         const { job, userSkills: bodySkills } = req.body;
         console.log('Checking eligibility for user:', req.user.id, 'Job:', job?.title);
 
-        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
-            return res.status(500).json({ message: 'AI Service configuration error' });
+        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here' || process.env.GROQ_API_KEY === 'missing_api_key') {
+            return res.status(500).json({ message: 'AI Service configuration error. GROQ_API_KEY is missing.' });
         }
 
         if (!job || !job.title) {
             return res.status(400).json({ message: 'Job details are required' });
         }
 
-        let user = null;
-        if (mongoose.Types.ObjectId.isValid(req.user.id)) {
-            user = await User.findById(req.user.id);
-        }
-        if (!user && req.user.id) {
-            user = await User.findOne({ uid: req.user.id });
-        }
+        let user = await safeFindUser(req.user.id);
 
         const userContext = req.body.userContext || user || {};
         const userSkills = userContext.skills || user?.skills || bodySkills || [];
@@ -498,20 +505,14 @@ router.post('/roadmap', auth, async (req, res) => {
         const { dreamJob } = req.body;
         console.log('Generating Roadmap for user:', req.user.id, 'Dream Job:', dreamJob);
 
-        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
+        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here' || process.env.GROQ_API_KEY === 'missing_api_key') {
             console.error('GROQ_API_KEY is not configured correctly in .env');
-            return res.status(500).json({ message: 'AI Service configuration error. Please set GROQ_API_KEY in .env' });
+            return res.status(500).json({ message: 'AI Service configuration error. GROQ_API_KEY is missing.' });
         }
 
         if (!dreamJob) return res.status(400).json({ message: 'Dream job title is required' });
 
-        let user = null;
-        if (mongoose.Types.ObjectId.isValid(req.user.id)) {
-            user = await User.findById(req.user.id);
-        }
-        if (!user && req.user.id) {
-            user = await User.findOne({ uid: req.user.id });
-        }
+        let user = await safeFindUser(req.user.id);
 
         const userContext = req.body.userContext || user || {};
         let userSkills = req.body.userSkills || userContext.skills || user?.skills || [];
@@ -641,8 +642,8 @@ router.post('/chat', auth, async (req, res) => {
         const { message, chatHistory, userContext } = req.body;
         if (!message) return res.status(400).json({ message: 'Message is required' });
 
-        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
-            return res.status(500).json({ message: 'AI Service configuration error. Please set GROQ_API_KEY in .env' });
+        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here' || process.env.GROQ_API_KEY === 'missing_api_key') {
+            return res.status(500).json({ message: 'AI Service configuration error. GROQ_API_KEY is missing.' });
         }
 
         const context = userContext || {};
@@ -698,26 +699,24 @@ router.post('/career-advice', auth, async (req, res) => {
     try {
         console.log('Generating career advice for user:', req.user.id);
 
-        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here') {
-            return res.status(500).json({ message: 'AI Service configuration error. Please set GROQ_API_KEY in .env' });
+        if (!process.env.GROQ_API_KEY || process.env.GROQ_API_KEY === 'your_groq_api_key_here' || process.env.GROQ_API_KEY === 'missing_api_key') {
+            return res.status(500).json({ message: 'AI Service configuration error. GROQ_API_KEY is missing.' });
         }
 
         // Fetch user info
-        let user = null;
-        if (mongoose.Types.ObjectId.isValid(req.user.id)) {
-            user = await User.findById(req.user.id);
-        }
-        if (!user && req.user.id) {
-            user = await User.findOne({ uid: req.user.id });
-        }
+        let user = await safeFindUser(req.user.id);
 
         // Fetch user's applications
         let applications = [];
         if (user) {
-            applications = await Application.find({ student: user._id })
-                .sort({ appliedDate: -1 })
-                .limit(20)
-                .lean();
+            try {
+                applications = await Application.find({ student: user._id })
+                    .sort({ appliedDate: -1 })
+                    .limit(20)
+                    .lean();
+            } catch (dbErr) {
+                console.warn('Failed to fetch applications:', dbErr.message);
+            }
         }
 
         const userContext = req.body.userContext || user || {};
