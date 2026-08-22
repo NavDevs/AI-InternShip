@@ -55,19 +55,8 @@ class ErrorBoundary extends React.Component {
     }
 }
 
-const formatMessageText = (text) => {
-    if (!text) return '';
-    // Replace **text** with bold tags
-    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-stone-900 dark:text-stone-100">$1</strong>');
-    // Replace *text* with italic tags
-    formatted = formatted.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
-    // Replace bullet points at the start of a line
-    formatted = formatted.replace(/^(\s*)-\s+(.*)/gm, '<li class="ml-4 list-disc">$2</li>');
-    formatted = formatted.replace(/^(\s*)\*\s+(.*)/gm, '<li class="ml-4 list-disc">$2</li>');
-    // Replace numbered lists
-    formatted = formatted.replace(/^(\s*)\d+\.\s+(.*)/gm, '<li class="ml-4 list-decimal">$2</li>');
-    return formatted;
-};
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const ChatMessage = ({ msg }) => {
     if (msg.role === 'bot' && !msg.content) return null;
@@ -79,8 +68,17 @@ const ChatMessage = ({ msg }) => {
                     ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
                     : 'bg-primary text-white rounded-tr-sm'
                 }`}
-                dangerouslySetInnerHTML={{ __html: msg.role === 'bot' ? formatMessageText(msg.content) : msg.content }}
-            />
+            >
+                {msg.role === 'bot' ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-stone-900 prose-pre:text-stone-100 prose-table:border-collapse prose-td:border prose-td:border-stone-300 dark:prose-td:border-stone-700 prose-th:border prose-th:border-stone-300 dark:prose-th:border-stone-700 prose-th:bg-stone-200 dark:prose-th:bg-stone-700 prose-td:p-2 prose-th:p-2">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {msg.content}
+                        </ReactMarkdown>
+                    </div>
+                ) : (
+                    msg.content
+                )}
+            </div>
         </div>
     );
 };
