@@ -71,12 +71,27 @@ const Profile = () => {
 
     const handleAddSkill = async (e) => {
         e.preventDefault();
-        const skill = newSkill.trim();
-        if (skill && !skills.includes(skill)) {
-            const updatedSkills = [...skills, skill];
+        if (!newSkill.trim()) return;
+
+        // Split by comma, trim spaces, and filter out empty strings
+        const newSkillsArray = newSkill
+            .split(',')
+            .map(s => s.trim())
+            .filter(s => s !== '');
+
+        // Find skills that are not already in the list
+        const uniqueNewSkills = newSkillsArray.filter(s => !skills.includes(s));
+        
+        // Ensure no duplicates within the newly typed list itself
+        const finalNewSkills = [...new Set(uniqueNewSkills)];
+
+        if (finalNewSkills.length > 0) {
+            const updatedSkills = [...skills, ...finalNewSkills];
             setSkills(updatedSkills);
             setNewSkill('');
             await saveSkillsToDB(updatedSkills);
+        } else {
+            setNewSkill(''); // Clear input if all typed skills were already in the list
         }
     };
 
