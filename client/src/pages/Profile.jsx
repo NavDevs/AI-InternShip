@@ -60,16 +60,30 @@ const Profile = () => {
         }
     }, [user]);
 
-    const handleAddSkill = (e) => {
-        e.preventDefault();
-        if (newSkill.trim() && !skills.includes(newSkill.trim())) {
-            setSkills([...skills, newSkill.trim()]);
-            setNewSkill('');
+    const saveSkillsToDB = async (updatedSkills) => {
+        try {
+            const userRef = doc(db, 'users', user.uid);
+            await setDoc(userRef, { skills: updatedSkills }, { merge: true });
+        } catch (err) {
+            console.error('Failed to auto-save skills', err);
         }
     };
 
-    const removeSkill = (skillToRemove) => {
-        setSkills(skills.filter(s => s !== skillToRemove));
+    const handleAddSkill = async (e) => {
+        e.preventDefault();
+        const skill = newSkill.trim();
+        if (skill && !skills.includes(skill)) {
+            const updatedSkills = [...skills, skill];
+            setSkills(updatedSkills);
+            setNewSkill('');
+            await saveSkillsToDB(updatedSkills);
+        }
+    };
+
+    const removeSkill = async (skillToRemove) => {
+        const updatedSkills = skills.filter(s => s !== skillToRemove);
+        setSkills(updatedSkills);
+        await saveSkillsToDB(updatedSkills);
     };
 
     const handleSave = async (e) => {
