@@ -11,7 +11,7 @@ export const API_BASE_URL = isDevelopment ? LOCAL_BACKEND_URL : PROD_BACKEND_URL
 // Create a pre-configured axios instance with timeout and base URL
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 30000, // 30s timeout — prevents requests hanging forever
+    timeout: 90000, // 90s timeout — accounts for Render free tier cold starts
     headers: {
         'Content-Type': 'application/json',
     }
