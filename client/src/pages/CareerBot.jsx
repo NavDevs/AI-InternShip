@@ -57,21 +57,22 @@ class ErrorBoundary extends React.Component {
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const ChatMessage = ({ msg }) => {
     if (msg.role === 'bot' && !msg.content) return null;
 
     return (
-        <div className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'}`}>
+        <div className={`flex ${msg.role === 'bot' ? 'justify-start' : 'justify-end'} w-full`}>
             <div
-                className={`max-w-[90%] rounded-2xl text-sm leading-relaxed p-4 ${msg.role === 'bot'
+                className={`max-w-[95%] rounded-2xl text-sm leading-relaxed p-4 ${msg.role === 'bot'
                     ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-tl-sm'
                     : 'bg-primary text-white rounded-tr-sm'
                 }`}
             >
                 {msg.role === 'bot' ? (
-                    <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-stone-900 prose-pre:text-stone-100 prose-table:border-collapse prose-td:border prose-td:border-stone-300 dark:prose-td:border-stone-700 prose-th:border prose-th:border-stone-300 dark:prose-th:border-stone-700 prose-th:bg-stone-200 dark:prose-th:bg-stone-700 prose-td:p-2 prose-th:p-2">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-stone-900 prose-pre:text-stone-100 prose-table:border-collapse prose-td:border prose-td:border-stone-300 dark:prose-td:border-stone-700 prose-th:border prose-th:border-stone-300 dark:prose-th:border-stone-700 prose-th:bg-stone-200 dark:prose-th:bg-stone-700 prose-td:p-2 prose-th:p-2 overflow-x-auto custom-scrollbar">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                             {msg.content}
                         </ReactMarkdown>
                     </div>
