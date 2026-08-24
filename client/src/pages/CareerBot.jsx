@@ -304,18 +304,18 @@ const CareerBot = () => {
                 <p className="text-sm text-stone-500 dark:text-stone-400">Get roadmaps, eligibility checks, and personalized career advice.</p>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* Chat Panel */}
-                <div className="lg:col-span-4 h-[700px] flex flex-col bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl overflow-hidden">
-                    <div className="px-5 py-4 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
+            <div className="flex flex-col gap-8 w-full">
+                {/* Chat Panel - Full Width */}
+                <div className="w-full h-[650px] flex flex-col bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl overflow-hidden shadow-sm">
+                    <div className="px-6 py-4 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-                                <Sparkles className="h-4 w-4 text-white" />
+                            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center shadow-xs">
+                                <Sparkles className="h-5 w-5 text-white" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">AI Bot</h3>
-                                <p className="text-xs text-emerald-600 flex items-center gap-1">
-                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Online
+                                <h3 className="text-base font-semibold text-stone-900 dark:text-stone-100">AI Career Assistant</h3>
+                                <p className="text-xs text-emerald-600 flex items-center gap-1.5 font-medium">
+                                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" /> Ready & Online
                                 </p>
                             </div>
                         </div>
@@ -326,46 +326,49 @@ const CareerBot = () => {
                                 setCareerAdvice(null);
                                 setMessages([{ role: 'bot', content: `Hey ${user?.name?.split(' ')[0] || 'there'}! How can I help you today?` }]); 
                             }}
-                            className="p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors"
-                            title="Reset"
+                            className="px-3 py-1.5 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400 font-medium"
+                            title="Reset Chat"
                         >
-                            <Zap className="h-4 w-4 text-stone-400" />
+                            <Zap className="h-3.5 w-3.5" />
+                            <span>Reset Chat</span>
                         </button>
                     </div>
 
-                    <div className="px-4 py-3 bg-stone-50/50 dark:bg-stone-900/50 border-b border-stone-200 dark:border-stone-800 z-10 shrink-0">
-                        <div className="grid grid-cols-3 gap-2">
+                    <div className="px-6 py-3 bg-stone-50/70 dark:bg-stone-900/60 border-b border-stone-200 dark:border-stone-800 z-10 shrink-0">
+                        <div className="flex items-center gap-2 overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
+                            <span className="text-xs text-stone-400 font-medium whitespace-nowrap mr-1">Quick Modes:</span>
                             <button
-                                onClick={() => { if(mode !== 'analyze') { setMode('analyze'); setMessages(p => [...p, { role: 'bot', content: "Please paste the job description you'd like me to analyze." }]); } }}
-                                className={`p-2 rounded-lg flex flex-col items-center gap-1 transition-colors text-center ${mode === 'analyze' ? 'bg-stone-200 dark:bg-stone-700 ring-1 ring-blue-500/50 shadow-sm' : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                                onClick={() => { if(mode !== 'menu') { setMode('menu'); setMessages(p => [...p, { role: 'bot', content: "I'm in General Chat mode! Ask me about tech trends, resumes, interviews, salaries, or skills." }]); } }}
+                                className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors text-xs font-medium whitespace-nowrap ${mode === 'menu' ? 'bg-primary text-white shadow-xs' : 'bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
                             >
-                                <div className="h-6 w-6 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
-                                    <Target className="h-3 w-3" />
-                                </div>
-                                <span className="text-[10px] font-medium text-stone-700 dark:text-stone-300">Eligibility</span>
+                                <Sparkles className="h-3.5 w-3.5" />
+                                <span>General Chat</span>
                             </button>
                             <button
-                                onClick={() => { if(mode !== 'roadmap') { setMode('roadmap'); setMessages(p => [...p, { role: 'bot', content: "What's your target role? I'll build a roadmap for you." }]); } }}
-                                className={`p-2 rounded-lg flex flex-col items-center gap-1 transition-colors text-center ${mode === 'roadmap' ? 'bg-stone-200 dark:bg-stone-700 ring-1 ring-purple-500/50 shadow-sm' : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                                onClick={() => { if(mode !== 'analyze') { setMode('analyze'); setMessages(p => [...p, { role: 'bot', content: "Please paste the job description you'd like me to analyze for skill matching & eligibility." }]); } }}
+                                className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors text-xs font-medium whitespace-nowrap ${mode === 'analyze' ? 'bg-blue-600 text-white shadow-xs' : 'bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
                             >
-                                <div className="h-6 w-6 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center">
-                                    <Award className="h-3 w-3" />
-                                </div>
-                                <span className="text-[10px] font-medium text-stone-700 dark:text-stone-300">Roadmap</span>
+                                <Target className="h-3.5 w-3.5" />
+                                <span>Job Eligibility Check</span>
+                            </button>
+                            <button
+                                onClick={() => { if(mode !== 'roadmap') { setMode('roadmap'); setMessages(p => [...p, { role: 'bot', content: "What's your dream target role? (e.g. Full Stack Developer, Data Scientist) I'll build a 6-month roadmap for you." }]); } }}
+                                className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors text-xs font-medium whitespace-nowrap ${mode === 'roadmap' ? 'bg-purple-600 text-white shadow-xs' : 'bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                            >
+                                <Award className="h-3.5 w-3.5" />
+                                <span>6-Month Learning Roadmap</span>
                             </button>
                             <button
                                 onClick={() => { setMode('insights'); setCareerAdvice(null); handleCareerInsights(); }}
-                                className={`p-2 rounded-lg flex flex-col items-center gap-1 transition-colors text-center ${mode === 'insights' ? 'bg-stone-200 dark:bg-stone-700 ring-1 ring-amber-500/50 shadow-sm' : 'bg-stone-50 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
+                                className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors text-xs font-medium whitespace-nowrap ${mode === 'insights' ? 'bg-amber-600 text-white shadow-xs' : 'bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700'}`}
                             >
-                                <div className="h-6 w-6 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
-                                    <Lightbulb className="h-3 w-3" />
-                                </div>
-                                <span className="text-[10px] font-medium text-stone-700 dark:text-stone-300">Insights</span>
+                                <Lightbulb className="h-3.5 w-3.5" />
+                                <span>Application Tracker Insights</span>
                             </button>
                         </div>
                     </div>
 
-                    <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 pb-28 space-y-4 custom-scrollbar scroll-smooth">
+                    <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar scroll-smooth">
                         {messages.map((msg, i) => (
                             <ChatMessage key={i} msg={msg} />
                         ))}
@@ -380,17 +383,16 @@ const CareerBot = () => {
                         )}
                     </div>
 
-                    <div className="p-4 border-t border-stone-200 dark:border-stone-800 space-y-3 bg-white dark:bg-stone-900 shrink-0">
-
-                        <div className="flex gap-2 items-end">
+                    <div className="p-4 sm:p-5 border-t border-stone-200 dark:border-stone-800 space-y-3 bg-white dark:bg-stone-900 shrink-0">
+                        <div className="flex gap-3 items-end">
                             <textarea
-                                placeholder={mode === 'analyze' ? 'Paste full JD here…' : mode === 'roadmap' ? 'Target job title…' : 'Ask me anything…'}
+                                placeholder={mode === 'analyze' ? 'Paste full job description (JD) here…' : mode === 'roadmap' ? 'Type target job title (e.g. Frontend Engineer)…' : 'Ask me anything about careers, tech, interviews, or resumes…'}
                                 className="flex-1 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 px-4 py-3 text-sm text-stone-900 dark:text-stone-100 focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-stone-400 resize-none overflow-y-auto custom-scrollbar leading-relaxed"
-                                style={{ minHeight: '44px', maxHeight: '200px', height: '44px' }}
+                                style={{ minHeight: '46px', maxHeight: '200px', height: '46px' }}
                                 value={inputText}
                                 onChange={(e) => {
                                     setInputText(e.target.value);
-                                    e.target.style.height = '44px';
+                                    e.target.style.height = '46px';
                                     e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
                                 }}
                                 onKeyDown={(e) => {
@@ -398,7 +400,7 @@ const CareerBot = () => {
                                         e.preventDefault();
                                         if (inputText.trim() && !loading) {
                                             handleSend();
-                                            e.target.style.height = '44px';
+                                            e.target.style.height = '46px';
                                         }
                                     }
                                 }}
@@ -407,13 +409,12 @@ const CareerBot = () => {
                                 onClick={() => {
                                     if (inputText.trim() && !loading) {
                                         handleSend();
-                                        // Reset height using a hacky query selector since we don't have a ref directly in this inline scope
-                                        const ta = document.querySelector('textarea[placeholder*="Ask"], textarea[placeholder*="Target"], textarea[placeholder*="Paste"]');
-                                        if (ta) ta.style.height = '44px';
+                                        const ta = document.querySelector('textarea[placeholder*="Ask"], textarea[placeholder*="Type"], textarea[placeholder*="Paste"]');
+                                        if (ta) ta.style.height = '46px';
                                     }
                                 }}
                                 disabled={!inputText.trim() || loading}
-                                className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0"
+                                className="h-11 w-11 rounded-xl bg-primary flex items-center justify-center text-white hover:bg-primary-hover transition-colors disabled:opacity-50 shrink-0 shadow-xs cursor-pointer"
                             >
                                 <Send className="h-4 w-4" />
                             </button>
@@ -421,8 +422,9 @@ const CareerBot = () => {
                     </div>
                 </div>
 
-                {/* Display Panel */}
-                <div className="lg:col-span-8 min-h-[700px] relative">
+                {/* Display Panel - Full Width Below Chat */}
+                {(result || careerAdvice || loading) && (
+                <div className="w-full relative mt-4">
                     <ErrorBoundary onReset={() => { setResult(null); setMode('menu'); }}>
                         <AnimatePresence mode="wait">
                             {loading ? (
@@ -431,7 +433,7 @@ const CareerBot = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="absolute inset-0 flex flex-col items-center justify-center bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl"
+                                className="w-full min-h-[300px] flex flex-col items-center justify-center bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl py-16"
                             >
                                 <div className="h-12 w-12 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
                                 <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Analyzing…</h3>
@@ -563,24 +565,7 @@ const CareerBot = () => {
                                     </div>
                                 )}
                             </motion.div>
-                        ) : !result ? (
-                            /* Idle State */
-                            <motion.div
-                                key="empty"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 flex flex-col items-center justify-center text-center bg-white dark:bg-stone-900 border border-dashed border-stone-200 dark:border-stone-700 rounded-xl"
-                            >
-                                <div className="h-16 w-16 bg-stone-100 dark:bg-stone-800 rounded-xl flex items-center justify-center mb-5">
-                                    <Sparkles className="h-7 w-7 text-stone-400" />
-                                </div>
-                                <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">Ready when you are</h3>
-                                <p className="text-sm text-stone-500 max-w-sm">
-                                    Paste a job description to check eligibility, type a career goal for a roadmap, or just ask me anything.
-                                </p>
-                            </motion.div>
-                        ) : result.phases ? (
+                        ) : result?.phases ? (
                             /* Roadmap Result */
                             <motion.div key="roadmap" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
                                 <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6">
@@ -803,6 +788,7 @@ const CareerBot = () => {
                         </AnimatePresence>
                     </ErrorBoundary>
                 </div>
+                )}
             </div>
         </div>
     );
